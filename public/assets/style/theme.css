@@ -2,98 +2,93 @@
 
 @theme {
   --breakpoint-xs: 390px;
-  --breakpoint-sm: 640px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 1024px;
-  --breakpoint-xl: 1280px;
-  --breakpoint-2xl: 1536px;
 
   --radius: 0.5rem;
 
   --font-text: "Muli", sans-serif;
   --font-title: "Ubuntu", sans-serif;
 
-  --color-foreground: hsl(224 71.4% 4.1%);
+  /*--color-foreground: hsl(224 71.4% 4.1%);*/
   --color-destructive: hsl(0 84.2% 60.2%);
   --color-destructive-foreground: hsl(210 20% 98%);
-  --color-border: hsl(220 13% 91%);
 
-  --color-sidebar-background: hsl(0 0% 98%);
-  --color-sidebar-foreground: hsl(240 5.3% 26.1%);
-  --color-sidebar-primary: hsl(240 5.9% 10%);
-  --color-sidebar-primary-foreground: hsl(0 0% 98%);
-  --color-sidebar-accent: hsl(240 4.8% 95.9%);
-  --color-sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --color-sidebar-border: hsl(220 13% 91%);
-  --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --color-text: hsl(220, 26%, 9%);
+  /*--color-text: #11151d;*/
+  --color-background: hsl(231, 25%, 90%);
+  --color-primary: hsl(4, 100%, 71%);
+  /*--color-primary: #FF7469;*/
+  --color-secondary: hsl(4, 61%, 40%);
+  --color-accent: hsl(192, 90%, 20%);
 
-  --color-text: hsl(233 41% 8%);
-  --color-text-50: hsl(234 38% 95%);
-  --color-text-100: hsl(234 41% 90%);
-  --color-text-200: hsl(233 41% 80%);
-  --color-text-300: hsl(233 41% 70%);
-  --color-text-400: hsl(233 41% 60%);
-  --color-text-500: hsl(233 41% 50%);
-  --color-text-600: hsl(233 41% 40%);
-  --color-text-700: hsl(233 41% 30%);
-  --color-text-800: hsl(233 41% 20%);
-  --color-text-900: hsl(234 41% 10%);
-  --color-text-950: hsl(234 38% 5%);
+  --color-text-50: hsl(220, 23%, 95%);
+  --color-text-100: hsl(222, 25%, 90%);
+  --color-text-200: hsl(219, 25%, 80%);
+  --color-text-300: hsl(220, 25%, 70%);
+  --color-text-400: hsl(221, 25%, 60%);
+  --color-text-500: hsl(220, 25%, 50%);
+  --color-text-600: hsl(221, 25%, 40%);
+  --color-text-700: hsl(220, 25%, 30%);
+  --color-text-800: hsl(219, 25%, 20%);
+  --color-text-900: hsl(222, 25%, 10%);
+  --color-text-950: hsl(220, 23%, 5%);
 
-  --color-background: hsl(231 25% 90%);
-  --color-background-50: hsl(230 23% 95%);
-  --color-background-100: hsl(231 25% 90%);
-  --color-background-200: hsl(231 25% 80%);
-  --color-background-300: hsl(231 25% 70%);
-  --color-background-400: hsl(232 25% 60%);
-  --color-background-500: hsl(231 25% 50%);
-  --color-background-600: hsl(232 25% 40%);
-  --color-background-700: hsl(231 25% 30%);
-  --color-background-800: hsl(231 25% 20%);
-  --color-background-900: hsl(231 25% 10%);
-  --color-background-950: hsl(230 23% 5%);
+  --color-background-50: hsl(230, 23%, 95%);
+  --color-background-100: hsl(231, 25%, 90%);
+  --color-background-200: hsl(231, 25%, 80%);
+  --color-background-300: hsl(231, 25%, 70%);
+  --color-background-400: hsl(232, 25%, 60%);
+  --color-background-500: hsl(231, 25%, 50%);
+  --color-background-600: hsl(232, 25%, 40%);
+  --color-background-700: hsl(231, 25%, 30%);
+  --color-background-800: hsl(231, 25%, 20%);
+  --color-background-900: hsl(231, 25%, 10%);
+  --color-background-950: hsl(230, 23%, 5%);
 
-  --color-primary-foreground: hsl(210 20% 98%);
-  --color-primary: hsl(232 52% 28%);
-  --color-primary-50: hsl(235 52% 95%);
-  --color-primary-100: hsl(231 53% 90%);
-  --color-primary-200: hsl(231 53% 80%);
-  --color-primary-300: hsl(232 52% 70%);
-  --color-primary-400: hsl(232 52% 60%);
-  --color-primary-500: hsl(232 52% 50%);
-  --color-primary-600: hsl(232 52% 40%);
-  --color-primary-700: hsl(232 52% 30%);
-  --color-primary-800: hsl(231 53% 20%);
-  --color-primary-900: hsl(231 53% 10%);
-  --color-primary-950: hsl(231 52% 5%);
+  --color-primary-50: hsl(5, 100%, 95%);
+  --color-primary-100: hsl(4, 100%, 90%);
+  --color-primary-200: hsl(4, 100%, 80%);
+  --color-primary-300: hsl(4, 100%, 70%);
+  --color-primary-400: hsl(4, 100%, 60%);
+  --color-primary-500: hsl(4, 100%, 50%);
+  --color-primary-600: hsl(4, 100%, 40%);
+  --color-primary-700: hsl(4, 100%, 30%);
+  --color-primary-800: hsl(4, 100%, 20%);
+  --color-primary-900: hsl(4, 100%, 10%);
+  --color-primary-950: hsl(5, 100%, 5%);
 
-  --color-secondary-foreground: hsl(220.9 39.3% 11%);
-  --color-secondary: hsl(232 58% 67%);
-  --color-secondary-50: hsl(232 60% 95%);
-  --color-secondary-100: hsl(232 57% 90%);
-  --color-secondary-200: hsl(232 59% 80%);
-  --color-secondary-300: hsl(232 58% 70%);
-  --color-secondary-400: hsl(232 58% 60%);
-  --color-secondary-500: hsl(232 58% 50%);
-  --color-secondary-600: hsl(232 58% 40%);
-  --color-secondary-700: hsl(232 58% 30%);
-  --color-secondary-800: hsl(232 59% 20%);
-  --color-secondary-900: hsl(232 57% 10%);
-  --color-secondary-950: hsl(232 60% 5%);
+  --color-secondary-50: hsl(8, 62%, 95%);
+  --color-secondary-100: hsl(4, 61%, 90%);
+  --color-secondary-200: hsl(4, 61%, 80%);
+  --color-secondary-300: hsl(4, 61%, 70%);
+  --color-secondary-400: hsl(4, 61%, 60%);
+  --color-secondary-500: hsl(4, 61%, 50%);
+  --color-secondary-600: hsl(4, 61%, 40%);
+  --color-secondary-700: hsl(4, 61%, 30%);
+  --color-secondary-800: hsl(4, 61%, 20%);
+  --color-secondary-900: hsl(4, 61%, 10%);
+  --color-secondary-950: hsl(4, 62%, 5%);
 
-  --color-accent-foreground: hsl(220.9 39.3% 11%);
-  --color-accent: hsl(232 64% 50%);
-  --color-accent-50: hsl(232 62% 95%);
-  --color-accent-100: hsl(231 65% 90%);
-  --color-accent-200: hsl(232 65% 80%);
-  --color-accent-300: hsl(232 63% 70%);
-  --color-accent-400: hsl(232 64% 60%);
-  --color-accent-500: hsl(232 64% 50%);
-  --color-accent-600: hsl(232 64% 40%);
-  --color-accent-700: hsl(232 63% 30%);
-  --color-accent-800: hsl(232 65% 20%);
-  --color-accent-900: hsl(231 65% 10%);
-  --color-accent-950: hsl(233 62% 5%);
+  --color-accent-50: hsl(193, 92%, 95%);
+  --color-accent-100: hsl(192, 88%, 90%);
+  --color-accent-200: hsl(192, 90%, 80%);
+  --color-accent-300: hsl(192, 90%, 70%);
+  --color-accent-400: hsl(192, 90%, 60%);
+  --color-accent-500: hsl(192, 90%, 50%);
+  --color-accent-600: hsl(192, 90%, 40%);
+  --color-accent-700: hsl(192, 90%, 30%);
+  --color-accent-800: hsl(192, 90%, 20%);
+  --color-accent-900: hsl(192, 88%, 10%);
+  --color-accent-950: hsl(190, 92%, 5%);
+  /*--color-border: hsl(220 13% 91%);*/
+
+  /*--color-sidebar-background: hsl(0 0% 98%);*/
+  /*--color-sidebar-foreground: hsl(240 5.3% 26.1%);*/
+  /*--color-sidebar-primary: hsl(240 5.9% 10%);*/
+  /*--color-sidebar-primary-foreground: hsl(0 0% 98%);*/
+  /*--color-sidebar-accent: hsl(240 4.8% 95.9%);*/
+  /*--color-sidebar-accent-foreground: hsl(240 5.9% 10%);*/
+  /*--color-sidebar-border: hsl(220 13% 91%);*/
+  /*--color-sidebar-ring: hsl(217.2 91.2% 59.8%);*/
 }
 
 @layer base {
@@ -102,15 +97,11 @@
   }
 
   body {
-    @apply font-text;
+    @apply font-text bg-background;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-title font-bold
-  }
-
-  body {
-    @apply bg-background text-foreground;
   }
 
   h1 {
@@ -138,11 +129,16 @@
   }
 
   p {
-    @apply text-xs mb-1;
+    @apply text-xs my-1 mx-2;
   }
 
   input, select, textarea, option {
-    @apply dark:bg-background-200 bg-background-200 dark:text-sidebar-foreground text-foreground p-2 border border-gray-300 rounded-lg;
+    @apply bg-background-200
+    /*dark:text-sidebar-foreground dark:bg-background-200 */
+    /*text-foreground*/
+    p-2
+    border border-gray-300
+    rounded-lg;
   }
 
   input::placeholder, textarea::placeholder {
@@ -150,7 +146,20 @@
   }
 
   button {
-    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow h-9 px-4 py-2 mt-6 text-text-100 bg-primary hover:bg-primary-600 dark:text-text-800 dark:bg-secondary-200 dark:hover:bg-primary-400 hover:underline
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap
+    rounded-lg text-sm font-medium transition-colors border-primary
+    focus-visible:outline-none cursor-pointer disabled:pointer-events-none
+    disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow
+    h-9 px-4 py-2 mt-6
+    /*text-background*/
+    bg-primary
+    hover:bg-background hover:outline-3 hover:-outline-offset-3 hover:outline-primary  hover:text-text
+  }
+
+  button {
+    a {
+      @apply hover:border-b-4 hover:border-b-primary;
+    }
   }
 
 }
