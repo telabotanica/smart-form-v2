@@ -23,6 +23,8 @@
               }
             ],
             "styles": [
+              "public/assets/style/fonts.css",
+              "public/assets/style/theme.css",
               "src/styles.css"
             ]
           },
