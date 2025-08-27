@@ -25,6 +25,7 @@
             "styles": [
               "public/assets/style/fonts.css",
               "public/assets/style/theme.css",
+              "public/assets/style/material_symbols.css",
               "src/styles.css"
             ]
           },

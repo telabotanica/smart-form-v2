@@ -147,19 +147,13 @@
 
   button {
     @apply inline-flex items-center justify-center gap-2 whitespace-nowrap
-    rounded-lg text-sm font-medium transition-colors border-primary
+    rounded-lg font-medium transition-colors border-primary
     focus-visible:outline-none cursor-pointer disabled:pointer-events-none
     disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow
-    h-9 px-4 py-2 mt-6
-    /*text-background*/
+    h-9 px-4 py-2 mt-6 mx-2
     bg-primary
     hover:bg-background hover:outline-3 hover:-outline-offset-3 hover:outline-primary  hover:text-text
-  }
-
-  button {
-    a {
-      @apply hover:border-b-4 hover:border-b-primary;
-    }
+    hover:underline hover:decoration-primary hover:decoration-4 hover:underline-offset-2
   }
 
 }

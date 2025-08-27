@@ -1,20 +1,31 @@
+<main class="main border" id="main" >
+<!--  <app-menu id="menu" class="" />-->
 
+  <section class="border-8" id="content">
+    <h1 class="border">
+      Smart'Flore
+    </h1>
+    <p class="border">
+      Du texte
+    </p>
+    <button class="border" type="button"><a>Bouton</a></button>
 
-<main class="main border">
-  <div class="content border-8">
-    <div class="border">
-      <h1 class="border">
-        Smart'Flore
-      </h1>
-      <p class="border">
-        Du texte
-      </p>
-      <button class="border" type="button"><a>Bouton</a></button>
+    <input checked class="accent-primary" type="checkbox" />  Customized
 
-      <input checked class="accent-primary m-4" type="checkbox" />  Customized
+    <app-auth />
+<!--    <img src="assets/icons/chevron_up_brown.png"-->
+<!--         alt="up icon"-->
+<!--         title="retourner en haut de la page"-->
+<!--         class="up-icon"-->
+<!--         (click)="scrollToTop()"-->
+<!--         [ngClass]="{'visible': showUpIcon}">-->
 
-    </div>
-  </div>
+  </section>
+
+<!--  @defer (on immediate){-->
+<!--  <app-footer />-->
+<!--  }-->
+
 </main>
 
 <router-outlet />

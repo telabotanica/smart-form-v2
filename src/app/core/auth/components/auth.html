@@ -1,0 +1,84 @@
+<div id="login">
+  @if(!isLoggedIn()){
+    <h2 class="w-full text-end cursor-pointer" role="button" tabindex="0" title="Se connecter"
+  (click)="openLoginPopup()" (keydown.enter)="openLoginPopup()" (keydown.space)="openLoginPopup()">Connexion</h2>
+  } @else {
+  <div class="flex w-full justify-between items-center no-wrap">
+     <p>Bienvenue {{user!.name}}</p>
+     <div><button class="" tabindex="0" type="button" (click)="logout()"
+  (keydown.enter)="logout()" (keydown.space)="logout()"><span>Se déconnecter</span></button></div>
+  </div>
+  }
+
+  @if(loginPopup()){
+  <div class="blur-background">
+    <div class="popup !h-1/2 sm:!w-6/10 !w-full !left-0 !top-2/10 sm:!left-2/10 bg-background relative " id="loginPopup">
+      <div class="absolute top-2 right-2 cursor-pointer p-2 z-50" role="button" tabindex="0" (click)="closeLoginPopup()" (keydown)="handleKey($event)">
+        <span class="material-symbols-outlined text-primary !text-4xl" title="Fermer le formulaire">cancel</span>
+      </div>
+
+      <form #f="ngForm"
+            class="w-full flex flex-col justify-start items-center gap-4 relative"
+            [formGroup]="loginForm"
+            (ngSubmit)="f.form.valid && onSubmit()">
+        <h4 class="mb-1">Connectez vous !</h4>
+
+        <div class="w-8/12 xs:w-full mt-4 relative">
+          <input class="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                 formControlName="username"
+                 name="username"
+                 placeholder="email"
+                 type="email"
+                 [class.input-empty]="!loginForm.get('username')?.value"
+                 [class.input-filled]="loginForm.get('username')?.value" />
+                  <span class="material-symbols-outlined cursor-pointer-none absolute left-3 top-1/2 -translate-y-1/2 peer-focus:text-gray-900">alternate_email</span>
+        </div>
+        @if(!loginForm.get('username')?.valid && f.submitted){
+          @let usernameError = "Le nom d'utilisateur est obligatoire !";
+          <app-error [errorMessage]="usernameError" />
+        }
+
+        <div class="w-8/12 xs:w-full mt-4 relative">
+          <input class="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                 formControlName="password"
+                 placeholder="Mot de passe"
+                 [class.input-empty]="!loginForm.get('password')?.value"
+                 [class.input-filled]="loginForm.get('password')?.value"
+                 [type]="passwordFieldType">
+                 <span class="material-symbols-outlined cursor-pointer-none absolute left-3 top-1/2 -translate-y-1/2 peer-focus:text-gray-900">key</span>
+        <span class="material-symbols-outlined cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 peer-focus:text-gray-900"
+          role="button"
+          tabindex="0"
+          title="Afficher/Masquer le mot de passe"
+          (click)="togglePasswordVisibility()"
+          (keydown.enter)="togglePasswordVisibility()"
+          (keydown.space)="togglePasswordVisibility()"
+          >
+          {{passwordFieldIcon}}
+        </span>
+
+        </div>
+        @if(!loginForm.get('password')?.valid && f.submitted){
+          @let pwdError = "Un mot de passe est obligatoire !";
+          <app-error [errorMessage]="pwdError" />
+        }
+
+        <div class="w-full flex justify-center items-center mb-2">
+          <button class="" title="Se connecter" type="button"><span>Se connecter</span></button>
+          @if(error()){
+            <app-error [errorMessage]="error()" />
+          }
+        </div>
+      </form>
+
+      <hr class="mt-2">
+      <div class="w-full flex flex-col justify-start items-center gap-4 mt-4">
+        <h4 class="m-0">Pas encore de compte ?</h4>
+        <div>
+          <button class="m-0" title="S'inscrire'" type="button"><a href="{{inscriptionUrl}}" target="_blank">S'inscrire</a></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</div>
