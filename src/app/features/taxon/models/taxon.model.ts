@@ -1,4 +1,4 @@
-export interface Taxon {
+export type Taxon = {
   espece: string;
   scientificName: string;
   htmlFullScientificName?: string;

@@ -1,0 +1,32 @@
+<form (submit)="$event.preventDefault(); submit()">
+  <label>
+    Nom :
+    <input placeholder="Nom du sentier" type="text" [value]="nom()" (input)="nom.set($any($event.target).value); onInputChange()" />
+  </label>
+
+  <label>
+    Auteur :
+    <input placeholder="Auteur" type="text" [value]="auteur()" (input)="auteur.set($any($event.target).value); onInputChange()" />
+  </label>
+
+  <label>
+    PMR :
+    <select [value]="pmr()" (change)="onPmrChange($event)">
+      <option [value]="null">Tous</option>
+      <option [value]="-1">Ne sait pas</option>
+      <option [value]="0">Non accessible</option>
+      <option [value]="1">Accessible</option>
+    </select>
+  </label>
+
+  <label>
+    Ordre :
+    <select [value]="ordre()" (change)="ordre.set($any($event.target).value); emitSearch()">
+      <option value="ASC">Ascendant</option>
+      <option value="DESC">Descendant</option>
+    </select>
+  </label>
+
+<!--  <button type="submit">Rechercher</button>-->
+  <button type="button" (click)="reset()">Réinitialiser</button>
+</form>

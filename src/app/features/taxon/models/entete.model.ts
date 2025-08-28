@@ -1,4 +1,4 @@
-export interface Entete {
+export type Entete = {
   total: number | string;
   depart: number | string;
   limite: number | string;

@@ -3,7 +3,7 @@ import {Path} from './path.model';
 import {Occurrence} from '../../occurrence/models/occurrence.model';
 import {Image} from '../../image/models/image.model';
 
-export interface Sentier {
+export type Sentier = {
   id: number;
   displayName?: string;
   path?: Path;

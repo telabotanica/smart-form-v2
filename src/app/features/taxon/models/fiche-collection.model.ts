@@ -1,7 +1,7 @@
 import {Entete} from './entete.model';
 import {FicheResultats} from './fiche-resultats.model';
 
-export interface FicheCollection {
+export type FicheCollection = {
   entete: Entete;
   resultats?: FicheResultats[] | null;
 }

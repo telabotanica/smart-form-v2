@@ -1,4 +1,4 @@
-export interface Fiche {
+export type Fiche = {
   id: number;
   tag: string;
   nt?: string;

@@ -1,4 +1,4 @@
-export interface Position {
+export type Position = {
   lat: number;
   lng: number;
 }

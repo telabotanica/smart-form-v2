@@ -1,6 +1,6 @@
 import {Position} from '../../../shared/models/position.model';
 
-export interface StartEnd {
+export type StartEnd = {
   start: Position;
   end: Position;
 }

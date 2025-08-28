@@ -2,7 +2,7 @@ import {Position} from '../../../shared/models/position.model';
 import {Taxon} from '../../taxon/models/taxon.model';
 import {Sentier} from '../../sentier/models/sentier.model';
 
-export interface Occurrence {
+export type Occurrence = {
   id: number;
   sentier?: Sentier;
   card_tag?: string;

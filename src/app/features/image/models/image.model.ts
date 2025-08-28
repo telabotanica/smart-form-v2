@@ -1,6 +1,6 @@
 import {Occurrence} from '../../occurrence/models/occurrence.model';
 
-export interface Image {
+export type Image = {
   id: number;
   url?: string;
   author?: string;

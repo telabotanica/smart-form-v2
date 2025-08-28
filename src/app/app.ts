@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import AuthComponent from './core/auth/components/auth';
-import {PublicTrailList} from './features/public_trail/components/public-trail-list/public-trail-list';
+import {PublicTrailList} from './features/sentier_public/components/public-trail-list/public-trail-list';
 
 @Component({
   selector: 'app-root',
