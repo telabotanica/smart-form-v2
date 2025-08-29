@@ -1,0 +1,21 @@
+<button
+  aria-controls="sidebar"
+  class="z-11 cursor-pointer fixed items-center p-2 mt-2 ms-3 text-sm rounded-lg sm:hidden hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:text-gray-400"
+  data-drawer-target="sidebar"
+  data-drawer-toggle="sidebar"
+  type="button"
+  (click)="toggle()"
+>
+  <span class="material-symbols-outlined">{{ isOpen() ? "close" : "menu"}}</span>
+</button>
+
+<aside aria-label="Sidebar"
+       class="bg-background-200 open-close-container hidden fixed z-10 top-0 left-0 sm:w-44 w-full h-screen sm:block"
+       id="sidebar"
+       [class.hidden]="!isOpen()"
+       [class.open]="isOpen()"
+>
+  <div class="h-full px-3 py-4 mt-12 sm:mt-0 overflow-y-auto ">
+    Menu
+  </div>
+</aside>

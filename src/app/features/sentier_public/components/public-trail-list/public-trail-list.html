@@ -5,12 +5,11 @@
 @if (sentierService.loading()) {
   <p>Chargement des sentiers...</p>
 } @else if (sentierService.error()) {
-<app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
-
+  <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
 } @else {
   <ul>
     @for (sentier of sentierService.sentiers(); track sentier.id) {
-      <li>{{ sentier.name }}</li>
+      <li>{{ sentier.name }} <button>Ouvrir</button></li>
     }
   </ul>
 }

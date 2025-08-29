@@ -1,32 +1,25 @@
-<main class="main border" id="main" >
-<!--  <app-menu id="menu" class="" />-->
+<app-sidebar />
 
-  <section class="border-8 p-2" id="content">
-    <h1 class="border">
-      Smart'Flore
-    </h1>
-    <p class="border">
-      Du texte
-    </p>
-    <button class="border" type="button"><a>Bouton</a></button>
-
-    <input checked class="accent-primary" type="checkbox" />  Customized
-
-    <app-auth />
-    <app-public-trail-list />
-<!--    <img src="assets/icons/chevron_up_brown.png"-->
-<!--         alt="up icon"-->
-<!--         title="retourner en haut de la page"-->
-<!--         class="up-icon"-->
-<!--         (click)="scrollToTop()"-->
-<!--         [ngClass]="{'visible': showUpIcon}">-->
-
+<main class="w-full " id="main" >
+  <section class="p-2 sm:ml-44" id="content">
+    <router-outlet />
   </section>
 
-<!--  @defer (on immediate){-->
-<!--  <app-footer />-->
-<!--  }-->
+  <button
+    aria-label="Remonter en haut de la page"
+    class="fixed bottom-5 right-5 z-50  text-white hover:text-primary p-2 rounded-full shadow-lg transition-opacity duration-300 text-2xl hover:no-underline "
+    title="Remonter en haut"
+    type="button"
+    [class.opacity-0]="!showUpIcon"
+    [class.pointer-events-none]="!showUpIcon"
+    (click)="scrollToTop()"
+  >
+    ↑
+  </button>
 
+  <footer class="sm:ml-44">Footer</footer>
+  <!--  @defer (on immediate){-->
+  <!--  <app-footer />-->
+  <!--  }-->
 </main>
 
-<router-outlet />
