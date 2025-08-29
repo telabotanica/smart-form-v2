@@ -1,8 +1,11 @@
 import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [],
+  imports: [
+    RouterLink
+  ],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush

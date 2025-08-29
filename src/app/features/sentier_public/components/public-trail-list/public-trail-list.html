@@ -9,7 +9,9 @@
 } @else {
   <ul>
     @for (sentier of sentierService.sentiers(); track sentier.id) {
-      <li>{{ sentier.name }} <button>Ouvrir</button></li>
+      <li>{{ sentier.name }}
+        <button><a [routerLink]="['/trail', sentier.id]">Ouvrir</a></button>
+      </li>
     }
   </ul>
 }

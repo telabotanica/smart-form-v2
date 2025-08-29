@@ -1,0 +1,13 @@
+@if (sentierService.loading()) {
+  <p>Chargement du sentier...</p>
+} @else if (sentierService.error()) {
+  <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
+} @else {
+  @let sentier = sentierService.sentier();
+  <ul>
+      <li>{{ sentier.display_name }}</li>
+      <li>{{ sentier.id }}</li>
+      <li>{{ sentier.author }}</li>
+      <li>{{ sentier.status }}</li>
+  </ul>
+}

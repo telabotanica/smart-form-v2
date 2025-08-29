@@ -16,6 +16,8 @@
        [class.open]="isOpen()"
 >
   <div class="h-full px-3 py-4 mt-12 sm:mt-0 overflow-y-auto ">
-    Menu
+    <button class="" title="accueil" type="button" [routerLink]="['']" (click)="isOpen() && toggle()">
+      <span class="material-symbols-outlined">home</span>
+    </button>
   </div>
 </aside>

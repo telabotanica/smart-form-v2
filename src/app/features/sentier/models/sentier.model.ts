@@ -5,7 +5,7 @@ import {Image} from '../../image/models/image.model';
 
 export type Sentier = {
   id: number;
-  displayName?: string;
+  display_name?: string;
   path?: Path;
   name?: string;
   author_id: string;

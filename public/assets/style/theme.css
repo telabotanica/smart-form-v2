@@ -4,6 +4,7 @@
   --breakpoint-xs: 390px;
 
   --radius: 0.5rem;
+  --screenH: calc(100dvh - 5rem);
 
   --font-text: "Muli", sans-serif;
   --font-title: "Ubuntu", sans-serif;
