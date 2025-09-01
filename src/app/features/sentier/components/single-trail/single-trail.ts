@@ -42,7 +42,8 @@ export class SingleTrail implements OnInit {
   }
 
   editSentier(sentier: Sentier): Sentier {
-    sentier.name = sentier.display_name + ' (modifié)';
+    sentier.name = sentier.display_name + ' (modifié2)';
+    console.log(sentier);
     this.sentierService.updateSentier(sentier);
     return sentier;
   }

@@ -12,7 +12,7 @@ export type Sentier = {
   author?: string;
   author_email?: string;
   status?: string;
-  position: StartEnd;
+  position?: StartEnd;
   path_length?: number;
   occurrences_count?: number;
   details?: string;

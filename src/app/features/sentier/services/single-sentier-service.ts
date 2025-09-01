@@ -1,5 +1,5 @@
-import {computed, effect, inject, Injectable, signal} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {computed, inject, Injectable, signal} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
 import {Sentier} from '../models/sentier.model';
 import {firstValueFrom} from 'rxjs';
@@ -13,7 +13,6 @@ import {SentierValidationCheck} from '../models/sentier-validation-check.model';
 export class SingleSentierService {
   private http = inject(HttpClient);
   private userService = inject(UserService);
-  private user = this.userService.user();
   private smartfloreService = environment.smartfloreService;
 
   // --- Signals ---
@@ -30,24 +29,13 @@ export class SingleSentierService {
   readonly error = computed(() => this._error());
   readonly errorCheck = computed(() => this._errorCheck());
 
-  constructor() {
-    effect(()=>{
-      this.user = this.userService.user();
-    })
-  }
-
   async fetchSentier(id: string): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
 
     try {
-      const headers = this.user
-        ? new HttpHeaders({ Authorization: this.user.token })
-        : undefined;
-
       const data = await firstValueFrom(this.http.get<Sentier>(
-        `${this.smartfloreService}trail/${id}`,
-        {headers}
+        `${this.smartfloreService}trail/${id}`
       ));
       this._sentier.set(data ?? {} as Sentier);
     } catch (err: unknown) {
@@ -66,14 +54,9 @@ export class SingleSentierService {
     this._error.set(null);
 
     try {
-      const headers = this.user
-        ? new HttpHeaders({ Authorization: this.user.token })
-        : undefined;
-
       const data = await firstValueFrom(this.http.post<Sentier>(
         `${this.smartfloreService}trail`,
-        sentier,
-        {headers}
+        sentier
       ));
       this._sentier.set(data ?? {} as Sentier);
     } catch (err: unknown) {
@@ -92,14 +75,9 @@ export class SingleSentierService {
     this._error.set(null);
 
     try {
-      const headers = this.user
-        ? new HttpHeaders({ Authorization: this.user.token })
-        : undefined;
-
       const data = await firstValueFrom(this.http.put<Sentier>(
         `${this.smartfloreService}trail/${sentier.id}`,
-        sentier,
-        {headers}
+        sentier
       ));
       this._sentier.set(data ?? {} as Sentier);
     } catch (err: unknown) {
@@ -118,13 +96,9 @@ export class SingleSentierService {
     this._error.set(null);
 
     try {
-      const headers = this.user
-        ? new HttpHeaders({ Authorization: this.user.token })
-        : undefined;
-
       const data = await firstValueFrom(this.http.put<Sentier>(
         `${this.smartfloreService}trail/${sentier.id}/update-image?imageId=${imageId}`,
-        {headers}
+        {}
       ));
       this._sentier.set(data ?? {} as Sentier);
     } catch (err: unknown) {
@@ -143,13 +117,8 @@ export class SingleSentierService {
     this._error.set(null);
 
     try {
-      const headers = this.user
-        ? new HttpHeaders({ Authorization: this.user.token })
-        : undefined;
-
       await firstValueFrom(this.http.delete<string>(
-        `${this.smartfloreService}trail/${sentier.id}`,
-        {headers}
+        `${this.smartfloreService}trail/${sentier.id}`
       ));
       this._sentier.set({} as Sentier);
     } catch (err: unknown) {
@@ -186,14 +155,9 @@ export class SingleSentierService {
     this._error.set(null);
 
     try {
-      const headers = this.user
-        ? new HttpHeaders({ Authorization: this.user.token })
-        : undefined;
-
       const data = await firstValueFrom(this.http.post<Sentier>(
         `${this.smartfloreService}trail/${sentier.id}/review`,
-        {},
-        {headers}
+        {}
       ));
       this._sentier.set(data ?? {} as Sentier);
     } catch (err: unknown) {
