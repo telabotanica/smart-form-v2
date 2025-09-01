@@ -58,7 +58,7 @@ export default class AuthComponent implements OnInit {
 
     this.loginForm = new FormGroup<AuthForm>({
       username: new FormControl("", {
-        validators: [Validators.required, Validators.email],
+        validators: [Validators.required],
         nonNullable: true,
       }),
       password: new FormControl("", {

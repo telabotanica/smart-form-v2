@@ -1,7 +1,7 @@
 <app-sentier-public-filter (searchFilters)="onSearch($event)" />
 
 <hr />
-
+<h2>Liste des sentiers publics</h2>
 @if (sentierService.loading()) {
   <p>Chargement des sentiers...</p>
 } @else if (sentierService.error()) {
