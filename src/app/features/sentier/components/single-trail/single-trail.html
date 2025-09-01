@@ -15,11 +15,20 @@
   </ul>
   @if (sentier.image) {
     <div class="w-40 h-40 relative">
-      <img alt="Image du sentier {{ sentier.display_name }}" class="" ngSrc="{{ sentier.image.url }}" fill priority/>
+      <img alt="Image du sentier {{ sentier.display_name }}" class="" fill ngSrc="{{ sentier.image.url }}" priority/>
 <!--      <figcaption>Crédit: {{ sentier.image.author }} image_id: {{ sentier.image.id }}</figcaption>-->
     </div>
   } @else {
     <li>Aucune image disponible</li>
+  }
+
+  <button class="" type="button" (click)="checkSentier(sentier)">Vérifier ce sentier</button>
+  @if (sentierCheck().status) {
+    <p>Le sentier peut être validé</p>
+  }
+  @if (sentierService.errorCheck()) {
+    <h3>Erreurs détectées:</h3>
+    <p>{{sentierService.errorCheck()}}</p>
   }
 
   <h2>Infos privés si utilisateur connecté</h2>
@@ -31,7 +40,7 @@
 <!--        <li>avatar: {{ user.avatar}}</li>-->
 <!--        <li>admin: {{ user.admin}}</li>-->
 <!--    </ul>-->
-    <button class="primary-button" (click)="editSentier(sentier)">Modifier ce sentier</button>
+    <button class="" type="button" (click)="editSentier(sentier)">Modifier ce sentier</button>
 
   } @else {
     <p>Connectez-vous pour modifier ce sentier</p>

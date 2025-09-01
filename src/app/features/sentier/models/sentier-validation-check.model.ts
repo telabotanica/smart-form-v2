@@ -1,4 +1,4 @@
 export type SentierValidationCheck = {
   status: string;
-  errors?: [string];
+  error?: [string];
 }

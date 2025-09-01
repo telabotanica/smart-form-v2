@@ -5,6 +5,7 @@ import {UserService} from '../../../../core/auth/services/user.service';
 import {User} from '../../../../core/auth/user.model';
 import {NgOptimizedImage} from '@angular/common';
 import {Sentier} from '../../models/sentier.model';
+import {SentierValidationCheck} from '../../models/sentier-validation-check.model';
 
 @Component({
   selector: 'app-single-trail',
@@ -20,6 +21,7 @@ export class SingleTrail implements OnInit {
   user: User | null = null;
   readonly id = input.required<string>()
   readonly isLoggedIn = signal(false);
+  readonly sentierCheck = signal({} as SentierValidationCheck);
 
   sentierService= inject(SingleSentierService)
   userService = inject(UserService);
@@ -27,10 +29,12 @@ export class SingleTrail implements OnInit {
   constructor() {
     this.isLoggedIn.set(this.userService.isLoggedIn());
     this.user = this.userService.user();
+    this.sentierCheck.set({} as SentierValidationCheck);
 
     effect(()=>{
       this.isLoggedIn.set(this.userService.isLoggedIn());
       this.user = this.userService.user();
+      this.sentierCheck.set(this.sentierService.sentierCheck());
     })
   }
   ngOnInit(): void {
@@ -41,5 +45,9 @@ export class SingleTrail implements OnInit {
     sentier.name = sentier.display_name + ' (modifié)';
     this.sentierService.updateSentier(sentier);
     return sentier;
+  }
+
+  checkSentier(sentier: Sentier):void {
+    this.sentierService.checkSentier(sentier);
   }
 }

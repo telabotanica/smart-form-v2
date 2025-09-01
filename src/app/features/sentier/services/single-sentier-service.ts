@@ -4,7 +4,6 @@ import {environment} from '../../../../environments/environment';
 import {Sentier} from '../models/sentier.model';
 import {firstValueFrom} from 'rxjs';
 import {UserService} from '../../../core/auth/services/user.service';
-import {User} from '../../../core/auth/user.model';
 import {ErrorApi} from '../../../core/models/error-api.model';
 import {SentierValidationCheck} from '../models/sentier-validation-check.model';
 
@@ -22,12 +21,14 @@ export class SingleSentierService {
   private readonly _sentierCheck = signal<SentierValidationCheck>({} as SentierValidationCheck);
   private readonly _loading = signal(false);
   private readonly _error = signal<string | null>(null);
+  private readonly _errorCheck = signal<string | null>(null);
 
   // --- Exposed signals ---
   readonly sentier = computed(() => this._sentier());
   readonly sentierCheck = computed(() => this._sentierCheck());
   readonly loading = computed(() => this._loading());
   readonly error = computed(() => this._error());
+  readonly errorCheck = computed(() => this._errorCheck());
 
   constructor() {
     effect(()=>{
@@ -40,9 +41,16 @@ export class SingleSentierService {
     this._error.set(null);
 
     try {
-      const data = await firstValueFrom(this.http.get<Sentier>(`${this.smartfloreService}trail/${id}`));
+      const headers = this.user
+        ? new HttpHeaders({ Authorization: this.user.token })
+        : undefined;
+
+      const data = await firstValueFrom(this.http.get<Sentier>(
+        `${this.smartfloreService}trail/${id}`,
+        {headers}
+      ));
       this._sentier.set(data ?? {} as Sentier);
-    } catch (err: any) {
+    } catch (err: unknown) {
       const apiError = err as ErrorApi;
       this._error.set(
         apiError.error?.error ?? 'Erreur inconnue lors de la récupération du sentier'
@@ -139,12 +147,12 @@ export class SingleSentierService {
         ? new HttpHeaders({ Authorization: this.user.token })
         : undefined;
 
-      const data = await firstValueFrom(this.http.delete<string>(
+      await firstValueFrom(this.http.delete<string>(
         `${this.smartfloreService}trail/${sentier.id}`,
         {headers}
       ));
       this._sentier.set({} as Sentier);
-    } catch (err: any) {
+    } catch (err: unknown) {
       const apiError = err as ErrorApi;
       this._error.set(
         apiError.error?.error ?? 'Erreur inconnue lors de la suppression du sentier'
@@ -157,19 +165,19 @@ export class SingleSentierService {
 
   // Vérifier si un sentier peut être publié
   async checkSentier(sentier: Sentier): Promise<void> {
-    this._loading.set(true);
-    this._error.set(null);
+    this._errorCheck.set(null);
 
     try {
-      const data = await firstValueFrom(this.http.get<SentierValidationCheck>(`${this.smartfloreService}trail/${sentier.id}/check`));
+      const data = await firstValueFrom(this.http.get<SentierValidationCheck>(
+        `${this.smartfloreService}trail/${sentier.id}/check`
+      ));
       this._sentierCheck.set(data ?? {} as SentierValidationCheck);
-    } catch (err: any) {
+    } catch (err: unknown) {
       const apiError = err as ErrorApi;
-      this._error.set(
+      this._errorCheck.set(
         apiError.error?.error ?? 'Erreur inconnue lors de la vérification du sentier'
       );
-    } finally {
-      this._loading.set(false);
+      console.log(err)
     }
   }
 
