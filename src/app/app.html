@@ -1,6 +1,10 @@
 <app-sidebar />
 
-<main class="w-full " id="main" >
+<main class="w-full" id="main" >
+  <section class="p-2 sm:ml-44" id="header">
+    <app-header class="flex justify-between content-center gap-6"/>
+  </section>
+
   <section class="p-2 sm:ml-44 min-h-(--screenH)" id="content">
     <router-outlet />
   </section>

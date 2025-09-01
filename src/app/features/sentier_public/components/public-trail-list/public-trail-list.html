@@ -10,7 +10,7 @@
   <ul>
     @for (sentier of sentierService.sentiers(); track sentier.id) {
       <li>{{ sentier.name }}
-        <button><a [routerLink]="['/trail', sentier.id]">Ouvrir</a></button>
+        <button type="button"><a [routerLink]="['/trail', sentier.id]">Ouvrir</a></button>
       </li>
     }
   </ul>

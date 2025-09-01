@@ -1,12 +1,14 @@
 import {ChangeDetectionStrategy, Component, HostListener, signal} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {Sidebar} from './core/layout/sidebar/sidebar';
+import {Header} from './core/layout/header/header';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
-    Sidebar
+    Sidebar,
+    Header
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',

@@ -4,11 +4,36 @@
   <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
 } @else {
   @let sentier = sentierService.sentier();
+  <h2>Infos public du sentier {{ sentier.display_name }}</h2>
   <ul>
-      <li>{{ sentier.display_name }}</li>
-      <li>{{ sentier.id }}</li>
-      <li>{{ sentier.author }}</li>
+      <li>id: {{ sentier.id }}</li>
+      <li>auteur_id: {{ sentier.author_id }}</li>
+      <li>auteur: {{ sentier.author }}</li>
+      <li>email: {{ sentier.author_email }}</li>
       <li>{{ sentier.status }}</li>
       <li>{{ sentier.details }}</li>
   </ul>
+  @if (sentier.image) {
+    <div class="w-40 h-40 relative">
+      <img alt="Image du sentier {{ sentier.display_name }}" class="" ngSrc="{{ sentier.image.url }}" fill priority/>
+<!--      <figcaption>Crédit: {{ sentier.image.author }} image_id: {{ sentier.image.id }}</figcaption>-->
+    </div>
+  } @else {
+    <li>Aucune image disponible</li>
+  }
+
+  <h2>Infos privés si utilisateur connecté</h2>
+  @if (isLoggedIn() && user && user.id === sentier.author_id) {
+    <h3>Vous pouvez modifier ce sentier</h3>
+<!--    <ul>-->
+<!--        <li>id: {{ user.id}}</li>-->
+<!--        <li>nom: {{ user.name}}</li>-->
+<!--        <li>avatar: {{ user.avatar}}</li>-->
+<!--        <li>admin: {{ user.admin}}</li>-->
+<!--    </ul>-->
+    <button class="primary-button" (click)="editSentier(sentier)">Modifier ce sentier</button>
+
+  } @else {
+    <p>Connectez-vous pour modifier ce sentier</p>
+  }
 }

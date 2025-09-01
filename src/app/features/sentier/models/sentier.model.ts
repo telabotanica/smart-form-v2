@@ -10,7 +10,7 @@ export type Sentier = {
   name?: string;
   author_id: string;
   author?: string;
-  auteur_email?: string;
+  author_email?: string;
   status?: string;
   position: StartEnd;
   path_length?: number;
