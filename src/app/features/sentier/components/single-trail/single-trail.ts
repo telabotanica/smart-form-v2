@@ -6,12 +6,15 @@ import {User} from '../../../../core/auth/user.model';
 import {NgOptimizedImage} from '@angular/common';
 import {Sentier} from '../../models/sentier.model';
 import {SentierValidationCheck} from '../../models/sentier-validation-check.model';
+import {SentierValidationError} from '../../../../shared/models/sentier-validation-error.model';
+import {SentierCheckErrors} from '../../../../shared/components/sentier-check-errors/sentier-check-errors';
 
 @Component({
   selector: 'app-single-trail',
   imports: [
     ErrorComponent,
-    NgOptimizedImage
+    NgOptimizedImage,
+    SentierCheckErrors
   ],
   templateUrl: './single-trail.html',
   styleUrl: './single-trail.css',
@@ -21,7 +24,10 @@ export class SingleTrail implements OnInit {
   user: User | null = null;
   readonly id = input.required<string>()
   readonly isLoggedIn = signal(false);
+  // readonly sentierCheck = signal({} as SentierValidationCheck);
+
   readonly sentierCheck = signal({} as SentierValidationCheck);
+  readonly sentierCheckError = signal<SentierValidationError | null>(null);
 
   sentierService= inject(SingleSentierService)
   userService = inject(UserService);
@@ -29,12 +35,12 @@ export class SingleTrail implements OnInit {
   constructor() {
     this.isLoggedIn.set(this.userService.isLoggedIn());
     this.user = this.userService.user();
-    this.sentierCheck.set({} as SentierValidationCheck);
+    // this.sentierCheck.set({} as SentierValidationCheck);
 
     effect(()=>{
       this.isLoggedIn.set(this.userService.isLoggedIn());
       this.user = this.userService.user();
-      this.sentierCheck.set(this.sentierService.sentierCheck());
+      // this.sentierCheck.set(this.sentierService.sentierCheck());
     })
   }
   ngOnInit(): void {
@@ -48,7 +54,14 @@ export class SingleTrail implements OnInit {
     return sentier;
   }
 
-  checkSentier(sentier: Sentier):void {
-    this.sentierService.checkSentier(sentier);
+  // checkSentier(sentier: Sentier):void {
+  //   this.sentierService.checkSentier(sentier);
+  // }
+
+  async checkSentier(sentier: Sentier): Promise<void> {
+    const { check, error } = await this.sentierService.checkSentier(sentier);
+    this.sentierCheck.set(check);
+    this.sentierCheckError.set(error);
   }
+
 }

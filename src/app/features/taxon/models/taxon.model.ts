@@ -1,13 +1,13 @@
 export type Taxon = {
   espece: string;
-  scientificName: string;
-  htmlFullScientificName?: string;
+  scientific_name: string;
+  html_full_scientific_name?: string;
   genus?: string;
   family?: string;
-  taxonRepository: string;
-  nameId: number;
-  acceptedScientificNameId?: number;
-  taxonomicId?: number;
-  vernacularNames?: string[];
+  taxon_repository: string;
+  name_id: number;
+  accepted_scientific_name_id?: number;
+  taxonomic_id?: number;
+  vernacular_names?: string[];
   tabs?: string;
 }

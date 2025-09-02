@@ -6,6 +6,7 @@ import {firstValueFrom} from 'rxjs';
 import {UserService} from '../../../core/auth/services/user.service';
 import {ErrorApi} from '../../../core/models/error-api.model';
 import {SentierValidationCheck} from '../models/sentier-validation-check.model';
+import {SentierValidationError} from '../../../shared/models/sentier-validation-error.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,17 +18,17 @@ export class SingleSentierService {
 
   // --- Signals ---
   private readonly _sentier = signal<Sentier>({} as Sentier);
-  private readonly _sentierCheck = signal<SentierValidationCheck>({} as SentierValidationCheck);
+  // private readonly _sentierCheck = signal<SentierValidationCheck>({} as SentierValidationCheck);
   private readonly _loading = signal(false);
   private readonly _error = signal<string | null>(null);
-  private readonly _errorCheck = signal<string | null>(null);
+  // private readonly _errorCheck = signal<string | null>(null);
 
   // --- Exposed signals ---
   readonly sentier = computed(() => this._sentier());
-  readonly sentierCheck = computed(() => this._sentierCheck());
+  // readonly sentierCheck = computed(() => this._sentierCheck());
   readonly loading = computed(() => this._loading());
   readonly error = computed(() => this._error());
-  readonly errorCheck = computed(() => this._errorCheck());
+  // readonly errorCheck = computed(() => this._errorCheck());
 
   async fetchSentier(id: string): Promise<void> {
     this._loading.set(true);
@@ -132,22 +133,23 @@ export class SingleSentierService {
     }
   }
 
-  // Vérifier si un sentier peut être publié
-  async checkSentier(sentier: Sentier): Promise<void> {
-    this._errorCheck.set(null);
+  async checkSentier(sentier: Sentier): Promise<{
+    check: SentierValidationCheck;
+    error: SentierValidationError | null
+  }> {
+    let result: SentierValidationCheck = {} as SentierValidationCheck;
+    let error: SentierValidationError | null = null;
 
     try {
-      const data = await firstValueFrom(this.http.get<SentierValidationCheck>(
+      result = await firstValueFrom(this.http.get<SentierValidationCheck>(
         `${this.smartfloreService}trail/${sentier.id}/check`
-      ));
-      this._sentierCheck.set(data ?? {} as SentierValidationCheck);
-    } catch (err: unknown) {
-      const apiError = err as ErrorApi;
-      this._errorCheck.set(
-        apiError.error?.error ?? 'Erreur inconnue lors de la vérification du sentier'
-      );
-      console.log(err)
+      )) ?? {} as SentierValidationCheck;
+    } catch (err: any) {
+      error = err.error?.error ?? {} as SentierValidationError;
+      console.log(err);
     }
+
+    return { check: result, error };
   }
 
   async reviewSentier(sentier:Sentier): Promise<void> {

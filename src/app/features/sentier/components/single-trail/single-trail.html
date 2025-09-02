@@ -24,11 +24,11 @@
 
   <button class="" type="button" (click)="checkSentier(sentier)">Vérifier ce sentier</button>
   @if (sentierCheck().status) {
-    <p>Le sentier peut être validé</p>
+    <app-sentier-check-errors [check]="sentierCheck()!" />
   }
-  @if (sentierService.errorCheck()) {
+  @if (sentierCheckError()) {
     <h3>Erreurs détectées:</h3>
-    <p>{{sentierService.errorCheck()}}</p>
+    <app-sentier-check-errors [error]="sentierCheckError()!" />
   }
 
   <h2>Infos privés si utilisateur connecté</h2>

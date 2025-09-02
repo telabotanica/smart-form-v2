@@ -8,9 +8,24 @@
   @if (user!.trails!.length === 0) {
     <p>Vous n'avez pas encore créé de sentier.</p>
   } @else {
-    <p>Voici la liste de vos sentiers:</p>
     @for (sentier of user!.trails; track sentier.id) {
-      <p>id: {{ sentier.id }} - name: {{ sentier.display_name }} - status: {{ sentier.status }} - url: {{ sentier.details }} <button type="button"><a [routerLink]="['/trail', sentier.id]">Ouvrir</a></button></p>
+      <hr class="mt-2"/>
+      <div>
+        <p>id: {{ sentier.id }} - name: {{ sentier.display_name }} - status: {{ sentier.status ?? 'brouillon'}} </p>
+        <div>
+          <button type="button"><a [routerLink]="['/trail', sentier.id]">Ouvrir</a></button>
+          <button class="" type="button" (click)="deleteSentier(sentier)">supprimer ce sentier</button>
+          @if (sentier.status === null) {
+            <button class="" type="button" (click)="checkSentier(sentier)">Vérifier ce sentier</button>
+          }
+        </div>
+        @if (sentierChecks()[sentier.id]?.status) {
+          <app-sentier-check-errors [check]="sentierChecks()[sentier.id]" />
+        }
+        @if (sentierCheckErrors()[sentier.id]) {
+          <app-sentier-check-errors [error]="sentierCheckErrors()[sentier.id]!" />
+        }
+      </div>
     }
   }
 }
