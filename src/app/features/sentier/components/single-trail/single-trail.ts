@@ -24,7 +24,6 @@ export class SingleTrail implements OnInit {
   user: User | null = null;
   readonly id = input.required<string>()
   readonly isLoggedIn = signal(false);
-  // readonly sentierCheck = signal({} as SentierValidationCheck);
 
   readonly sentierCheck = signal({} as SentierValidationCheck);
   readonly sentierCheckError = signal<SentierValidationError | null>(null);
@@ -35,12 +34,10 @@ export class SingleTrail implements OnInit {
   constructor() {
     this.isLoggedIn.set(this.userService.isLoggedIn());
     this.user = this.userService.user();
-    // this.sentierCheck.set({} as SentierValidationCheck);
 
     effect(()=>{
       this.isLoggedIn.set(this.userService.isLoggedIn());
       this.user = this.userService.user();
-      // this.sentierCheck.set(this.sentierService.sentierCheck());
     })
   }
   ngOnInit(): void {
@@ -53,10 +50,6 @@ export class SingleTrail implements OnInit {
     this.sentierService.updateSentier(sentier);
     return sentier;
   }
-
-  // checkSentier(sentier: Sentier):void {
-  //   this.sentierService.checkSentier(sentier);
-  // }
 
   async checkSentier(sentier: Sentier): Promise<void> {
     const { check, error } = await this.sentierService.checkSentier(sentier);
