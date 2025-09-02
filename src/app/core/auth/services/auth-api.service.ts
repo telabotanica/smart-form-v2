@@ -35,10 +35,6 @@ export class AuthApiService {
     return this.http.get<any>(this.authUrl + 'identite')
   }
 
-  me(token: string): Observable<any> {
-    return this.http.get<any>(this.smartfloreService + 'me?token=' + token)
-  }
-
   isAdmin(token: string): Observable<boolean>{
     const headers = new HttpHeaders().set('Authorization', token);
     return this.http.get<any>(this.smartfloreService + 'admincheck',{headers} )

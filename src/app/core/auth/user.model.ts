@@ -1,3 +1,5 @@
+import {Sentier} from '../../features/sentier/models/sentier.model';
+
 export class User {
   id: string;
   name: string;
@@ -5,7 +7,7 @@ export class User {
   avatar: string;
   token: string;
   admin: number;
-  trails: unknown[];
+  trails: Sentier[];
 
 
   constructor(
@@ -15,7 +17,7 @@ export class User {
     avatar: string,
     token: string,
     admin: number,
-    trails: unknown[]
+    trails: Sentier[]
   ) {
     this.id = id;
     this.name = name;

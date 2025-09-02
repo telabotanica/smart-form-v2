@@ -6,6 +6,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const userService = inject(UserService);
   const user = userService.user();
 
+  if (req.url.includes('/service:annuaire:auth/deconnexion')) {
+    return next(req);
+  }
+
   if (user?.token) {
     const cloned = req.clone({
       setHeaders: {

@@ -1,0 +1,16 @@
+<h1>Mes sentiers</h1>
+
+@if (mesSentiersService.loading()) {
+  <p>Chargement des sentiers...</p>
+} @else if (mesSentiersService.error()) {
+  <app-error [errorMessage]="mesSentiersService.error() ?? 'Erreur inconnue'" />
+} @else {
+  @if (user!.trails!.length === 0) {
+    <p>Vous n'avez pas encore créé de sentier.</p>
+  } @else {
+    <p>Voici la liste de vos sentiers:</p>
+    @for (sentier of user!.trails; track sentier.id) {
+      <p>id: {{ sentier.id }} - name: {{ sentier.display_name }} - status: {{ sentier.status }} - url: {{ sentier.details }} <button type="button"><a [routerLink]="['/trail', sentier.id]">Ouvrir</a></button></p>
+    }
+  }
+}
