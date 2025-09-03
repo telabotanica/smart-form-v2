@@ -9,13 +9,16 @@ import {SingleSentierService} from '../../services/single-sentier-service';
 import {SentierValidationCheck} from '../../models/sentier-validation-check.model';
 import {SentierValidationError} from '../../../../shared/models/sentier-validation-error.model';
 import {SentierCheckErrors} from '../../../../shared/components/sentier-check-errors/sentier-check-errors';
+import {SharedService} from '../../../../shared/services/shared.service';
+import {ModalDeleteTrailConfirmation} from '../modal-delete-trail-confirmation/modal-delete-trail-confirmation';
 
 @Component({
   selector: 'app-mes-sentiers',
   imports: [
     ErrorComponent,
     RouterLink,
-    SentierCheckErrors
+    SentierCheckErrors,
+    ModalDeleteTrailConfirmation
   ],
   templateUrl: './mes-sentiers.html',
   styleUrl: './mes-sentiers.css',
@@ -25,11 +28,15 @@ export class MesSentiers implements OnInit{
   private userService = inject(UserService);
   mesSentiersService = inject(MesSentiersService);
   sentierService= inject(SingleSentierService)
+  sharedService = inject(SharedService);
+
   private router = inject(Router);
 
   user: User | null = null;
   readonly sentierChecks = signal<Record<string, SentierValidationCheck>>({});
   readonly sentierCheckErrors = signal<Record<string, SentierValidationError | null>>({});
+  sentierToDelete: Sentier | null = null;
+  showDeleteConfirmModal = false;
 
   constructor() {
     this.user = this.mesSentiersService.userMe();
@@ -62,11 +69,19 @@ export class MesSentiers implements OnInit{
     this.mesSentiersService.fetchMe();
   }
 
-  deleteSentier(sentier: Sentier): void {
-    this.sentierService.deleteSentier(sentier).then(() => {
-      this.mesSentiersService.fetchMe();
-    });
+  // --- Deletion methods ---
+  openDeleteConfirmModal(sentier: Sentier): void {
+    this.sharedService.toggleBlurBackground()
+    this.sentierToDelete = sentier;
+    this.showDeleteConfirmModal = true;
   }
+
+  closeDeleteConfirmModal(): void {
+    this.sharedService.toggleBlurBackground()
+    this.sentierToDelete = null;
+    this.showDeleteConfirmModal = false;
+  }
+  // --- End of deletion methods ---
 
   async checkSentier(sentier: Sentier): Promise<void> {
     const { check, error } = await this.sentierService.checkSentier(sentier);

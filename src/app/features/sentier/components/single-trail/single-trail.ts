@@ -8,13 +8,16 @@ import {Sentier} from '../../models/sentier.model';
 import {SentierValidationCheck} from '../../models/sentier-validation-check.model';
 import {SentierValidationError} from '../../../../shared/models/sentier-validation-error.model';
 import {SentierCheckErrors} from '../../../../shared/components/sentier-check-errors/sentier-check-errors';
+import {ModalDeleteTrailConfirmation} from '../modal-delete-trail-confirmation/modal-delete-trail-confirmation';
+import {SharedService} from '../../../../shared/services/shared.service';
 
 @Component({
   selector: 'app-single-trail',
   imports: [
     ErrorComponent,
     NgOptimizedImage,
-    SentierCheckErrors
+    SentierCheckErrors,
+    ModalDeleteTrailConfirmation
   ],
   templateUrl: './single-trail.html',
   styleUrl: './single-trail.css',
@@ -22,14 +25,17 @@ import {SentierCheckErrors} from '../../../../shared/components/sentier-check-er
 })
 export class SingleTrail implements OnInit {
   user: User | null = null;
+  sentierToDelete: Sentier | null = null;
+  showDeleteConfirmModal = false;
+
   readonly id = input.required<string>()
   readonly isLoggedIn = signal(false);
-
   readonly sentierCheck = signal({} as SentierValidationCheck);
   readonly sentierCheckError = signal<SentierValidationError | null>(null);
 
   sentierService= inject(SingleSentierService)
   userService = inject(UserService);
+  sharedService = inject(SharedService);
 
   constructor() {
     this.isLoggedIn.set(this.userService.isLoggedIn());
@@ -46,7 +52,7 @@ export class SingleTrail implements OnInit {
 
   editSentier(sentier: Sentier): Sentier {
     sentier.name = sentier.display_name + ' (modifié2)';
-    console.log(sentier);
+    // console.log(sentier);
     this.sentierService.updateSentier(sentier);
     return sentier;
   }
@@ -56,5 +62,20 @@ export class SingleTrail implements OnInit {
     this.sentierCheck.set(check);
     this.sentierCheckError.set(error);
   }
+
+  // --- Deletion methods ---
+  openDeleteConfirmModal(sentier: Sentier): void {
+    this.sharedService.toggleBlurBackground()
+    this.sentierToDelete = sentier;
+    this.showDeleteConfirmModal = true;
+  }
+
+  closeDeleteConfirmModal(): void {
+    this.sharedService.toggleBlurBackground()
+    this.sentierToDelete = null;
+    this.showDeleteConfirmModal = false;
+    this.sentierService.fetchSentier(this.id());
+  }
+  // --- End of deletion methods ---
 
 }

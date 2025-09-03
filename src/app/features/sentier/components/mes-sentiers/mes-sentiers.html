@@ -1,31 +1,43 @@
-<h1>Mes sentiers</h1>
+<div [class.blur-2xl]="sharedService.blurBackground()">
+  <h1>Mes sentiers</h1>
 
-@if (mesSentiersService.loading()) {
-  <p>Chargement des sentiers...</p>
-} @else if (mesSentiersService.error()) {
-  <app-error [errorMessage]="mesSentiersService.error() ?? 'Erreur inconnue'" />
-} @else {
-  @if (user!.trails!.length === 0) {
-    <p>Vous n'avez pas encore créé de sentier.</p>
+  @if (mesSentiersService.loading()) {
+    <p>Chargement des sentiers...</p>
+  } @else if (mesSentiersService.error()) {
+    <app-error [errorMessage]="mesSentiersService.error() ?? 'Erreur inconnue'" />
   } @else {
-    @for (sentier of user!.trails; track sentier.id) {
-      <hr class="mt-2"/>
-      <div>
-        <p>id: {{ sentier.id }} - name: {{ sentier.display_name }} - status: {{ sentier.status ?? 'brouillon'}} </p>
+    @if (user!.trails!.length === 0) {
+      <p>Vous n'avez pas encore créé de sentier.</p>
+    } @else {
+      @for (sentier of user!.trails; track sentier.id) {
+        <hr class="mt-2"/>
         <div>
-          <button type="button"><a [routerLink]="['/trail', sentier.id]">Ouvrir</a></button>
-          <button class="" type="button" (click)="deleteSentier(sentier)">supprimer ce sentier</button>
-          @if (sentier.status === null) {
-            <button class="" type="button" (click)="checkSentier(sentier)">Vérifier ce sentier</button>
+          <p>id: {{ sentier.id }} - name: {{ sentier.display_name }} - status: {{ sentier.status ?? 'brouillon'}} </p>
+          <div>
+            <button type="button"><a [routerLink]="['/trail', sentier.id]">Ouvrir</a></button>
+
+            <button class="" type="button" (click)="openDeleteConfirmModal(sentier)">supprimer ce sentier</button>
+
+            @if (sentier.status === null) {
+              <button class="" type="button" (click)="checkSentier(sentier)">Vérifier ce sentier</button>
+            }
+
+          </div>
+          @if (sentierChecks()[sentier.id]?.status) {
+            <app-sentier-check-errors [check]="sentierChecks()[sentier.id]" />
+          }
+          @if (sentierCheckErrors()[sentier.id]) {
+            <app-sentier-check-errors [error]="sentierCheckErrors()[sentier.id]!" />
           }
         </div>
-        @if (sentierChecks()[sentier.id]?.status) {
-          <app-sentier-check-errors [check]="sentierChecks()[sentier.id]" />
-        }
-        @if (sentierCheckErrors()[sentier.id]) {
-          <app-sentier-check-errors [error]="sentierCheckErrors()[sentier.id]!" />
-        }
-      </div>
+      }
     }
   }
+</div>
+
+@if (showDeleteConfirmModal) {
+  <app-modal-delete-trail-confirmation
+    [sentierToDelete]="sentierToDelete"
+    (modalClosed)="closeDeleteConfirmModal()"
+  />
 }
