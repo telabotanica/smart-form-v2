@@ -23,7 +23,7 @@
             }
 
           </div>
-          @if (sentierChecks()[sentier.id]?.status) {
+          @if (sentierChecks()[sentier.id] && sentierChecks()[sentier.id].status) {
             <app-sentier-check-errors [check]="sentierChecks()[sentier.id]" />
           }
           @if (sentierCheckErrors()[sentier.id]) {
