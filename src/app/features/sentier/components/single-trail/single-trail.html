@@ -4,26 +4,95 @@
   } @else if (sentierService.error()) {
     <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
   } @else {
-    @let sentier = sentierService.sentier();
-    <h2>Infos public du sentier {{ sentier.display_name }}</h2>
+    <h2>Infos public du sentier {{ sentier!.display_name }}</h2>
     <ul>
-      <li>id: {{ sentier.id }}</li>
-      <li>auteur_id: {{ sentier.author_id }}</li>
-      <li>auteur: {{ sentier.author }}</li>
-      <li>email: {{ sentier.author_email }}</li>
-      <li>{{ sentier.status }}</li>
-      <li>{{ sentier.details }}</li>
+      <li>id: {{ sentier!.id }}</li>
+      <li>auteur_id: {{ sentier!.author_id }}</li>
+      <li>auteur: {{ sentier!.author }}</li>
+      <li>email: {{ sentier!.author_email }}</li>
+      <li>Créée le : {{ sentier!.date_creation | date:"d MMMM y" }}</li>
+      @if (sentier!.date_modification) {
+        <li>modifié le : {{ sentier!.date_modification | date:"d MMMM y" }}</li>
+      }
+      @if (sentier!.date_publication) {
+        <li>publié le : {{ sentier!.date_publication | date:"d MMMM y" }}</li>
+      }
+      <li>url: {{ sentier!.details }}</li>
+
+      <hr />
+      <li>Accessibilité PMR: {{ sentier!.prm }}</li>
+      @if (sentier!.best_season) {
+        Meilleures saisons:
+        @for (season of sentier!.best_season; track $index) {
+          <span class="inline-block bg-gray-200 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{{ season }}</span>
+        }
+      }
+      <li>{{ sentier!.status ?? 'brouillon' }}</li>
+
+      <hr />
+      @if (sentier!.path && sentier!.path.coordinates.length > 0) {
+        @if (sentier!.position) {
+          <li>
+            start: lat {{ sentier!.position.start.lat }}, lng {{ sentier!.position.start.lng }} <br />
+            end: lat {{ sentier!.position.end.lat }}, lng {{ sentier!.position.end.lng }}
+          </li>
+        }
+        <li>Chemin : <br />
+          @for (coord of sentier!.path.coordinates; track $index) {
+            <p> Point {{$index +1 }} -> [{{ coord.lat }}, {{ coord.lng }}]</p>
+          }
+        </li>
+      }
+      <li>Longueur: {{ sentier!.path_length }} m</li>
+
+      <hr />
+      <li>Nombre d'occurrences: {{ sentier!.occurrences_count }}</li>
+      <li>Nombre de taxons: {{ sentier!.nb_taxons }}</li>
+      @if (sentier!.occurrences && sentier!.occurrences.length > 0) {
+        <li>Liste des individus (occurrence id - anecdotes - position // taxonomic id - nom id - nom scientifique - référentiel - fiche - noms communs -  ):
+          <ul class="mt-2">
+            @for (occurrence of sentier!.occurrences; track occurrence.id) {
+              <li class="mb-2">
+                {{ occurrence.id}} -
+                {{ occurrence.anecdotes }} -
+                @if (occurrence.position) {
+                  [{{ occurrence.position.lat }}, {{ occurrence.position.lng }}]
+                }//
+                {{ occurrence.taxon?.taxonomic_id }} -
+                {{ occurrence.taxon?.name_id }} -
+                {{ occurrence.taxon?.scientific_name }} -
+                {{ occurrence.taxon?.taxon_repository }} -
+                {{ occurrence.taxon?.tabs ?? 'Pas de fiche'}}
+                @if (occurrence.taxon?.vernacular_names?.length) {
+                  @for (name of occurrence.taxon!.vernacular_names!; track $index) {
+                    <p> {{ name }} </p>
+                  }
+                }
+
+                @if (occurrence.images && occurrence.images.length > 0) {
+                  <div class="w-40 h-40 relative">
+                    <img alt="Image de l'occurrence {{ occurrence.id }}" class="" fill ngSrc="{{ occurrence.images[0].url }}" priority />
+                  </div>
+                }
+              </li>
+            }
+          </ul>
+        </li>
+      }
+
     </ul>
-    @if (sentier.image) {
+
+    <hr />
+    @if (sentier!.image) {
       <div class="w-40 h-40 relative">
-        <img alt="Image du sentier {{ sentier.display_name }}" class="" fill ngSrc="{{ sentier.image.url }}" priority />
+        <img alt="Image du sentier {{ sentier!.display_name }}" class="" fill ngSrc="{{ sentier!.image.url }}" priority />
         <!--      <figcaption>Crédit: {{ sentier.image.author }} image_id: {{ sentier.image.id }}</figcaption>-->
       </div>
     } @else {
       <li>Aucune image disponible</li>
     }
-    @if (sentier.status !== 'Validé') {
-      <button class="" type="button" (click)="checkSentier(sentier)">Vérifier ce sentier</button>
+    @if (sentier!.status !== 'Validé') {
+      <button class="" type="button" (click)="checkSentier(sentier!)">Vérifier ce sentier</button>
     }
 
     @if (sentierCheck().status) {
@@ -34,10 +103,10 @@
       <app-sentier-check-errors [error]="sentierCheckError()!" />
     }
 
-    @if (sentier.status !== 'Validé') {
+    @if (sentier!.status !== 'Validé') {
       <h2>Infos privés si utilisateur connecté</h2>
 
-      @if (isLoggedIn() && user && user.id === sentier.author_id) {
+      @if (isLoggedIn() && user && user.id === sentier!.author_id) {
         <h3>Vous pouvez modifier ce sentier</h3>
         <!--    <ul>-->
           <!--        <li>id: {{ user.id}}</li>-->
@@ -45,8 +114,8 @@
           <!--        <li>avatar: {{ user.avatar}}</li>-->
           <!--        <li>admin: {{ user.admin}}</li>-->
           <!--    </ul>-->
-        <button class="" type="button" (click)="editSentier(sentier)">Modifier ce sentier</button>
-        <button class="" type="button" (click)="openDeleteConfirmModal(sentier)">supprimer ce sentier</button>
+        <button class="" type="button" (click)="editSentier(sentier!)">Modifier ce sentier</button>
+        <button class="" type="button" (click)="openDeleteConfirmModal(sentier!)">supprimer ce sentier</button>
 
       } @else {
         <p>Connectez-vous pour modifier ce sentier</p>
