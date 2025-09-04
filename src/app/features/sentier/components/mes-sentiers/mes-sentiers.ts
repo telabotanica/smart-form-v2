@@ -11,6 +11,7 @@ import {SentierValidationError} from '../../../../shared/models/sentier-validati
 import {SentierCheckErrors} from '../../../../shared/components/sentier-check-errors/sentier-check-errors';
 import {SharedService} from '../../../../shared/services/shared.service';
 import {ModalDeleteTrailConfirmation} from '../modal-delete-trail-confirmation/modal-delete-trail-confirmation';
+import {SentierForm} from '../../forms/sentier-form/sentier-form';
 
 @Component({
   selector: 'app-mes-sentiers',
@@ -18,7 +19,8 @@ import {ModalDeleteTrailConfirmation} from '../modal-delete-trail-confirmation/m
     ErrorComponent,
     RouterLink,
     SentierCheckErrors,
-    ModalDeleteTrailConfirmation
+    ModalDeleteTrailConfirmation,
+    SentierForm
   ],
   templateUrl: './mes-sentiers.html',
   styleUrl: './mes-sentiers.css',
@@ -36,7 +38,9 @@ export class MesSentiers implements OnInit{
   readonly sentierChecks = signal<Record<string, SentierValidationCheck>>({});
   readonly sentierCheckErrors = signal<Record<string, SentierValidationError | null>>({});
   sentierToDelete: Sentier | null = null;
+  sentierToUpdate: Sentier | null = null;
   showDeleteConfirmModal = false;
+  showTrailModal = false;
 
   constructor() {
     this.user = this.mesSentiersService.userMe();
@@ -96,6 +100,21 @@ export class MesSentiers implements OnInit{
       [sentier.id]: error
     }));
   }
+
+  // --- Add / Edit methods ---
+  openTrailModal(sentier: Sentier | null = null): void {
+    this.sharedService.toggleBlurBackground()
+    this.sentierToUpdate = sentier
+    this.showTrailModal = true;
+  }
+
+  closeTrailModal(): void {
+    this.sharedService.toggleBlurBackground()
+    this.sentierToUpdate = null;
+    this.showTrailModal = false;
+    this.mesSentiersService.fetchMe();
+  }
+  // --- End of Add / Edit methods ---
 
 
 }

@@ -10,6 +10,7 @@ import {SentierValidationError} from '../../../../shared/models/sentier-validati
 import {SentierCheckErrors} from '../../../../shared/components/sentier-check-errors/sentier-check-errors';
 import {ModalDeleteTrailConfirmation} from '../modal-delete-trail-confirmation/modal-delete-trail-confirmation';
 import {SharedService} from '../../../../shared/services/shared.service';
+import {SentierForm} from '../../forms/sentier-form/sentier-form';
 
 @Component({
   selector: 'app-single-trail',
@@ -18,7 +19,8 @@ import {SharedService} from '../../../../shared/services/shared.service';
     NgOptimizedImage,
     SentierCheckErrors,
     ModalDeleteTrailConfirmation,
-    DatePipe
+    DatePipe,
+    SentierForm
   ],
   templateUrl: './single-trail.html',
   styleUrl: './single-trail.css',
@@ -27,8 +29,10 @@ import {SharedService} from '../../../../shared/services/shared.service';
 export class SingleTrail implements OnInit {
   user: User | null = null;
   sentierToDelete: Sentier | null = null;
+  sentierToUpdate: Sentier | null = null;
   showDeleteConfirmModal = false;
   sentier: Sentier | null = null;
+  showTrailModal = false;
 
   readonly id = input.required<string>()
   readonly isLoggedIn = signal(false);
@@ -80,5 +84,20 @@ export class SingleTrail implements OnInit {
     this.sentierService.fetchSentier(this.id());
   }
   // --- End of deletion methods ---
+
+  // --- Add / Edit methods ---
+  openTrailModal(sentier: Sentier | null = null): void {
+    this.sharedService.toggleBlurBackground()
+    this.sentierToUpdate = sentier
+    this.showTrailModal = true;
+  }
+
+  closeTrailModal(): void {
+    this.sharedService.toggleBlurBackground()
+    this.sentierToUpdate = null;
+    this.showTrailModal = false;
+    this.sentierService.fetchSentier(this.id());
+  }
+  // --- End of Add / Edit methods ---
 
 }

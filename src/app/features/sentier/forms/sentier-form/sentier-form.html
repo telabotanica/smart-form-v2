@@ -1,0 +1,41 @@
+<div class="popup !h-1/2 sm:!w-6/10 !w-full !left-0 !top-2/10 sm:!left-2/10 bg-background relative "
+     id="loginPopup"
+     xmlns="http://www.w3.org/1999/html">
+  <div class="absolute top-2 right-2 cursor-pointer p-2 z-50" role="button" tabindex="0" (click)="closeModal()" (keydown)="handleKey($event)">
+    <span class="material-symbols-outlined text-primary !text-4xl" title="Fermer le formulaire">cancel</span>
+  </div>
+
+  <form [formGroup]="form()" (ngSubmit)="submit()">
+    <label for="display_name">Nom</label>
+    <input formControlName="display_name" id="display_name" type="text" />
+
+    <label for="best_season">Saisons idéales</label>
+    <div formArrayName="best_season" id="best_season">
+      <label for="printemps">
+        <input formControlName="0" id="printemps" type="checkbox" /> Printemps
+      </label>
+      <label for="ete">
+        <input formControlName="1" id="ete" type="checkbox" /> Été
+      </label>
+      <label for="automne">
+        <input formControlName="2" id="automne" type="checkbox" /> Automne
+      </label>
+      <label for="hiver">
+        <input formControlName="3" id="hiver" type="checkbox" /> Hiver
+      </label>
+    </div>
+
+    <label for="prm">PRM</label>
+    <select formControlName="prm">
+      <option [ngValue]="-1">Je ne sais pas</option>
+      <option [ngValue]="0">non accessible PMR</option>
+      <option [ngValue]="1">accessible PMR</option>
+    </select>
+
+    <div class="modal-actions">
+      <button type="submit">Valider</button>
+      <button type="button" (click)="closeModal()">Annuler</button>
+    </div>
+  </form>
+
+</div>

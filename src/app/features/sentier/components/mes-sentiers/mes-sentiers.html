@@ -1,6 +1,6 @@
 <div [class.blur-2xl]="sharedService.blurBackground()">
   <h1>Mes sentiers</h1>
-
+  <button class="" type="button" (click)="openTrailModal()">Créer un sentier</button>
   @if (mesSentiersService.loading()) {
     <p>Chargement des sentiers...</p>
   } @else if (mesSentiersService.error()) {
@@ -16,9 +16,9 @@
           <div>
             <button type="button"><a [routerLink]="['/trail', sentier.id]">Ouvrir</a></button>
 
-            <button class="" type="button" (click)="openDeleteConfirmModal(sentier)">supprimer ce sentier</button>
-
             @if (sentier.status === null) {
+              <button class="" type="button" (click)="openDeleteConfirmModal(sentier)">supprimer ce sentier</button>
+              <button class="" type="button" (click)="openTrailModal(sentier!)">Modifier ce sentier</button>
               <button class="" type="button" (click)="checkSentier(sentier)">Vérifier ce sentier</button>
             }
 
@@ -34,6 +34,13 @@
     }
   }
 </div>
+
+@if (showTrailModal) {
+  <app-sentier-form
+    [sentier]="sentierToUpdate"
+    (modalClosed)="closeTrailModal()"
+  />
+}
 
 @if (showDeleteConfirmModal) {
   <app-modal-delete-trail-confirmation

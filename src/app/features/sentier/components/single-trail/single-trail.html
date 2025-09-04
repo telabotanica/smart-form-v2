@@ -2,10 +2,19 @@
   @if (sentierService.loading()) {
     <p>Chargement du sentier...</p>
   } @else if (sentierService.error()) {
+    <button class="" type="button" (click)="openTrailModal()">Créer un sentier</button>
     <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
   } @else {
-    <h2>Infos public du sentier {{ sentier!.display_name }}</h2>
+    <button class="" type="button" (click)="openTrailModal()">Créer un sentier</button>
+    <h2>{{ sentier!.display_name }}</h2>
     <ul>
+      @if (sentier!.image) {
+        <div class="w-40 h-40 relative">
+          <img alt="Image du sentier {{ sentier!.display_name }}" class="" fill ngSrc="{{ sentier!.image.url }}" priority />
+        </div>
+      } @else {
+        <li>Aucune image disponible</li>
+      }
       <li>id: {{ sentier!.id }}</li>
       <li>auteur_id: {{ sentier!.author_id }}</li>
       <li>auteur: {{ sentier!.author }}</li>
@@ -30,18 +39,22 @@
       <li>{{ sentier!.status ?? 'brouillon' }}</li>
 
       <hr />
+      @if (sentier!.position && sentier!.position.start) {
+        <li>
+          start: lat {{ sentier!.position.start.lat }}, lng {{ sentier!.position.start.lng }} <br />
+          end: lat {{ sentier!.position.end.lat }}, lng {{ sentier!.position.end.lng }}
+        </li>
+      } @else {
+        <li>Aucune position de départ/arrivée définie</li>
+      }
       @if (sentier!.path && sentier!.path.coordinates.length > 0) {
-        @if (sentier!.position) {
-          <li>
-            start: lat {{ sentier!.position.start.lat }}, lng {{ sentier!.position.start.lng }} <br />
-            end: lat {{ sentier!.position.end.lat }}, lng {{ sentier!.position.end.lng }}
-          </li>
-        }
         <li>Chemin : <br />
           @for (coord of sentier!.path.coordinates; track $index) {
             <p> Point {{$index +1 }} -> [{{ coord.lat }}, {{ coord.lng }}]</p>
           }
         </li>
+      } @else {
+        <li>Aucun chemin défini</li>
       }
       <li>Longueur: {{ sentier!.path_length }} m</li>
 
@@ -79,18 +92,9 @@
           </ul>
         </li>
       }
-
     </ul>
 
     <hr />
-    @if (sentier!.image) {
-      <div class="w-40 h-40 relative">
-        <img alt="Image du sentier {{ sentier!.display_name }}" class="" fill ngSrc="{{ sentier!.image.url }}" priority />
-        <!--      <figcaption>Crédit: {{ sentier.image.author }} image_id: {{ sentier.image.id }}</figcaption>-->
-      </div>
-    } @else {
-      <li>Aucune image disponible</li>
-    }
     @if (sentier!.status !== 'Validé') {
       <button class="" type="button" (click)="checkSentier(sentier!)">Vérifier ce sentier</button>
     }
@@ -104,8 +108,6 @@
     }
 
     @if (sentier!.status !== 'Validé') {
-      <h2>Infos privés si utilisateur connecté</h2>
-
       @if (isLoggedIn() && user && user.id === sentier!.author_id) {
         <h3>Vous pouvez modifier ce sentier</h3>
         <!--    <ul>-->
@@ -114,7 +116,7 @@
           <!--        <li>avatar: {{ user.avatar}}</li>-->
           <!--        <li>admin: {{ user.admin}}</li>-->
           <!--    </ul>-->
-        <button class="" type="button" (click)="editSentier(sentier!)">Modifier ce sentier</button>
+        <button class="" type="button" (click)="openTrailModal(sentier!)">Modifier ce sentier</button>
         <button class="" type="button" (click)="openDeleteConfirmModal(sentier!)">supprimer ce sentier</button>
 
       } @else {
@@ -125,6 +127,13 @@
 
   }
 </div>
+
+@if (showTrailModal) {
+  <app-sentier-form
+    [sentier]="sentierToUpdate"
+    (modalClosed)="closeTrailModal()"
+  />
+}
 
 @if (showDeleteConfirmModal) {
   <app-modal-delete-trail-confirmation
