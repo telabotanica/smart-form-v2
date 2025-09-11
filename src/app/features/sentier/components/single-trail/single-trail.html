@@ -117,7 +117,11 @@
           <!--        <li>admin: {{ user.admin}}</li>-->
           <!--    </ul>-->
         <button class="" type="button" (click)="openTrailModal(sentier!)">Modifier ce sentier</button>
-        <button class="" type="button" (click)="openDeleteConfirmModal(sentier!)">supprimer ce sentier</button>
+        <button
+          class="bg-red-800 hover:bg-red-600 text-white"
+          type="button"
+          (click)="openDeleteConfirmModal(sentier!)"
+        >supprimer ce sentier</button>
 
       } @else {
         <p>Connectez-vous pour modifier ce sentier</p>

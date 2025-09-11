@@ -1,0 +1,117 @@
+# .aiignore for smart-form-v2 (Angular v16+ / v20-ready)
+# Purpose: Exclude generated, dependency, cache, large/binary, and environment files from AI context.
+# Syntax follows .gitignore-style globbing.
+
+###############################
+# Dependencies & Package Mgrs #
+###############################
+node_modules/
+.pnpm-store/
+.yarn/
+.yarn/cache/
+.yarn/install-state.gz
+.bazel/
+
+# Lockfiles (AI usually doesn’t need them)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+###############
+# Build Output #
+###############
+dist/
+build/
+out/
+.tmp/
+.tmp-ng/
+.angular/
+.angular/cache/
+.vite/
+.storybook-static/
+storybook-static/
+
+#########################
+# Caches / Tool Artifacts #
+#########################
+.nx/
+.turbo/
+.eslintcache
+.stylelintcache
+.cache/
+coverage/
+
+############################
+# Tests / E2E Artifacts etc #
+############################
+cypress/videos/
+cypress/screenshots/
+.cypress/
+playwright-report/
+playwright/.cache/
+.test-results/
+reports/
+
+################
+# Environments #
+################
+# Keep examples; ignore actual env files
+.env
+.env.*
+!.env.example
+
+########
+# Logs #
+########
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+#############
+# IDE / OS  #
+#############
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+###########################
+# Documentation Generators #
+###########################
+# Generated docs can be heavy; keep sources.
+docs/
+documentation/
+doc/
+typedoc/
+compodoc/
+compodoc-report/
+
+########################
+# Large/Binary Assets  #
+########################
+# Exclude binary/media by default to reduce AI context size.
+# If you need specific small assets in context, whitelist them explicitly below.
+assets/**
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.avif
+*.svg
+*.ico
+*.mp4
+*.mov
+*.mp3
+*.wav
+*.pdf
+
+####################################
+# Misc project-specific exclusions #
+####################################
+# Add any app-specific generated folders below as needed
+# e.g., data exports, mock API outputs, temporary imports
+# tmp-data/
+# export/

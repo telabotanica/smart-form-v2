@@ -1,0 +1,30 @@
+<div class="w-full">
+  <div class="flex items-center gap-3 my-2">
+    <button class="px-3 py-1.5 border border-gray-200 rounded-md bg-white"
+            type="button"
+            (click)="locateMe()">Me localiser</button>
+  </div>
+
+  <div class="relative w-full h-[420px]">
+    <div #mapContainer aria-label="Carte des sentiers" class="w-full h-full" role="region"></div>
+  </div>
+</div>
+
+<dialog #detailsDialog class="border-0 rounded-xl p-0 shadow-2xl" (close)="closeDetails()">
+  @if (selectedSentier(); as s) {
+    <article class="p-4 min-w-[280px] max-w-[90vw]">
+      <header class="flex items-center justify-between gap-4 mb-2">
+        <h3 class="m-0 text-lg">{{ s.display_name || s.name || ('Sentier #' + s.id) }}</h3>
+        <button aria-label="Fermer" class="bg-transparent border-0 text-xl" type="button" (click)="closeDetails()">×</button>
+      </header>
+      <section class="space-y-1">
+        @if (s.author) { <p>Auteur: {{ s.author }}</p> }
+        @if (s.details) { <p>{{ s.details }}</p> }
+        @if (s.occurrences_count) { <p>Espèces: {{ s.occurrences_count }}</p> }
+      </section>
+      <footer class="mt-3">
+        <a class="text-sky-700 underline" [routerLink]="['/trail', s.id]">Ouvrir le sentier</a>
+      </footer>
+    </article>
+  }
+</dialog>

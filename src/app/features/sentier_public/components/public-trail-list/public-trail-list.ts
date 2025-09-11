@@ -2,11 +2,11 @@ import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core'
 import {SentierPublicListService} from '../../services/sentier-public-list-service';
 import {ErrorComponent} from '../../../../shared/components/error/error';
 import {SentierPublicFilter} from '../sentier-public-filter/sentier-public-filter';
-import {RouterLink} from '@angular/router';
+import {Map} from '../../../../shared/components/map/map';
 
 @Component({
   selector: 'app-public-trail-list',
-  imports: [ErrorComponent, SentierPublicFilter, RouterLink],
+  imports: [ErrorComponent, SentierPublicFilter, Map],
   templateUrl: './public-trail-list.html',
   styleUrl: './public-trail-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush
