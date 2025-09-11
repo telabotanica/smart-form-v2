@@ -11,6 +11,7 @@ import {SentierCheckErrors} from '../../../../shared/components/sentier-check-er
 import {ModalDeleteTrailConfirmation} from '../modal-delete-trail-confirmation/modal-delete-trail-confirmation';
 import {SharedService} from '../../../../shared/services/shared.service';
 import {SentierForm} from '../../forms/sentier-form/sentier-form';
+import {Map} from '../../../../shared/components/map/map';
 
 @Component({
   selector: 'app-single-trail',
@@ -20,7 +21,8 @@ import {SentierForm} from '../../forms/sentier-form/sentier-form';
     SentierCheckErrors,
     ModalDeleteTrailConfirmation,
     DatePipe,
-    SentierForm
+    SentierForm,
+    Map
   ],
   templateUrl: './single-trail.html',
   styleUrl: './single-trail.css',

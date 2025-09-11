@@ -7,6 +7,9 @@
   } @else {
     <button class="" type="button" (click)="openTrailModal()">Créer un sentier</button>
     <h2>{{ sentier!.display_name }}</h2>
+
+    <app-map [singleSentier]="sentier"/>
+
     <ul>
       @if (sentier!.image) {
         <div class="w-40 h-40 relative">
@@ -39,21 +42,11 @@
       <li>{{ sentier!.status ?? 'brouillon' }}</li>
 
       <hr />
-      @if (sentier!.position && sentier!.position.start) {
-        <li>
-          start: lat {{ sentier!.position.start.lat }}, lng {{ sentier!.position.start.lng }} <br />
-          end: lat {{ sentier!.position.end.lat }}, lng {{ sentier!.position.end.lng }}
-        </li>
-      } @else {
+      @if (!sentier!.position || !sentier!.position.start) {
         <li>Aucune position de départ/arrivée définie</li>
       }
-      @if (sentier!.path && sentier!.path.coordinates.length > 0) {
-        <li>Chemin : <br />
-          @for (coord of sentier!.path.coordinates; track $index) {
-            <p> Point {{$index +1 }} -> [{{ coord.lat }}, {{ coord.lng }}]</p>
-          }
-        </li>
-      } @else {
+
+      @if (!sentier!.path || sentier!.path.coordinates.length === 0){
         <li>Aucun chemin défini</li>
       }
       <li>Longueur: {{ sentier!.path_length }} m</li>
@@ -62,32 +55,28 @@
       <li>Nombre d'occurrences: {{ sentier!.occurrences_count }}</li>
       <li>Nombre de taxons: {{ sentier!.nb_taxons }}</li>
       @if (sentier!.occurrences && sentier!.occurrences.length > 0) {
-        <li>Liste des individus (occurrence id - anecdotes - position // taxonomic id - nom id - nom scientifique - référentiel - fiche - noms communs -  ):
+        <li class="mt-2"><span class="font-bold underline">Occurrences sans localisation:</span>
           <ul class="mt-2">
             @for (occurrence of sentier!.occurrences; track occurrence.id) {
-              <li class="mb-2">
-                {{ occurrence.id}} -
-                {{ occurrence.anecdotes }} -
-                @if (occurrence.position) {
-                  [{{ occurrence.position.lat }}, {{ occurrence.position.lng }}]
-                }//
-                {{ occurrence.taxon?.taxonomic_id }} -
-                {{ occurrence.taxon?.name_id }} -
-                {{ occurrence.taxon?.scientific_name }} -
-                {{ occurrence.taxon?.taxon_repository }} -
-                {{ occurrence.taxon?.tabs ?? 'Pas de fiche'}}
-                @if (occurrence.taxon?.vernacular_names?.length) {
-                  @for (name of occurrence.taxon!.vernacular_names!; track $index) {
-                    <p> {{ name }} </p>
+              @if (!occurrence.position) {
+                <li class="mb-2">
+                  Id: {{ occurrence.id}} -
+                  {{ occurrence.anecdotes }} -
+                  nt: {{ occurrence.taxon?.taxonomic_id }} -
+                  name_id: {{ occurrence.taxon?.name_id }} -
+                  {{ occurrence.taxon?.scientific_name }} -
+                  {{ occurrence.taxon?.taxon_repository }} -
+                  {{ occurrence.taxon?.tabs ?? 'Pas de fiche'}} -
+                  @if (occurrence.taxon?.vernacular_names?.length) {
+                    {{ occurrence.taxon!.vernacular_names!.join(', ') }}
                   }
-                }
-
-                @if (occurrence.images && occurrence.images.length > 0) {
-                  <div class="w-40 h-40 relative">
-                    <img alt="Image de l'occurrence {{ occurrence.id }}" class="" fill ngSrc="{{ occurrence.images[0].url }}" priority />
-                  </div>
-                }
-              </li>
+                  @if (occurrence.images && occurrence.images.length > 0) {
+                    <div class="w-40 h-40 relative">
+                      <img alt="Image de l'occurrence {{ occurrence.id }}" class="" fill ngSrc="{{ occurrence.images[0].url }}" priority />
+                    </div>
+                  }
+                </li>
+              }
             }
           </ul>
         </li>

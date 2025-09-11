@@ -1,0 +1,46 @@
+@if (occurrence(); as o) {
+  <article class="p-4 min-w-[280px] max-w-[90vw]">
+    <header class="flex items-center justify-between gap-4 mb-2">
+      <h3 class="m-0 text-lg">Occurrence #{{ o.id }}</h3>
+      <button
+        aria-label="Fermer"
+        class="bg-transparent border-0 text-xl"
+        type="button"
+        (click)="onClose()()"
+      >
+        ×
+      </button>
+    </header>
+
+    <section class="space-y-1">
+      @if (o.taxon?.scientific_name) {
+        <p>Nom scientifique: {{ o.taxon!.scientific_name }}</p>
+      }
+      @if (o.taxon?.taxon_repository) {
+        <p>Référentiel: {{ o.taxon!.taxon_repository }}</p>
+      }
+      @if (o.taxon?.vernacular_names?.length) {
+        <p>Noms vernaculaires: {{ o.taxon!.vernacular_names!.join(', ') }}</p>
+      }
+
+      @if (o.images?.length) {
+        <div class="w-40 h-40 relative">
+          <img
+            alt="Image de l'occurrence {{ o.id }}"
+            fill
+            ngSrc="{{ o.images![0].url }}"
+            priority
+          />
+        </div>
+      }
+
+      @if (!o.card_tag) {
+        <p>Pas de fiche</p>
+      }
+
+      @if (o.anecdotes) {
+        <p>{{ o.anecdotes }}</p>
+      }
+    </section>
+  </article>
+}
