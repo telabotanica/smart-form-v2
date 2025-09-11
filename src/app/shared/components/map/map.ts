@@ -2,7 +2,6 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  computed,
   effect,
   ElementRef,
   input,
@@ -12,6 +11,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { Sentier } from '../../../features/sentier/models/sentier.model';
 import * as L from 'leaflet';
+import 'leaflet.markercluster';
 
 type LatLngTuple = [number, number];
 
@@ -35,22 +35,19 @@ export class Map implements AfterViewInit {
   private userMarker: L.Marker | null = null;
   private osmTileLayer: L.TileLayer | null = null;
 
-  // Icons
-  private readonly sentierIcon = L.divIcon({
-    className: 'marker',
-    html: '<span class="inline-block rounded-full bg-emerald-600 border border-white w-3.5 h-3.5 shadow"></span>',
-    iconSize: [14, 14],
-    iconAnchor: [7, 7]
+  // Icons (use image assets instead of CSS dots)
+  private readonly sentierIcon = L.icon({
+    iconUrl: 'assets/images/marker-icon-orange.svg',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
   });
-  private readonly userIcon = L.divIcon({
-    className: 'marker-user',
-    html: '<span class="inline-block rounded-full bg-sky-600 border border-white w-4 h-4 shadow"></span>',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8]
+  private readonly userIcon = L.icon({
+    iconUrl: 'assets/images/marker-icon-user.svg',
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
   });
 
-  // Derived state
-  readonly hasSentiers = computed(() => (this.sentiers() ?? []).length > 0);
+  // readonly hasSentiers = computed(() => (this.sentiers() ?? []).length > 0);
 
   constructor() {
     // Re-render markers when input sentiers changes
@@ -67,7 +64,6 @@ export class Map implements AfterViewInit {
     this.renderMarkers();
   }
 
-  // Initialize Leaflet map with OSM as default
   private initMap(): void {
     const container = this.mapContainer()?.nativeElement;
     if (!container) { return; }
@@ -83,7 +79,17 @@ export class Map implements AfterViewInit {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(this.leafletMap);
 
-    this.markersLayer = L.layerGroup().addTo(this.leafletMap);
+    // Initialize a MarkerClusterGroup from the npm plugin (with a safe fallback)
+    const mcgFactory = (L as unknown as { markerClusterGroup?: (opts?: unknown) => L.LayerGroup }).markerClusterGroup;
+    if (mcgFactory) {
+      this.markersLayer = mcgFactory({
+        disableClusteringAtZoom: 15,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false
+      }).addTo(this.leafletMap);
+    } else {
+      this.markersLayer = L.layerGroup().addTo(this.leafletMap);
+    }
   }
 
   private invalidateMapSize(): void {
@@ -118,7 +124,7 @@ export class Map implements AfterViewInit {
         { icon: this.sentierIcon, title: s.display_name ?? s.name ?? `Sentier #${s.id}` }
       );
       marker.on('click', () => this.openDetails(s));
-      marker.addTo(layer);
+      (layer as unknown as { addLayer: (m: L.Marker) => void }).addLayer(marker);
       bounds.push(latlng);
     }
 
@@ -128,7 +134,6 @@ export class Map implements AfterViewInit {
     }
   }
 
-  // Geolocation
   locateMe(): void {
     if (!navigator.geolocation) {return;}
     navigator.geolocation.getCurrentPosition(
@@ -138,7 +143,7 @@ export class Map implements AfterViewInit {
         if (map) {
           if (!this.userMarker) {
             this.userMarker = L.marker([latitude, longitude], { title: 'Vous êtes ici', icon: this.userIcon });
-            this.userMarker.addTo(this.markersLayer!);
+            this.userMarker.addTo(map);
           } else {
             this.userMarker.setLatLng([latitude, longitude]);
           }
@@ -152,6 +157,7 @@ export class Map implements AfterViewInit {
       { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
     );
   }
+
 
   // Modal controls
   openDetails(s: Sentier): void {

@@ -20,7 +20,8 @@
       <section class="space-y-1">
         @if (s.author) { <p>Auteur: {{ s.author }}</p> }
         @if (s.details) { <p>{{ s.details }}</p> }
-        @if (s.occurrences_count) { <p>Espèces: {{ s.occurrences_count }}</p> }
+        @if (s.occurrences_count) { <p>{{ s.occurrences_count }} observations</p> }
+        @if (s.path_length) { <p>{{ s.path_length }} m</p> }
       </section>
       <footer class="mt-3">
         <a class="text-sky-700 underline" [routerLink]="['/trail', s.id]">Ouvrir le sentier</a>
