@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, effect, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {NgOptimizedImage} from '@angular/common';
 import {Occurrence} from '../../models/occurrence.model';
 

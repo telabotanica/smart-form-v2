@@ -13,17 +13,19 @@ import { Sentier } from '../../../features/sentier/models/sentier.model';
 import { Occurrence } from '../../../features/occurrence/models/occurrence.model';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
-import {NgOptimizedImage} from '@angular/common';
 import {
   OccurrenceModalDetail
 } from '../../../features/occurrence/components/occurrence-modal-detail/occurrence-modal-detail';
 import {SharedService} from '../../services/shared.service';
+import {OccurrenceService} from '../../../features/occurrence/services/occurrence-service';
+import {SingleSentierService} from '../../../features/sentier/services/single-sentier-service';
+import {ErrorComponent} from '../error/error';
 
 type LatLngTuple = [number, number];
 
 @Component({
   selector: 'app-map',
-  imports: [RouterLink, NgOptimizedImage, OccurrenceModalDetail],
+  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent],
   templateUrl: './map.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -46,6 +48,8 @@ export class Map implements AfterViewInit {
   private osmTileLayer: L.TileLayer | null = null;
 
   sharedService = inject(SharedService)
+  occurrenceService = inject(OccurrenceService);
+  singleSentierService = inject(SingleSentierService);
 
   // Icons (use image assets instead of CSS dots)
   private readonly sentierIcon = L.icon({
@@ -159,9 +163,29 @@ export class Map implements AfterViewInit {
     const start = s.position?.start;
     if (start && typeof start.lat === 'number' && typeof start.lng === 'number') {
       const pt: LatLngTuple = [start.lat, start.lng];
-      this.markersLayer!.addLayer(
-        L.marker(pt, { icon: this.sentierIcon, title: 'Départ' })
-      );
+      const isSingle = !!this.singleSentier();
+      const marker = L.marker(pt, { icon: this.sentierIcon, title: 'Départ', draggable: isSingle });
+
+      if (isSingle) {
+        marker.on('dragend', async () => {
+          const ll = marker.getLatLng();
+          const newStart = { lat: ll.lat, lng: ll.lng };
+          const updated: Sentier = {
+            ...s,
+            position: {
+              start: newStart,
+              end: s.position?.end ?? newStart,
+            }
+          };
+          try {
+            await this.singleSentierService.updateSentier(updated);
+          } catch (e) {
+            console.error('Failed to update sentier start position', e);
+          }
+        });
+      }
+
+      this.markersLayer!.addLayer(marker);
       bounds.push(pt);
     }
   }
@@ -170,9 +194,29 @@ export class Map implements AfterViewInit {
     const end = s.position?.end;
     if (end && typeof end.lat === 'number' && typeof end.lng === 'number') {
       const pt: LatLngTuple = [end.lat, end.lng];
-      this.markersLayer!.addLayer(
-        L.marker(pt, { icon: this.sentierIcon, title: 'Arrivée' })
-      );
+      const isSingle = !!this.singleSentier();
+      const marker = L.marker(pt, { icon: this.sentierIcon, title: 'Arrivée', draggable: isSingle });
+
+      if (isSingle) {
+        marker.on('dragend', async () => {
+          const ll = marker.getLatLng();
+          const newEnd = { lat: ll.lat, lng: ll.lng };
+          const updated: Sentier = {
+            ...s,
+            position: {
+              start: s.position?.start ?? newEnd,
+              end: newEnd,
+            }
+          };
+          try {
+            await this.singleSentierService.updateSentier(updated);
+          } catch (e) {
+            console.error('Failed to update sentier end position', e);
+          }
+        });
+      }
+
+      this.markersLayer!.addLayer(marker);
       bounds.push(pt);
     }
   }
@@ -199,6 +243,7 @@ export class Map implements AfterViewInit {
 
   private addOccurrences(s: Sentier, bounds: LatLngTuple[]): void {
     const occurrences = s.occurrences ?? [];
+    const isSingle = !!this.singleSentier();
     for (const occ of occurrences) {
       const p = occ.position;
       if (p && typeof p.lat === 'number' && typeof p.lng === 'number') {
@@ -207,8 +252,30 @@ export class Map implements AfterViewInit {
           ? `Obs: ${occ.taxon.scientific_name}`
           : `Observation #${occ.id}`;
 
-        const marker = L.marker(pt, { icon: this.occurrenceIcon, title });
+        const marker = L.marker(pt, { icon: this.occurrenceIcon, title, draggable: isSingle });
         marker.on('click', () => this.openOccurrence(occ));
+
+        if (isSingle) {
+          marker.on('dragend', async () => {
+            const ll = marker.getLatLng();
+            const updated: Occurrence = {
+              ...occ,
+              position: { lat: ll.lat, lng: ll.lng }
+            };
+            // Reflect the change locally in the UI state
+            const current = this.selectedOccurrence();
+            if (current?.id === occ.id) {
+              this.selectedOccurrence.set(updated);
+            }
+            try {
+              await this.occurrenceService.updateOccurrence(updated);
+            } catch (e) {
+              // If update failed, log error and optionally reset marker to original pos
+              console.error('Failed to update occurrence position', e);
+            }
+          });
+        }
+
         this.markersLayer!.addLayer(marker);
         bounds.push(pt);
       }

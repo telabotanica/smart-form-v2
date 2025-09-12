@@ -33,6 +33,6 @@
   overflow-y: auto;
 }
 
-.leaflet-pane {
+.leaflet-pane, .leaflet-top, .leaflet-bottom {
   z-index: 10 !important;
 }
