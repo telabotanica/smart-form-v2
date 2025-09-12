@@ -99,11 +99,13 @@ export class Map implements AfterViewInit {
     this.leafletMap = L.map(container, {
       center: [43.611, 3.876],
       zoom: 7,
-      zoomControl: true
+      zoomControl: true,
+      maxZoom: 19
     });
 
     this.osmTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 22,
+      maxZoom: 19,
+      maxNativeZoom: 19,
       attribution: 'Map data &copy; <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a> ' +
         'contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>'
     }).addTo(this.leafletMap);
@@ -270,7 +272,6 @@ export class Map implements AfterViewInit {
             try {
               await this.occurrenceService.updateOccurrence(updated);
             } catch (e) {
-              // If update failed, log error and optionally reset marker to original pos
               console.error('Failed to update occurrence position', e);
             }
           });
