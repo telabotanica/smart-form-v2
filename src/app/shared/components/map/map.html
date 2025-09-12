@@ -2,14 +2,25 @@
   <div class="flex items-center gap-3 my-2">
     <button class="px-3 py-1.5 border border-gray-200 rounded-md bg-white"
             type="button"
-            (click)="locateMe()">Me localiser</button>
+            (click)="locateMe()">Ma position</button>
   </div>
 
   <div class="relative w-full h-[420px]">
+    @if (currentSentier(); as s) {
+      @if ((s.path?.coordinates?.length || 0) > 0) {
+        <app-waypoint-list
+          [points]="s.path!.coordinates!"
+          (remove)="removeWaypoint($event)"
+          (reorder)="onReorder($event)"
+        />
+      }
+    }
+
     <div #mapContainer aria-label="Carte des sentiers" class="w-full h-full" role="region"></div>
   </div>
 
   <app-error [errorMessage]="occurrenceService.error() ?? ''" />
+  <app-error [errorMessage]="singleSentierService.errorUpdate() ?? ''" />
 
 </div>
 

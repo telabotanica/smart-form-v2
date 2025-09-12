@@ -20,12 +20,15 @@ import {SharedService} from '../../services/shared.service';
 import {OccurrenceService} from '../../../features/occurrence/services/occurrence-service';
 import {SingleSentierService} from '../../../features/sentier/services/single-sentier-service';
 import {ErrorComponent} from '../error/error';
+import { Position } from '../../models/position.model';
+import { WaypointListComponent } from '../waypoint-list/waypoint-list';
+import { MapUtilsService } from '../../services/map-utils.service';
 
 type LatLngTuple = [number, number];
 
 @Component({
   selector: 'app-map',
-  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent],
+  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent, WaypointListComponent],
   templateUrl: './map.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -34,6 +37,8 @@ export class Map implements AfterViewInit {
   readonly singleSentier = input<Sentier | null>(null);
   readonly selectedSentier = signal<Sentier | null>(null);
   readonly selectedOccurrence = signal<Occurrence | null>(null);
+  // Local working copy of current single sentier to ensure immediate UI updates
+  readonly currentSentier = signal<Sentier | null>(null);
 
   // Template references
   readonly mapContainer = viewChild<ElementRef<HTMLElement>>('mapContainer');
@@ -50,6 +55,7 @@ export class Map implements AfterViewInit {
   sharedService = inject(SharedService)
   occurrenceService = inject(OccurrenceService);
   singleSentierService = inject(SingleSentierService);
+    mapUtils = inject(MapUtilsService);
 
   // Icons (use image assets instead of CSS dots)
   private readonly sentierIcon = L.icon({
@@ -68,6 +74,20 @@ export class Map implements AfterViewInit {
     iconAnchor: [12, 41]
   });
 
+  // Div icons for single-sentier start/end using Material Symbols
+  private readonly startDivIcon: L.DivIcon = L.divIcon({
+    className: 'map-material-marker',
+    html: '<span class="material-symbols-outlined bg-primary-200 rounded-full">home_pin</span>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 28]
+  });
+  private readonly endDivIcon: L.DivIcon = L.divIcon({
+    className: 'map-material-marker',
+    html: '<span class="material-symbols-outlined bg-primary-100 rounded-full">sports_score</span>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 28]
+  });
+
   // readonly hasSentiers = computed(() => (this.sentiers() ?? []).length > 0);
 
   constructor() {
@@ -75,8 +95,10 @@ export class Map implements AfterViewInit {
       const list = this.sentiers();
       const single = this.singleSentier();
       if (single) {
+        this.currentSentier.set(single);
         this.renderSingleSentier(single);
       } else if (list !== undefined) {
+        this.currentSentier.set(null);
         this.renderMarkers();
       }
     });
@@ -86,8 +108,10 @@ export class Map implements AfterViewInit {
     this.initMap();
     const single = this.singleSentier();
     if (single) {
+      this.currentSentier.set(single);
       this.renderSingleSentier(single);
     } else {
+      this.currentSentier.set(null);
       this.renderMarkers();
     }
   }
@@ -124,6 +148,13 @@ export class Map implements AfterViewInit {
 
     // Layer to hold the route polyline and any non-cluster overlays
     this.routeLayer = L.layerGroup().addTo(this.leafletMap);
+
+    // Right-click: open a lightweight context menu to add a waypoint at the clicked location
+    this.leafletMap.on('contextmenu', (e: L.LeafletMouseEvent) => {
+      const single = this.currentSentier();
+      if (!single) { return; }
+      this.buildMapContextMenu(e.latlng, single);
+    });
   }
 
   private invalidateMapSize(): void {
@@ -150,8 +181,13 @@ export class Map implements AfterViewInit {
 
     const bounds: LatLngTuple[] = [];
 
-    this.addStartMarker(s, bounds);
-    this.addEndMarker(s, bounds);
+    const coords = s.path?.coordinates ?? [];
+    if (coords.length > 0) {
+      this.addEditablePath(s, bounds);
+    } else {
+      this.addStartMarker(s, bounds);
+      this.addEndMarker(s, bounds);
+    }
     this.addPolyline(s, bounds);
     this.addOccurrences(s, bounds);
 
@@ -166,7 +202,10 @@ export class Map implements AfterViewInit {
     if (start && typeof start.lat === 'number' && typeof start.lng === 'number') {
       const pt: LatLngTuple = [start.lat, start.lng];
       const isSingle = !!this.singleSentier();
-      const marker = L.marker(pt, { icon: this.sentierIcon, title: 'Départ', draggable: isSingle });
+      const marker = L.marker(
+        pt,
+        { icon: isSingle ? this.startDivIcon : this.sentierIcon, title: 'Départ', draggable: isSingle }
+      );
 
       if (isSingle) {
         marker.on('dragend', async () => {
@@ -197,7 +236,10 @@ export class Map implements AfterViewInit {
     if (end && typeof end.lat === 'number' && typeof end.lng === 'number') {
       const pt: LatLngTuple = [end.lat, end.lng];
       const isSingle = !!this.singleSentier();
-      const marker = L.marker(pt, { icon: this.sentierIcon, title: 'Arrivée', draggable: isSingle });
+      const marker = L.marker(
+        pt,
+        { icon: isSingle ? this.endDivIcon : this.sentierIcon, title: 'Arrivée', draggable: isSingle }
+      );
 
       if (isSingle) {
         marker.on('dragend', async () => {
@@ -356,5 +398,104 @@ export class Map implements AfterViewInit {
     this.selectedOccurrence.set(null);
   };
 
+  // ----- Editable route (waypoints) -----
+  private addEditablePath(s: Sentier, bounds: LatLngTuple[]): void {
+    const map = this.leafletMap;
+    if (!map || !this.routeLayer) { return; }
+    const coords: Position[] = (s.path?.coordinates ?? [])
+      .filter((c): c is Position => typeof c?.lat === 'number' && typeof c?.lng === 'number');
+
+    const lastIndex = coords.length - 1;
+
+    coords.forEach((c, i) => {
+      const pt: LatLngTuple = [c.lat, c.lng];
+
+      // First and last: use Material Symbols for start/end in single-sentier mode
+      // Intermediates: small dot with the same color as the path
+      let marker: L.Marker;
+      if (i === 0 || i === lastIndex) {
+        const title = i === 0 ? 'Départ' : 'Arrivée';
+        const icon = i === 0 ? this.startDivIcon : this.endDivIcon;
+        marker = L.marker(pt, { icon, draggable: true, title });
+      } else {
+        const dot = L.divIcon({
+          className: '',
+          html: `<span class="
+            inline-block w-[10px] h-[10px] rounded-full border-2 bg-primary
+            border-white shadow-[0_0_0_1px_rgba(0,0,0,0.15)]" ></span>`,
+          iconSize: [10, 10],
+          iconAnchor: [5, 5]
+        });
+        marker = L.marker(pt, { icon: dot, draggable: true, title: `Étape ${i + 1}` });
+      }
+
+      marker.on('dragend', async () => {
+        const ll = marker.getLatLng();
+        const newCoords = coords.map((p, idx) => idx === i ? { lat: ll.lat, lng: ll.lng } : p);
+        await this.persistPath(s, newCoords);
+      });
+
+      this.routeLayer!.addLayer(marker);
+      bounds.push(pt);
+    });
+  }
+
+  private buildMapContextMenu(latlng: L.LatLng, s: Sentier): void {
+    const container = this.mapUtils.createPopupMenu([
+      {
+        label: 'Ajouter une étape ici',
+        onClick: async (): Promise<void> => {
+          const p: Position = { lat: latlng.lat, lng: latlng.lng };
+          const coords = (s.path?.coordinates ?? []).slice();
+          const idx = this.mapUtils.nearestInsertionIndex(coords as Position[], p);
+          coords.splice(idx, 0, p);
+          await this.persistPath(s, coords as Position[]);
+        }
+      }
+    ], this.leafletMap ?? undefined);
+
+    L.popup({ closeButton: true, autoClose: true })
+      .setLatLng(latlng)
+      .setContent(container)
+      .openOn(this.leafletMap!);
+  }
+
+  private async persistPath(s: Sentier, coords: Position[]): Promise<void> {
+    const newPath = {
+      id: s.path?.id ?? 0,
+      type: s.path?.type ?? 'LineString',
+      coordinates: coords
+    };
+    const updated: Sentier = {
+      ...s,
+      path: newPath,
+      position: coords.length > 0 ? { start: coords[0], end: coords[coords.length - 1] } : s.position
+    };
+    try {
+      await this.singleSentierService.updateSentier(updated);
+      // Update local state immediately so UI reflects changes (e.g., waypoint list)
+      this.currentSentier.set(updated);
+      // Re-render immediately
+      this.renderSingleSentier(updated);
+    } catch (e) {
+      console.error('Failed to persist path', e);
+    }
+  }
+
+  // ----- Sidebar actions (reorder waypoints) -----
+  async removeWaypoint(index: number): Promise<void> {
+    const s = this.currentSentier();
+    if (!s) { return; }
+    const arr = (s.path?.coordinates ?? []).slice() as Position[];
+    if (index < 0 || index >= arr.length) { return; }
+    arr.splice(index, 1);
+    await this.persistPath(s, arr);
+  }
+
+  async onReorder(newOrder: Position[]): Promise<void> {
+    const s = this.currentSentier();
+    if (!s) { return; }
+    await this.persistPath(s, newOrder);
+  }
 
 }

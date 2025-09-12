@@ -1,0 +1,45 @@
+@if ((points()?.length || 0) > 0) {
+  <aside class="absolute left-2 top-2 z-[9] bg-white/95 backdrop-blur rounded-md shadow p-2 max-h-[380px] overflow-auto border border-gray-200">
+    <header class="flex items-center justify-between gap-2 mb-2">
+      <h4 class="m-0 text-sm font-medium">Points de passage</h4>
+<!--      <small class="text-xs text-gray-500">{{ points()?.length || 0 }} pts</small>-->
+    </header>
+    <ol class="m-0 p-0 list-none"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop($event)">
+      @for (point of points()!; track $index; let i = $index, last = $last) {
+        <li class="flex items-center gap-2 cursor-grab select-none h-16 mr-2"
+            draggable="true"
+            [attr.data-index]="i"
+            (dragend)="onDragEnd()"
+            (dragstart)="onDragStart($event, i)">
+          <span class="inline-flex w-6 shrink-0 justify-center text-xs font-semibold rounded-full"
+                [class]="i === 0 ? '' : (last ? '' : 'bg-orange-100 text-orange-700')">
+            @switch (i) {
+              @case (0) { <span class="material-symbols-outlined">home_pin</span> }
+              @case (points()?.length! - 1) { <span class="material-symbols-outlined">sports_score</span> }
+              @default { {{ i }} }
+            }
+          </span>
+          <div class="flex-1 min-w-0 truncate text-sm">
+            <div class="truncate text-sm">
+              @if (i === 0) { Départ } @else if (last) { Arrivée } @else { Étape {{ i }} }
+            </div>
+            <div class="text-[11px] text-gray-500 truncate">{{ point.lat.toFixed(5) }}, {{ point.lng.toFixed(5) }}</div>
+          </div>
+          <div class="flex items-center gap-0">
+            <button aria-label="Supprimer" class="px-2 py-1 m-0 h-full text-xs border border-gray-200 rounded-full text-rose-700" type="button"
+                    (click)="remove.emit(i)">✕</button>
+          </div>
+
+
+        </li>
+        @if (!last) {
+          <div>
+            <hr class="border-t border-gray-200" />
+          </div>
+        }
+      }
+    </ol>
+  </aside>
+}

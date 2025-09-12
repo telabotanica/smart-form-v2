@@ -20,14 +20,18 @@ export class SingleSentierService {
   private readonly _sentier = signal<Sentier>({} as Sentier);
   // private readonly _sentierCheck = signal<SentierValidationCheck>({} as SentierValidationCheck);
   private readonly _loading = signal(false);
+  private readonly _loadingUpdate = signal(false);
   private readonly _error = signal<string | null>(null);
+  private readonly _errorUpdate = signal<string | null>(null);
   // private readonly _errorCheck = signal<string | null>(null);
 
   // --- Exposed signals ---
   readonly sentier = computed(() => this._sentier());
   // readonly sentierCheck = computed(() => this._sentierCheck());
   readonly loading = computed(() => this._loading());
+  readonly loadingUpdate = computed(() => this._loadingUpdate());
   readonly error = computed(() => this._error());
+  readonly errorUpdate = computed(() => this._errorUpdate());
   // readonly errorCheck = computed(() => this._errorCheck());
 
   async fetchSentier(id: string): Promise<void> {
@@ -51,8 +55,8 @@ export class SingleSentierService {
   }
 
   async addSentier(sentier:Sentier): Promise<void> {
-    this._loading.set(true);
-    this._error.set(null);
+    this._loadingUpdate.set(true);
+    this._errorUpdate.set(null);
 
     try {
       const data = await firstValueFrom(this.http.post<Sentier>(
@@ -62,18 +66,18 @@ export class SingleSentierService {
       this._sentier.set(data ?? {} as Sentier);
     } catch (err: unknown) {
       const apiError = err as ErrorApi;
-      this._error.set(
+      this._errorUpdate.set(
         apiError.error?.error ?? 'Erreur inconnue lors de la mise à jour du sentier'
       );
       console.error(err)
     } finally {
-      this._loading.set(false);
+      this._loadingUpdate.set(false);
     }
   }
 
   async updateSentier(sentier:Sentier): Promise<void> {
-    this._loading.set(true);
-    this._error.set(null);
+    this._loadingUpdate.set(true);
+    this._errorUpdate.set(null);
 
     try {
       const data = await firstValueFrom(this.http.put<Sentier>(
@@ -83,18 +87,18 @@ export class SingleSentierService {
       this._sentier.set(data ?? {} as Sentier);
     } catch (err: unknown) {
       const apiError = err as ErrorApi;
-      this._error.set(
+      this._errorUpdate.set(
         apiError.error?.error ?? 'Erreur inconnue lors de la mise à jour du sentier'
       );
       console.error(err)
     } finally {
-      this._loading.set(false);
+      this._loadingUpdate.set(false);
     }
   }
 
   async updateSentierImage(sentier: Sentier, imageId: string): Promise<void> {
-    this._loading.set(true);
-    this._error.set(null);
+    this._loadingUpdate.set(true);
+    this._errorUpdate.set(null);
 
     try {
       const data = await firstValueFrom(this.http.put<Sentier>(
@@ -104,12 +108,12 @@ export class SingleSentierService {
       this._sentier.set(data ?? {} as Sentier);
     } catch (err: unknown) {
       const apiError = err as ErrorApi;
-      this._error.set(
+      this._errorUpdate.set(
         apiError.error?.error ?? 'Erreur inconnue lors de la mise à jour de l\'image du sentier'
       );
       console.error(err)
     } finally {
-      this._loading.set(false);
+      this._loadingUpdate.set(false);
     }
   }
 
