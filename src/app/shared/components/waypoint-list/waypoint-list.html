@@ -8,11 +8,13 @@
         (dragover)="onDragOver($event)"
         (drop)="onDrop($event)">
       @for (point of points()!; track $index; let i = $index, last = $last) {
-        <li class="flex items-center gap-2 cursor-grab select-none h-16 mr-2"
-            draggable="true"
+        <li class="flex items-center gap-2 select-none h-16 mr-2"
             [attr.data-index]="i"
             (dragend)="onDragEnd()"
-            (dragstart)="onDragStart($event, i)">
+            (dragstart)="onDragStart($event, i)"
+            [class.cursor-grab]="userService.isUserAdmin()"
+            [attr.draggable]="userService.isUserAdmin()"
+        >
           <span class="inline-flex w-6 shrink-0 justify-center text-xs font-semibold rounded-full"
                 [class]="i === 0 ? '' : (last ? '' : 'bg-orange-100 text-orange-700')">
             @switch (i) {

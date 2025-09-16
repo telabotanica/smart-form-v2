@@ -97,6 +97,7 @@ export default class AuthComponent implements OnInit {
           next: (data) => {
             const token = data ?? '';
             this.userService.setUserData(token);
+            this.userService.addAdminRole(this.userService.user());
             this.error.set('');
             this.loginPopup.set(false);
           },

@@ -1,5 +1,9 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, input, output, signal} from '@angular/core';
 import { Position } from '../../../shared/models/position.model';
+import {UserService} from '../../../core/auth/services/user.service';
+import {SharedService} from '../../services/shared.service';
+import {SingleSentierService} from '../../../features/sentier/services/single-sentier-service';
+import {User} from '../../../core/auth/user.model';
 
 @Component({
   selector: 'app-waypoint-list',
@@ -8,12 +12,34 @@ import { Position } from '../../../shared/models/position.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WaypointListComponent {
-  // Inputs/Outputs using Angular v20 functions
   readonly points = input<Position[] | null>(null);
   readonly reorder = output<Position[]>();
   readonly remove = output<number>();
 
+  // user: User | null = null;
+
+  readonly canEditTrail = signal(false)
   private readonly draggingIndex = signal<number | null>(null);
+
+  userService = inject(UserService);
+  sharedService = inject (SharedService)
+  sentierService = inject(SingleSentierService)
+
+  // constructor() {
+  //   this.user = this.userService.user();
+  //   const canEdit = this.sharedService.canEditTrail(this.user, this.sentierService.sentier())
+  //   this.canEditTrail.set(canEdit)
+  //
+  //   effect(() => {
+  //     this.user = this.userService.user();
+  //     const canEdit = this.sharedService.canEditTrail(this.user, this.sentierService.sentier())
+  //     this.canEditTrail.set(canEdit)
+  //     console.log(this.canEditTrail())
+  //     console.log(this.user)
+  //   })
+  //
+  //   console.log(this.canEditTrail())
+  // }
 
   // Event handlers
   onDragStart(ev: DragEvent, index: number): void {
