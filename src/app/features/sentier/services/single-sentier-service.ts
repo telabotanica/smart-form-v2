@@ -34,7 +34,7 @@ export class SingleSentierService {
   readonly errorUpdate = computed(() => this._errorUpdate());
   // readonly errorCheck = computed(() => this._errorCheck());
 
-  async fetchSentier(id: string): Promise<void> {
+  async fetchSentier(id: number): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
 

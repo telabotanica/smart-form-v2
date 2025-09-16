@@ -3,7 +3,6 @@ import {User} from '../user.model';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AuthApiService} from './auth-api.service';
 import {CookiesService} from './cookies.service';
-import {Sentier} from '../../../features/sentier/models/sentier.model';
 
 @Injectable({
   providedIn: 'root'

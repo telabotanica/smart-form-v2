@@ -27,12 +27,20 @@ export class WaypointListComponent {
 
   constructor() {
     this.user = this.userService.user();
-    const canEdit = this.sharedService.canEditTrail(this.user, this.sentierService.sentier(), this.userService.isUserAdmin())
+    let canEdit = this.sharedService.canEditTrail(
+      this.user,
+      this.sentierService.sentier(),
+      this.userService.isUserAdmin()
+    )
     this.canEditTrail.set(canEdit)
 
     effect(() => {
       this.user = this.userService.user();
-      const canEdit = this.sharedService.canEditTrail(this.user, this.sentierService.sentier(), this.userService.isUserAdmin())
+      canEdit = this.sharedService.canEditTrail(
+        this.user,
+        this.sentierService.sentier(),
+        this.userService.isUserAdmin()
+      )
       this.canEditTrail.set(canEdit)
     })
   }

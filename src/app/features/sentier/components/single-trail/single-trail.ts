@@ -36,7 +36,7 @@ export class SingleTrail implements OnInit {
   sentier: Sentier | null = null;
   showTrailModal = false;
 
-  readonly id = input.required<string>()
+  readonly id = input.required<number>()
   readonly isLoggedIn = signal(false);
   readonly sentierCheck = signal({} as SentierValidationCheck);
   readonly sentierCheckError = signal<SentierValidationError | null>(null);
@@ -59,6 +59,7 @@ export class SingleTrail implements OnInit {
     this.sentierService.fetchSentier(this.id());
   }
 
+  //TODO edit sentier
   editSentier(sentier: Sentier): Sentier {
     sentier.name = sentier.display_name + ' (modifié2)';
 

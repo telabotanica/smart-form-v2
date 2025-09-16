@@ -37,10 +37,12 @@ type LatLngTuple = [number, number];
 export class Map implements AfterViewInit {
   readonly sentiers = input<Sentier[] | null>(null);
   readonly singleSentier = input<Sentier | null>(null);
+
   readonly selectedSentier = signal<Sentier | null>(null);
   readonly selectedOccurrence = signal<Occurrence | null>(null);
   // Local working copy of current single sentier to ensure immediate UI updates
   readonly currentSentier = signal<Sentier | null>(null);
+
   readonly isLoggedIn = signal(false);
   user: User | null = null;
 
@@ -171,7 +173,7 @@ export class Map implements AfterViewInit {
     this.canEditmap()
   }
 
-  private canEditmap(){
+  private canEditmap(): void{
     const map = this.leafletMap;
     if (this.isLoggedIn() && this.user && map){
       // Right-click: open a lightweight context menu to add a waypoint at the clicked location
@@ -229,7 +231,11 @@ export class Map implements AfterViewInit {
     if (start && typeof start.lat === 'number' && typeof start.lng === 'number') {
       const pt: LatLngTuple = [start.lat, start.lng];
       const isSingle = !!this.singleSentier();
-      const draggable = isSingle ? this.sharedService.canEditTrail(this.user, this.singleSentier()!, this.userService.isUserAdmin()) : false
+      const draggable = isSingle ? this.sharedService.canEditTrail(
+        this.user,
+        this.singleSentier()!,
+        this.userService.isUserAdmin()
+      ) : false
       const marker = L.marker(
         pt,
         { icon: isSingle ? this.startDivIcon : this.sentierIcon, title: 'Départ', draggable: draggable }
@@ -264,7 +270,11 @@ export class Map implements AfterViewInit {
     if (end && typeof end.lat === 'number' && typeof end.lng === 'number') {
       const pt: LatLngTuple = [end.lat, end.lng];
       const isSingle = !!this.singleSentier();
-      const draggable = isSingle ? this.sharedService.canEditTrail(this.user, this.singleSentier()!, this.userService.isUserAdmin()) : false
+      const draggable = isSingle ? this.sharedService.canEditTrail(
+        this.user,
+        this.singleSentier()!,
+        this.userService.isUserAdmin()
+      ) : false
       const marker = L.marker(
         pt,
         { icon: isSingle ? this.endDivIcon : this.sentierIcon, title: 'Arrivée', draggable: draggable }
@@ -317,7 +327,11 @@ export class Map implements AfterViewInit {
   private addOccurrences(s: Sentier, bounds: LatLngTuple[]): void {
     const occurrences = s.occurrences ?? [];
     const isSingle = !!this.singleSentier();
-    const draggable = isSingle ? this.sharedService.canEditTrail(this.user, this.singleSentier()!, this.userService.isUserAdmin()) : false
+    const draggable = isSingle ? this.sharedService.canEditTrail(
+      this.user,
+      this.singleSentier()!,
+      this.userService.isUserAdmin()
+    ) : false
     for (const occ of occurrences) {
       const p = occ.position;
       if (p && typeof p.lat === 'number' && typeof p.lng === 'number') {
@@ -343,6 +357,9 @@ export class Map implements AfterViewInit {
             }
             try {
               await this.occurrenceService.updateOccurrence(updated);
+              //Force le rechargement du sentier, sinon les modifs de l'occurrence ne sont pas pris en compte si on modifie ensuite un waypoint
+              //TODO: voir si on peut faire ça mieux
+              this.singleSentierService.fetchSentier(this.singleSentier()!.id)
             } catch (e) {
               console.error('Failed to update occurrence position', e);
             }
@@ -443,7 +460,7 @@ export class Map implements AfterViewInit {
       // First and last: use Material Symbols for start/end in single-sentier mode
       // Intermediates: small dot with the same color as the path
       let marker: L.Marker;
-      const draggable = this.sharedService.canEditTrail(this.user, this.singleSentier()!, this.userService.isUserAdmin())
+      const draggable= this.sharedService.canEditTrail(this.user, this.singleSentier()!, this.userService.isUserAdmin())
       if (i === 0 || i === lastIndex) {
         const title = i === 0 ? 'Départ' : 'Arrivée';
         const icon = i === 0 ? this.startDivIcon : this.endDivIcon;
