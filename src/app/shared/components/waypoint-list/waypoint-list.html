@@ -12,8 +12,8 @@
             [attr.data-index]="i"
             (dragend)="onDragEnd()"
             (dragstart)="onDragStart($event, i)"
-            [class.cursor-grab]="userService.isUserAdmin()"
-            [attr.draggable]="userService.isUserAdmin()"
+            [class.cursor-grab]="canEditTrail()"
+            [attr.draggable]="canEditTrail()"
         >
           <span class="inline-flex w-6 shrink-0 justify-center text-xs font-semibold rounded-full"
                 [class]="i === 0 ? '' : (last ? '' : 'bg-orange-100 text-orange-700')">
@@ -29,10 +29,16 @@
             </div>
             <div class="text-[11px] text-gray-500 truncate">{{ point.lat.toFixed(5) }}, {{ point.lng.toFixed(5) }}</div>
           </div>
-          <div class="flex items-center gap-0">
-            <button aria-label="Supprimer" class="px-2 py-1 m-0 h-full text-xs border border-gray-200 rounded-full text-rose-700" type="button"
-                    (click)="remove.emit(i)">✕</button>
-          </div>
+          @if (canEditTrail()) {
+            <div class="flex items-center gap-0">
+              <button aria-label="Supprimer" class="px-2 py-1 m-0 h-full text-xs border border-gray-200 rounded-full text-rose-700" type="button"
+                      (click)="remove.emit(i)">✕</button>
+            </div>
+          }
+<!--          <div class="flex items-center gap-0">-->
+<!--            <button aria-label="Supprimer" class="px-2 py-1 m-0 h-full text-xs border border-gray-200 rounded-full text-rose-700" type="button"-->
+<!--                    (click)="remove.emit(i)">✕</button>-->
+<!--          </div>-->
 
 
         </li>

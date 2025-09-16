@@ -16,7 +16,7 @@ export class WaypointListComponent {
   readonly reorder = output<Position[]>();
   readonly remove = output<number>();
 
-  // user: User | null = null;
+  user: User | null = null;
 
   readonly canEditTrail = signal(false)
   private readonly draggingIndex = signal<number | null>(null);
@@ -25,21 +25,17 @@ export class WaypointListComponent {
   sharedService = inject (SharedService)
   sentierService = inject(SingleSentierService)
 
-  // constructor() {
-  //   this.user = this.userService.user();
-  //   const canEdit = this.sharedService.canEditTrail(this.user, this.sentierService.sentier())
-  //   this.canEditTrail.set(canEdit)
-  //
-  //   effect(() => {
-  //     this.user = this.userService.user();
-  //     const canEdit = this.sharedService.canEditTrail(this.user, this.sentierService.sentier())
-  //     this.canEditTrail.set(canEdit)
-  //     console.log(this.canEditTrail())
-  //     console.log(this.user)
-  //   })
-  //
-  //   console.log(this.canEditTrail())
-  // }
+  constructor() {
+    this.user = this.userService.user();
+    const canEdit = this.sharedService.canEditTrail(this.user, this.sentierService.sentier(), this.userService.isUserAdmin())
+    this.canEditTrail.set(canEdit)
+
+    effect(() => {
+      this.user = this.userService.user();
+      const canEdit = this.sharedService.canEditTrail(this.user, this.sentierService.sentier(), this.userService.isUserAdmin())
+      this.canEditTrail.set(canEdit)
+    })
+  }
 
   // Event handlers
   onDragStart(ev: DragEvent, index: number): void {
