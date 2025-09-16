@@ -19,13 +19,13 @@
     </select>
   </label>
 
-  <label>
-    Ordre :
-    <select [value]="ordre()" (change)="ordre.set($any($event.target).value); emitSearch()">
-      <option value="ASC">Ascendant</option>
-      <option value="DESC">Descendant</option>
-    </select>
-  </label>
+<!--  <label>-->
+<!--    Ordre :-->
+<!--    <select [value]="ordre()" (change)="ordre.set($any($event.target).value); emitSearch()">-->
+<!--      <option value="ASC">Ascendant</option>-->
+<!--      <option value="DESC">Descendant</option>-->
+<!--    </select>-->
+<!--  </label>-->
 
 <!--  <button type="submit">Rechercher</button>-->
   <button type="button" (click)="reset()">Réinitialiser</button>

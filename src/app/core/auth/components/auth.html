@@ -1,13 +1,13 @@
 <div id="login">
-  @if(!isLoggedIn()){
+  @if(!userService.isLoggedIn()){
     <h2 class="w-full text-end cursor-pointer" role="button" tabindex="0" title="Se connecter"
   (click)="openLoginPopup()" (keydown.enter)="openLoginPopup()" (keydown.space)="openLoginPopup()">Connexion</h2>
   } @else {
-  <div class="flex w-full justify-between items-center no-wrap">
-     <p>Bienvenue {{user!.name}}</p>
-     <div><button class="" tabindex="0" type="button" (click)="logout()"
-  (keydown.enter)="logout()" (keydown.space)="logout()"><span>Se déconnecter</span></button></div>
-  </div>
+    <div class="flex w-full justify-between items-center no-wrap">
+       <p>Bienvenue {{userService.user()?.name}}</p>
+       <div><button class="" tabindex="0" type="button" (click)="logout()"
+    (keydown.enter)="logout()" (keydown.space)="logout()"><span>Se déconnecter</span></button></div>
+    </div>
   }
 
   @if(loginPopup()){

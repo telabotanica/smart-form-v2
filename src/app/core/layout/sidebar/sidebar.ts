@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, effect, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {User} from '../../auth/user.model';
 import {UserService} from '../../auth/services/user.service';
@@ -19,15 +19,6 @@ export class Sidebar {
 
   userService = inject(UserService);
 
-  constructor() {
-    this.isLoggedIn.set(this.userService.isLoggedIn());
-    this.user = this.userService.user();
-
-    effect(()=>{
-      this.isLoggedIn.set(this.userService.isLoggedIn());
-      this.user = this.userService.user();
-    })
-  }
   toggle(): void {
     this.isOpen.update((isOpen) => !isOpen);
   }

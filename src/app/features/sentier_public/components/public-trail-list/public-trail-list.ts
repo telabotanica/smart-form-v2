@@ -22,7 +22,7 @@ export class PublicTrailList implements OnInit {
     // Supprimer les clés dont la valeur est undefined ou vide
     const queryParams: Record<string, string> = {};
     Object.entries(filters).forEach(([key, value]) => {
-      if (value != null && value !== '') {
+      if (value !== undefined && value !== '') {
         queryParams[key] = String(value);
       }
     });

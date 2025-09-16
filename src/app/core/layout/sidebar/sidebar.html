@@ -20,7 +20,7 @@
       <span class="material-symbols-outlined">home</span>
     </button>
 
-    @if (isLoggedIn()){
+    @if (userService.isLoggedIn()){
       <button class="" title="Mes sentiers" type="button" [routerLink]="['/me']" (click)="isOpen() && toggle()">
         <span class="material-symbols-outlined">route</span>Mes sentiers
       </button>

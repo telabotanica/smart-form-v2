@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  effect,
   HostListener,
   inject,
   OnInit,
@@ -15,7 +14,6 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {CookieService} from 'ngx-cookie-service';
 import {CommonModule} from '@angular/common';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {User} from '../user.model';
 import {ErrorComponent} from '../../../shared/components/error/error';
 
 type AuthForm = {
@@ -31,7 +29,6 @@ type AuthForm = {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export default class AuthComponent implements OnInit {
-  user: User | null = null;
   cookieName = environment.cookieName;
   inscriptionUrl = environment.inscriptionUrl
   loginForm: FormGroup<AuthForm>;
@@ -40,7 +37,6 @@ export default class AuthComponent implements OnInit {
 
   readonly error = signal<string>('');
   readonly loginPopup = signal(false);
-  readonly isLoggedIn = signal(false);
 
   authApiService = inject(AuthApiService);
   userService = inject(UserService);
@@ -48,14 +44,6 @@ export default class AuthComponent implements OnInit {
   destroyRef = inject(DestroyRef);
 
   constructor() {
-    this.isLoggedIn.set(this.userService.isLoggedIn());
-    this.user = this.userService.user();
-
-    effect(()=>{
-      this.isLoggedIn.set(this.userService.isLoggedIn());
-      this.user = this.userService.user();
-    })
-
     this.loginForm = new FormGroup<AuthForm>({
       username: new FormControl("", {
         validators: [Validators.required],
@@ -72,7 +60,6 @@ export default class AuthComponent implements OnInit {
     const cookie = this.cookieService.get(this.cookieName)
     if (cookie){
       this.userService.setLoggedIn(true);
-      this.isLoggedIn.set(true);
       this.authApiService.identite().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (data) => {
           const token = data.token ?? '';
@@ -116,7 +103,6 @@ export default class AuthComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.user = null
           this.userService.setUserId("")
           this.userService.setUser(null)
           this.userService.setLoggedIn(false)
