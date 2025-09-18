@@ -16,6 +16,7 @@ import 'leaflet.markercluster';
 import {
   OccurrenceModalDetail
 } from '../../../features/occurrence/components/occurrence-modal-detail/occurrence-modal-detail';
+import { OccurrenceForm } from '../../../features/occurrence/components/occurrence-form/occurrence-form';
 import {SharedService} from '../../services/shared.service';
 import {OccurrenceService} from '../../../features/occurrence/services/occurrence-service';
 import {SingleSentierService} from '../../../features/sentier/services/single-sentier-service';
@@ -30,7 +31,7 @@ type LatLngTuple = [number, number];
 
 @Component({
   selector: 'app-map',
-  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent, WaypointListComponent],
+  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent, WaypointListComponent, OccurrenceForm],
   templateUrl: './map.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -42,6 +43,10 @@ export class Map implements AfterViewInit {
   readonly selectedOccurrence = signal<Occurrence | null>(null);
   // Local working copy of current single sentier to ensure immediate UI updates
   readonly currentSentier = signal<Sentier | null>(null);
+
+  // Occurrence form state
+  readonly showOccurrenceForm = signal<boolean>(false);
+  readonly occurrenceFormPosition = signal<Position | null>(null);
 
   readonly isLoggedIn = signal(false);
   user: User | null = null;
@@ -499,7 +504,17 @@ export class Map implements AfterViewInit {
           coords.splice(idx, 0, p);
           await this.persistPath(s, coords as Position[]);
         }
-      }
+      },
+      {
+        label: 'Ajouter une occurrence ici',
+        onClick: async (): Promise<void> => {
+          const p: Position = { lat: latlng.lat, lng: latlng.lng };
+          // this.sharedService.toggleBlurBackground()
+          this.showOccurrenceForm.set(true);
+          this.occurrenceFormPosition.set(p);
+          // await this.persistPath(s, coords as Position[]);
+        }
+      },
     ], this.leafletMap ?? undefined);
 
     L.popup({ closeButton: true, autoClose: true })
@@ -546,6 +561,12 @@ export class Map implements AfterViewInit {
     const s = this.currentSentier();
     if (!s) { return; }
     await this.persistPath(s, newOrder);
+  }
+
+  closeOccurrenceModal(): void{
+    // this.sharedService.blurBackground.set(false)
+    this.showOccurrenceForm.set(false)
+    this.singleSentierService.fetchSentier(this.singleSentier()!.id)
   }
 
 }

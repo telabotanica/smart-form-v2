@@ -54,3 +54,12 @@
     [onClose]="closeOccurrence"
   />
 </dialog>
+
+@if (showOccurrenceForm()) {
+  <app-occurrence-form
+    [position]="occurrenceFormPosition()!"
+    [sentier]="singleSentier()!"
+    (modalClosed)="closeOccurrenceModal()"
+    (modalSuccessed)="closeOccurrenceModal()"
+  />
+}

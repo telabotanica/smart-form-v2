@@ -1,0 +1,69 @@
+<div class="popup !h-1/2 sm:!w-6/10 !w-full !left-0 !top-2/10 sm:!left-2/10 bg-background! relative z-40">
+  <div class="absolute top-2 right-2 cursor-pointer p-2 z-50" role="button" tabindex="0" (click)="close()" (keydown)="handleKey($event)">
+    <span class="material-symbols-outlined text-primary !text-4xl" title="Fermer le formulaire">cancel</span>
+  </div>
+  <h3>Ajouter un individu</h3>
+  <form [formGroup]="form()" (ngSubmit)="submit()">
+    <h4>Informations de taxon</h4>
+
+    <div class="">
+      <label for="referentiel">Référentiel</label>
+      <select
+        formControlName="referentiel"
+        id="referentiel">
+        <option value="bdtfx">BDTFX</option>
+        <option value="bdtxa">BDTXA</option>
+        <option value="isfan">ISFAN</option>
+        <option value="apd">APD</option>
+        <option value="taxref">TAXREF</option>
+        <option value="taxreflich">TAXREF LICH</option>
+      </select>
+    </div>
+
+    <div class="">
+      <label>
+        <input
+          formControlName="nom_verna"
+          type="checkbox">
+        Nom vernaculaire (sinon nom scientifique)
+      </label>
+    </div>
+
+    <div class="">
+      <label for="recherche">Recherche</label>
+      <input
+        formControlName="recherche"
+        id="recherche"
+        placeholder="Tapez pour rechercher..."
+        type="text"
+        [value]="quickSearchValue()"
+        (input)="quickSearchValue.set($any($event.target).value); onInputChange()"
+        >
+
+      @if (taxonSearchService.taxonsQuickSearchResults().pagination > 0 && showQuickSearchResults()) {
+        <ul class="">
+          @for (result of taxonSearchService.taxonsQuickSearchResults().resultats; track result) {
+            <li
+              class="cursor-pointer border-b-2"
+              role="button"
+              tabindex="0"
+              (click)="selectTaxonName(result)"
+              (keydown)="handleSelectName($event, result)"
+            >{{ result }}</li>
+          }
+        </ul>
+      }
+    </div>
+
+    <h4>Divers</h4>
+    <div>
+      <label for="anecdotes">Anecdotes à propos de l'individu</label>
+      <input formControlName="anecdotes" id="anecdotes" placeholder="Ajouter une anecdote" type="text">
+    </div>
+
+    <div class="flex justify-between items-center">
+      <button title="Enregistrer l'individu" type="submit">Enregistrer</button>
+      <button class="bg-red-200" title="Fermer le formulaire" type="button" (click)="close()">Annuler</button>
+    </div>
+  </form>
+</div>
