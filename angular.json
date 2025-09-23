@@ -90,6 +90,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "allowedHosts":["front.localhost.fr.local"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "smart-form-v2:build:production"

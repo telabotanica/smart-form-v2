@@ -68,7 +68,8 @@ export class OccurrenceForm {
     });
   }
 
-  // -------------- STEP 1 -> Récupérer le nom du taxon --------------
+// TODO: ajouter image
+  //TODO: maj anecdotes
   onInputChange(): void {
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);

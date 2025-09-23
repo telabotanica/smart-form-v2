@@ -23,16 +23,15 @@
         <p>Noms vernaculaires: {{ o.taxon!.vernacular_names!.join(', ') }}</p>
       }
 
-      @if (o.images?.length) {
-        <div class="w-40 h-40 relative">
-          <img
-            alt="Image de l'occurrence {{ o.id }}"
-            fill
-            ngSrc="{{ o.images![0].url }}"
-            priority
-          />
-        </div>
-      }
+      <div class="w-40 h-40 relative">
+        <img
+          [alt]="imageAlt()"
+          fill
+          [ngSrc]="imageSrc()"
+          priority
+          [title]="imageTitle()"
+        />
+      </div>
 
       @if (!o.card_tag) {
         <p>Pas de fiche</p>

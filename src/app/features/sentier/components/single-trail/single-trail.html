@@ -55,11 +55,11 @@
       <li>Nombre d'occurrences: {{ sentier!.occurrences_count }}</li>
       <li>Nombre de taxons: {{ sentier!.nb_taxons }}</li>
       @if (sentier!.occurrences && sentier!.occurrences.length > 0) {
-        <li class="mt-2"><span class="font-bold underline">Occurrences sans localisation:</span>
+        <li class="mt-2">
           <ul class="mt-2">
             @for (occurrence of sentier!.occurrences; track occurrence.id) {
               @if (!occurrence.position) {
-                <li class="mb-2">
+                <li class="mb-2"><span class="font-bold underline">Occurrence sans localisation:</span>
                   Id: {{ occurrence.id}} -
                   {{ occurrence.anecdotes }} -
                   nt: {{ occurrence.taxon?.taxonomic_id }} -
