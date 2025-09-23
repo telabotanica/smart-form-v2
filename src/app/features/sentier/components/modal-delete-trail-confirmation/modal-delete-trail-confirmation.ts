@@ -3,6 +3,7 @@ import {Sentier} from '../../models/sentier.model';
 import {SharedService} from '../../../../shared/services/shared.service';
 import {MesSentiersService} from '../../services/mes-sentiers-service';
 import {SingleSentierService} from '../../services/single-sentier-service';
+import {Occurrence} from '../../../occurrence/models/occurrence.model';
 
 @Component({
   selector: 'app-modal-delete-trail-confirmation',
@@ -12,8 +13,11 @@ import {SingleSentierService} from '../../services/single-sentier-service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModalDeleteTrailConfirmation {
-  readonly sentierToDelete = input.required<Sentier | null>();
+  readonly sentierToDelete = input<Sentier | null>();
+  readonly occurrenceToDelete = input<Occurrence | null>();
+  readonly type = input<'sentier' | 'occurrence'>('sentier');
   readonly modalClosed = output<boolean>()
+  readonly modalSucceed = output<boolean>()
 
   sharedService = inject(SharedService);
   mesSentiersService = inject(MesSentiersService);
@@ -32,6 +36,7 @@ export class ModalDeleteTrailConfirmation {
       .then(() => {
         this.mesSentiersService.fetchMe();
         this.closeModal()
+        this.modalSucceed.emit(true);
       })
       .catch(err => {
         this.closeModal()
@@ -42,5 +47,9 @@ export class ModalDeleteTrailConfirmation {
 
   closeModal(): void {
     this.modalClosed.emit(true);
+  }
+
+  deleteOccurrence(): void {
+    this.modalSucceed.emit(true);
   }
 }

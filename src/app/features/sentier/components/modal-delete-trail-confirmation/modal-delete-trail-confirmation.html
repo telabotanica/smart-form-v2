@@ -1,9 +1,16 @@
 <div class="fixed top-1/3 left-0 mx-5 md:left-1/3 bg-background-200  flex justify-center items-center z-10 rounded-xl p-4 w-11/12 md:w-2/5 md:min-w-[40%] md:max-w-[40%] shadow-sm" method="dialog">
   <div class="p-1 rounded-xl">
-    <p>Voulez-vous vraiment supprimer ce sentier <span class="font-bold underline">"{{ sentierToDelete()!.display_name }}"</span> ?</p>
+    <p>Voulez-vous vraiment supprimer
+      @if (type() === 'sentier') {
+       ce sentier <span class="font-bold underline">"{{ sentierToDelete()!.display_name }}"</span>?
+      } @else {
+        cet individu <span class="font-bold underline">"{{ occurrenceToDelete()!.taxon?.scientific_name }}"</span>?
+      }
+      </p>
     <p>Cette action est irréversible !</p>
 
     <div class="flex flex-wrap gap-8 justify-between items-center">
+      @if (type() === 'sentier') {
       <button
         class="bg-red-800 hover:bg-red-600 text-white"
         title="confirmer la suppression"
@@ -11,6 +18,15 @@
         (click)="deleteConfirmed()"
       >Oui, supprimer
       </button>
+      } @else {
+        <button
+          class="bg-red-800 hover:bg-red-600 text-white"
+          title="confirmer la suppression"
+          type="button"
+          (click)="deleteOccurrence()"
+        >Oui, supprimer
+        </button>
+      }
 
       <button
         title="annuler la suppression"

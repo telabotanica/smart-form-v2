@@ -46,7 +46,8 @@
         sentier(),
         userService.isUserAdmin()
       )) {
-        <button class="" type="button" (click)="openOccurrenceForm()">Modifier</button>
+        <button class="" title="modifier l'individu" type="button" (click)="openOccurrenceForm()">Modifier</button>
+        <button class="bg-red-800 hover:bg-red-600 text-white" title="supprimer l'individu" type="button" (click)="openDeleteConfirmation()">Supprimer</button>
       }
 
     </section>
@@ -59,6 +60,15 @@
       [sentier]="o.sentier!"
       (modalClosed)="closeOccurrenceForm()"
       (modalSuccessed)="occurrenceUpdateSuccessed()"
+    />
+  }
+
+  @if (showDeleteConfirmModal) {
+    <app-modal-delete-trail-confirmation
+      [occurrenceToDelete]="occurrence()"
+      [type]="'occurrence'"
+      (modalClosed)="closeDeleteConfirmModal()"
+      (modalSucceed)="deleteOccurrence()"
     />
   }
 }
