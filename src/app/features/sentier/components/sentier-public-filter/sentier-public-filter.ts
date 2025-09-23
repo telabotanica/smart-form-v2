@@ -4,7 +4,6 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Output, signal} from '
   selector: 'app-sentier-public-filter',
   imports: [],
   templateUrl: './sentier-public-filter.html',
-  styleUrl: './sentier-public-filter.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SentierPublicFilter {

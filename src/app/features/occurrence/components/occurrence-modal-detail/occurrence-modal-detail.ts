@@ -8,14 +8,13 @@ import {Sentier} from '../../../sentier/models/sentier.model';
 import {SingleSentierService} from '../../../sentier/services/single-sentier-service';
 import {OccurrenceService} from '../../services/occurrence-service';
 import {
-  ModalDeleteTrailConfirmation
-} from '../../../sentier/components/modal-delete-trail-confirmation/modal-delete-trail-confirmation';
+  ModalDeleteConfirmation
+} from '../../../../shared/components/modal-delete-confirmation/modal-delete-confirmation';
 
 @Component({
   selector: 'app-occurrence-modal-detail',
-  imports: [NgOptimizedImage, OccurrenceForm, ModalDeleteTrailConfirmation],
+  imports: [NgOptimizedImage, OccurrenceForm, ModalDeleteConfirmation],
   templateUrl: './occurrence-modal-detail.html',
-  styleUrl: './occurrence-modal-detail.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OccurrenceModalDetail {

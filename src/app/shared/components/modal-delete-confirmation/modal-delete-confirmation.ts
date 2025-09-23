@@ -1,19 +1,18 @@
 import {ChangeDetectionStrategy, Component, inject, input, output} from '@angular/core';
-import {Sentier} from '../../models/sentier.model';
-import {SharedService} from '../../../../shared/services/shared.service';
-import {MesSentiersService} from '../../services/mes-sentiers-service';
-import {SingleSentierService} from '../../services/single-sentier-service';
-import {Occurrence} from '../../../occurrence/models/occurrence.model';
+import {Sentier} from '../../../features/sentier/models/sentier.model';
+import {SharedService} from '../../services/shared.service';
+import {MesSentiersService} from '../../../features/sentier/services/mes-sentiers-service';
+import {SingleSentierService} from '../../../features/sentier/services/single-sentier-service';
+import {Occurrence} from '../../../features/occurrence/models/occurrence.model';
 import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-modal-delete-trail-confirmation',
   imports: [],
-  templateUrl: './modal-delete-trail-confirmation.html',
-  styleUrl: './modal-delete-trail-confirmation.css',
+  templateUrl: './modal-delete-confirmation.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ModalDeleteTrailConfirmation {
+export class ModalDeleteConfirmation {
   readonly sentierToDelete = input<Sentier | null>();
   readonly occurrenceToDelete = input<Occurrence | null>();
   readonly type = input<'sentier' | 'occurrence'>('sentier');

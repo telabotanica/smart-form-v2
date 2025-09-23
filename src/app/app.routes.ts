@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import {Home} from './core/layout/home/home';
-import {SingleTrail} from './features/sentier/components/single-trail/single-trail';
-import {MesSentiers} from './features/sentier/components/mes-sentiers/mes-sentiers';
+import {Home} from './pages/home/home';
+import {SingleTrail} from './pages/single-trail/single-trail';
+import {MesSentiers} from './pages/mes-sentiers/mes-sentiers';
 import {authGuard} from './core/auth/auth-guard';
 
 export const routes: Routes = [

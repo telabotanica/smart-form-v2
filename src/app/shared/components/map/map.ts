@@ -26,7 +26,7 @@ import { WaypointListComponent } from '../waypoint-list/waypoint-list';
 import { MapUtilsService } from '../../services/map-utils.service';
 import {UserService} from '../../../core/auth/services/user.service';
 import {User} from '../../../core/auth/user.model';
-import {SentierPublicListService} from '../../../features/sentier_public/services/sentier-public-list-service';
+import {SentierPublicListService} from '../../../features/sentier/services/sentier-public-list-service';
 import {Loader} from '../loader/loader';
 
 type LatLngTuple = [number, number];

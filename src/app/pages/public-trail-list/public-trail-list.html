@@ -8,11 +8,4 @@
   <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
 } @else {
   <app-map [sentiers]="sentierService.sentiers()"/>
-<!--  <ul>-->
-<!--    @for (sentier of sentierService.sentiers(); track sentier.id) {-->
-<!--      <li>{{ sentier.name }}-->
-<!--        <button type="button"><a [routerLink]="['/trail', sentier.id]">Ouvrir</a></button>-->
-<!--      </li>-->
-<!--    }-->
-<!--  </ul>-->
 }

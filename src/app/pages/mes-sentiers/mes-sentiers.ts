@@ -1,18 +1,18 @@
 import {ChangeDetectionStrategy, Component, effect, inject, OnInit, signal} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
-import {UserService} from '../../../../core/auth/services/user.service';
-import {MesSentiersService} from '../../services/mes-sentiers-service';
-import {ErrorComponent} from '../../../../shared/components/error/error';
-import {User} from '../../../../core/auth/user.model';
-import {Sentier} from '../../models/sentier.model';
-import {SingleSentierService} from '../../services/single-sentier-service';
-import {SentierValidationCheck} from '../../models/sentier-validation-check.model';
-import {SentierValidationError} from '../../../../shared/models/sentier-validation-error.model';
-import {SentierCheckErrors} from '../../../../shared/components/sentier-check-errors/sentier-check-errors';
-import {SharedService} from '../../../../shared/services/shared.service';
-import {ModalDeleteTrailConfirmation} from '../modal-delete-trail-confirmation/modal-delete-trail-confirmation';
-import {SentierForm} from '../../forms/sentier-form/sentier-form';
-import {Loader} from '../../../../shared/components/loader/loader';
+import {UserService} from '../../core/auth/services/user.service';
+import {MesSentiersService} from '../../features/sentier/services/mes-sentiers-service';
+import {ErrorComponent} from '../../shared/components/error/error';
+import {User} from '../../core/auth/user.model';
+import {Sentier} from '../../features/sentier/models/sentier.model';
+import {SingleSentierService} from '../../features/sentier/services/single-sentier-service';
+import {SentierValidationCheck} from '../../features/sentier/models/sentier-validation-check.model';
+import {SentierValidationError} from '../../shared/models/sentier-validation-error.model';
+import {SentierCheckErrors} from '../../shared/components/sentier-check-errors/sentier-check-errors';
+import {SharedService} from '../../shared/services/shared.service';
+import {ModalDeleteConfirmation} from '../../shared/components/modal-delete-confirmation/modal-delete-confirmation';
+import {SentierForm} from '../../features/sentier/forms/sentier-form/sentier-form';
+import {Loader} from '../../shared/components/loader/loader';
 
 @Component({
   selector: 'app-mes-sentiers',
@@ -20,12 +20,11 @@ import {Loader} from '../../../../shared/components/loader/loader';
     ErrorComponent,
     RouterLink,
     SentierCheckErrors,
-    ModalDeleteTrailConfirmation,
+    ModalDeleteConfirmation,
     SentierForm,
     Loader
   ],
   templateUrl: './mes-sentiers.html',
-  styleUrl: './mes-sentiers.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MesSentiers implements OnInit{

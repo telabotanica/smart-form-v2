@@ -1,18 +1,18 @@
 import {ChangeDetectionStrategy, Component, effect, inject, input, OnInit, signal} from '@angular/core';
-import {SingleSentierService} from '../../services/single-sentier-service';
-import {ErrorComponent} from '../../../../shared/components/error/error';
-import {UserService} from '../../../../core/auth/services/user.service';
-import {User} from '../../../../core/auth/user.model';
+import {SingleSentierService} from '../../features/sentier/services/single-sentier-service';
+import {ErrorComponent} from '../../shared/components/error/error';
+import {UserService} from '../../core/auth/services/user.service';
+import {User} from '../../core/auth/user.model';
 import {DatePipe, NgOptimizedImage} from '@angular/common';
-import {Sentier} from '../../models/sentier.model';
-import {SentierValidationCheck} from '../../models/sentier-validation-check.model';
-import {SentierValidationError} from '../../../../shared/models/sentier-validation-error.model';
-import {SentierCheckErrors} from '../../../../shared/components/sentier-check-errors/sentier-check-errors';
-import {ModalDeleteTrailConfirmation} from '../modal-delete-trail-confirmation/modal-delete-trail-confirmation';
-import {SharedService} from '../../../../shared/services/shared.service';
-import {SentierForm} from '../../forms/sentier-form/sentier-form';
-import {Map} from '../../../../shared/components/map/map';
-import {Loader} from '../../../../shared/components/loader/loader';
+import {Sentier} from '../../features/sentier/models/sentier.model';
+import {SentierValidationCheck} from '../../features/sentier/models/sentier-validation-check.model';
+import {SentierValidationError} from '../../shared/models/sentier-validation-error.model';
+import {SentierCheckErrors} from '../../shared/components/sentier-check-errors/sentier-check-errors';
+import {ModalDeleteConfirmation} from '../../shared/components/modal-delete-confirmation/modal-delete-confirmation';
+import {SharedService} from '../../shared/services/shared.service';
+import {SentierForm} from '../../features/sentier/forms/sentier-form/sentier-form';
+import {Map} from '../../shared/components/map/map';
+import {Loader} from '../../shared/components/loader/loader';
 
 @Component({
   selector: 'app-single-trail',
@@ -20,14 +20,13 @@ import {Loader} from '../../../../shared/components/loader/loader';
     ErrorComponent,
     NgOptimizedImage,
     SentierCheckErrors,
-    ModalDeleteTrailConfirmation,
+    ModalDeleteConfirmation,
     DatePipe,
     SentierForm,
     Map,
     Loader
   ],
   templateUrl: './single-trail.html',
-  styleUrl: './single-trail.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SingleTrail implements OnInit {

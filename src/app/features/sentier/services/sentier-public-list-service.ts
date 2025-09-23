@@ -1,7 +1,7 @@
 import {computed, inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
-import {Sentier} from '../../sentier/models/sentier.model';
+import {Sentier} from '../models/sentier.model';
 import {firstValueFrom} from 'rxjs';
 
 @Injectable({
