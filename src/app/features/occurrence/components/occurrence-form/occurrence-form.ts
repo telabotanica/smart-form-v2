@@ -18,10 +18,11 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {Occurrence} from '../../models/occurrence.model';
 import {Taxon} from '../../../taxon/models/taxon.model';
 import {ErrorComponent} from '../../../../shared/components/error/error';
+import {Loader} from '../../../../shared/components/loader/loader';
 
 @Component({
   selector: 'app-occurrence-form',
-  imports: [ReactiveFormsModule, ErrorComponent],
+  imports: [ReactiveFormsModule, ErrorComponent, Loader],
   templateUrl: './occurrence-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

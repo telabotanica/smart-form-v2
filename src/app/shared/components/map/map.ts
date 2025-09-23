@@ -26,12 +26,14 @@ import { WaypointListComponent } from '../waypoint-list/waypoint-list';
 import { MapUtilsService } from '../../services/map-utils.service';
 import {UserService} from '../../../core/auth/services/user.service';
 import {User} from '../../../core/auth/user.model';
+import {SentierPublicListService} from '../../../features/sentier_public/services/sentier-public-list-service';
+import {Loader} from '../loader/loader';
 
 type LatLngTuple = [number, number];
 
 @Component({
   selector: 'app-map',
-  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent, WaypointListComponent, OccurrenceForm],
+  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent, WaypointListComponent, OccurrenceForm, Loader],
   templateUrl: './map.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -66,6 +68,7 @@ export class Map implements AfterViewInit {
   sharedService = inject(SharedService)
   occurrenceService = inject(OccurrenceService);
   singleSentierService = inject(SingleSentierService);
+  sentierService = inject(SentierPublicListService)
   mapUtils = inject(MapUtilsService);
   userService = inject(UserService);
 

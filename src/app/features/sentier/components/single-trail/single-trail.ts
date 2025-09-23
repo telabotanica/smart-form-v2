@@ -12,6 +12,7 @@ import {ModalDeleteTrailConfirmation} from '../modal-delete-trail-confirmation/m
 import {SharedService} from '../../../../shared/services/shared.service';
 import {SentierForm} from '../../forms/sentier-form/sentier-form';
 import {Map} from '../../../../shared/components/map/map';
+import {Loader} from '../../../../shared/components/loader/loader';
 
 @Component({
   selector: 'app-single-trail',
@@ -22,7 +23,8 @@ import {Map} from '../../../../shared/components/map/map';
     ModalDeleteTrailConfirmation,
     DatePipe,
     SentierForm,
-    Map
+    Map,
+    Loader
   ],
   templateUrl: './single-trail.html',
   styleUrl: './single-trail.css',

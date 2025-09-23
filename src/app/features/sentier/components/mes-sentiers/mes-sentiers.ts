@@ -12,6 +12,7 @@ import {SentierCheckErrors} from '../../../../shared/components/sentier-check-er
 import {SharedService} from '../../../../shared/services/shared.service';
 import {ModalDeleteTrailConfirmation} from '../modal-delete-trail-confirmation/modal-delete-trail-confirmation';
 import {SentierForm} from '../../forms/sentier-form/sentier-form';
+import {Loader} from '../../../../shared/components/loader/loader';
 
 @Component({
   selector: 'app-mes-sentiers',
@@ -20,7 +21,8 @@ import {SentierForm} from '../../forms/sentier-form/sentier-form';
     RouterLink,
     SentierCheckErrors,
     ModalDeleteTrailConfirmation,
-    SentierForm
+    SentierForm,
+    Loader
   ],
   templateUrl: './mes-sentiers.html',
   styleUrl: './mes-sentiers.css',

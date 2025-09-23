@@ -2,7 +2,7 @@
   <h1>Mes sentiers</h1>
   <button class="" type="button" (click)="openTrailModal()">Créer un sentier</button>
   @if (mesSentiersService.loading()) {
-    <p>Chargement des sentiers...</p>
+    <app-loader />
   } @else if (mesSentiersService.error()) {
     <app-error [errorMessage]="mesSentiersService.error() ?? 'Erreur inconnue'" />
   } @else {

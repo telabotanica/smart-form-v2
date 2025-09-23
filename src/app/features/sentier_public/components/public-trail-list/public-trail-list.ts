@@ -3,10 +3,11 @@ import {SentierPublicListService} from '../../services/sentier-public-list-servi
 import {ErrorComponent} from '../../../../shared/components/error/error';
 import {SentierPublicFilter} from '../sentier-public-filter/sentier-public-filter';
 import {Map} from '../../../../shared/components/map/map';
+import {Loader} from '../../../../shared/components/loader/loader';
 
 @Component({
   selector: 'app-public-trail-list',
-  imports: [ErrorComponent, SentierPublicFilter, Map],
+  imports: [ErrorComponent, SentierPublicFilter, Map, Loader],
   templateUrl: './public-trail-list.html',
   styleUrl: './public-trail-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush

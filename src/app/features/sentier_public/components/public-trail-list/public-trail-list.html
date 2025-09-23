@@ -3,7 +3,7 @@
 <hr />
 <h2>Liste des sentiers publics</h2>
 @if (sentierService.loading()) {
-  <p>Chargement des sentiers...</p>
+  <app-loader />
 } @else if (sentierService.error()) {
   <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
 } @else {

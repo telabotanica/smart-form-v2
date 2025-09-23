@@ -16,16 +16,20 @@
       }
     }
 
-    <div #mapContainer aria-label="Carte des sentiers" class="w-full h-full" role="region"></div>
+    @if (singleSentierService.loading() || singleSentierService.loadingUpdate() || sentierService.loading()) {
+      <app-loader />
+    } @else {
+      <div #mapContainer aria-label="Carte des sentiers" class="w-full h-full" role="region"></div>
+    }
   </div>
 
-  <app-error [errorMessage]="occurrenceService.error() ?? ''" />
-  <app-error [errorMessage]="singleSentierService.errorUpdate() ?? ''" />
+     <app-error [errorMessage]="occurrenceService.error() ?? ''" />
+     <app-error [errorMessage]="singleSentierService.errorUpdate() ?? ''" />
 
 </div>
 
-<dialog #detailsDialog class="border-0 rounded-xl p-0 shadow-2xl" (close)="closeDetails()">
-  @if (selectedSentier(); as s) {
+ <dialog #detailsDialog class="border-0 rounded-xl p-0 shadow-2xl" (close)="closeDetails()">
+   @if (selectedSentier(); as s) {
     <article class="p-4 min-w-[280px] max-w-[90vw]">
       <header class="flex items-center justify-between gap-4 mb-2">
         <h3 class="m-0 text-lg">{{ s.display_name || s.name || ('Sentier #' + s.id) }}</h3>
