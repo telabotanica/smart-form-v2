@@ -4,6 +4,7 @@ import {SharedService} from '../../../../shared/services/shared.service';
 import {SingleSentierService} from '../../services/single-sentier-service';
 import {FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule} from '@angular/common';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-sentier-form',
@@ -19,6 +20,7 @@ export class SentierForm implements OnInit {
   sharedService = inject(SharedService);
   sentierService= inject(SingleSentierService)
   private fb = inject(FormBuilder);
+  private readonly router = inject(Router);
 
   readonly form = signal(this.fb.group({
     name: this.fb.control(''),
@@ -71,10 +73,12 @@ export class SentierForm implements OnInit {
     if (this.sentier()) {
       await this.sentierService.updateSentier(sentierPayload);
     } else {
-      await this.sentierService.addSentier(sentierPayload);
+      const newSentier = await this.sentierService.addSentier(sentierPayload);
+      if (newSentier) {
+        await this.router.navigate(['/trail', newSentier.id]);
+      }
     }
     this.closeModal()
-
   }
 
   closeModal(): void {

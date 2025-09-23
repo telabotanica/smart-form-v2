@@ -4,6 +4,7 @@ import {SharedService} from '../../../../shared/services/shared.service';
 import {MesSentiersService} from '../../services/mes-sentiers-service';
 import {SingleSentierService} from '../../services/single-sentier-service';
 import {Occurrence} from '../../../occurrence/models/occurrence.model';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-modal-delete-trail-confirmation',
@@ -22,6 +23,7 @@ export class ModalDeleteTrailConfirmation {
   sharedService = inject(SharedService);
   mesSentiersService = inject(MesSentiersService);
   sentierService= inject(SingleSentierService)
+  private readonly router = inject(Router);
 
   deleteConfirmed(): void {
     if (!this.sentierToDelete()) {
@@ -31,12 +33,13 @@ export class ModalDeleteTrailConfirmation {
     this.delete(this.sentierToDelete()!);
   }
 
-  delete(sentier: Sentier): void {
+  async delete(sentier: Sentier): Promise<void> {
     this.sentierService.deleteSentier(sentier)
       .then(() => {
         this.mesSentiersService.fetchMe();
         this.closeModal()
         this.modalSucceed.emit(true);
+        this.router.navigate(['/me']);
       })
       .catch(err => {
         this.closeModal()

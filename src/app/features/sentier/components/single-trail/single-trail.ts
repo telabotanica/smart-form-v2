@@ -57,6 +57,7 @@ export class SingleTrail implements OnInit {
   }
   ngOnInit(): void {
     this.sentierService.fetchSentier(this.id());
+    this.sharedService.blurBackground.set(false)
   }
 
   //TODO edit sentier

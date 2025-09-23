@@ -54,7 +54,7 @@ export class SingleSentierService {
     }
   }
 
-  async addSentier(sentier:Sentier): Promise<void> {
+  async addSentier(sentier:Sentier): Promise<Sentier | null> {
     this._loadingUpdate.set(true);
     this._errorUpdate.set(null);
 
@@ -64,12 +64,14 @@ export class SingleSentierService {
         sentier
       ));
       this._sentier.set(data ?? {} as Sentier);
+      return data ?? null;
     } catch (err: unknown) {
       const apiError = err as ErrorApi;
       this._errorUpdate.set(
         apiError.error?.error ?? 'Erreur inconnue lors de la mise à jour du sentier'
       );
       console.error(err)
+      return null;
     } finally {
       this._loadingUpdate.set(false);
     }
