@@ -17,10 +17,11 @@ import { Sentier } from '../../../sentier/models/sentier.model';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {Occurrence} from '../../models/occurrence.model';
 import {Taxon} from '../../../taxon/models/taxon.model';
+import {ErrorComponent} from '../../../../shared/components/error/error';
 
 @Component({
   selector: 'app-occurrence-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ErrorComponent],
   templateUrl: './occurrence-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -65,16 +66,41 @@ export class OccurrenceForm implements OnInit {
 
   private debounceTimer?: number;
   constructor() {
+    // effect(() => {
+    //   const ref = this.referentielSignal();
+    //   const verna = this.nomVernaSignal();
+    //   const recherche = this.form().get('recherche')!.value;
+    //   // on évite d'effacer au premier run si le champ est déjà vide
+    //   if (!ref || !recherche || !verna) {return;}
+    //
+    //   this.form().patchValue({ recherche: '' });
+    //   this.selectedTaxonName.set('');
+    //   this.quickSearchValue.set('')
+    //   this.showQuickSearchResults.set(false);
+    //   // this.newOccurrence.set({
+    //   //   taxon: {} as Taxon
+    //   // })
+    //   console.log( this.selectedTaxonName())
+    //   console.log( this.quickSearchValue())
+    // });
+
     effect(() => {
       const ref = this.referentielSignal();
-      const verna = this.nomVernaSignal();
-      const recherche = this.form().get('recherche')!.value;
-      // on évite d'effacer au premier run si le champ est déjà vide
-      if (!ref || !recherche || !verna) {return;}
+      if (!ref) { return };
 
       this.form().patchValue({ recherche: '' });
       this.selectedTaxonName.set('');
-      this.quickSearchValue.set('')
+      this.quickSearchValue.set('');
+      this.showQuickSearchResults.set(false);
+    });
+
+    effect(() => {
+      const verna = this.nomVernaSignal();
+      if (verna === null || verna === undefined) { return };
+
+      this.form().patchValue({ recherche: '' });
+      this.selectedTaxonName.set('');
+      this.quickSearchValue.set('');
       this.showQuickSearchResults.set(false);
     });
   }
@@ -91,18 +117,19 @@ export class OccurrenceForm implements OnInit {
         limite: 10
       });
       this.selectedTaxonName.set(o.taxon?.scientific_name ?? '');
+      this.quickSearchValue.set(o.taxon?.scientific_name ?? '')
       this.selectedTaxonDetails.set(o.taxon ?? {} as Taxon);
       this.newOccurrence.set(o)
     }
   }
 
 // TODO: ajouter image
-  //TODO: maj anecdotes
   onInputChange(): void {
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
     }
     this.debounceTimer = window.setTimeout(() => {
+      this.selectedTaxonName.set('');
       this.searchTaxonsNames()
     }, 300);
   }
@@ -123,10 +150,9 @@ export class OccurrenceForm implements OnInit {
     )
 
    await this.getTaxonDetails()
-    //TODO: ajouter un loader et désactiver le bouton enregistrer pendant ce temps
+    //TODO: ajouter un loader
     this.fillOccurrence()
   }
-  //TODO: Ajouter messages d'erreur
 
   // Récupération du détail du taxon
   async getTaxonDetails(): Promise<void> {

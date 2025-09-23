@@ -8,6 +8,19 @@
     <button class="" type="button" (click)="openTrailModal()">Créer un sentier</button>
     <h2>{{ sentier!.display_name }}</h2>
 
+    @if (sentier!.status !== 'Validé') {
+      @if (isLoggedIn() && user && user.id === sentier!.author_id) {
+        <button class="" type="button" (click)="openTrailModal(sentier!)">Modifier ce sentier</button>
+        <button
+          class="bg-red-800 hover:bg-red-600 text-white"
+          type="button"
+          (click)="openDeleteConfirmModal(sentier!)"
+        >supprimer ce sentier</button>
+      } @else {
+        <p>Connectez-vous pour modifier ce sentier</p>
+      }
+    }
+
     <app-map [singleSentier]="sentier"/>
 
     <ul>
@@ -95,29 +108,6 @@
       <h3>Erreurs détectées:</h3>
       <app-sentier-check-errors [error]="sentierCheckError()!" />
     }
-
-    @if (sentier!.status !== 'Validé') {
-      @if (isLoggedIn() && user && user.id === sentier!.author_id) {
-        <h3>Vous pouvez modifier ce sentier</h3>
-        <!--    <ul>-->
-          <!--        <li>id: {{ user.id}}</li>-->
-          <!--        <li>nom: {{ user.name}}</li>-->
-          <!--        <li>avatar: {{ user.avatar}}</li>-->
-          <!--        <li>admin: {{ user.admin}}</li>-->
-          <!--    </ul>-->
-        <button class="" type="button" (click)="openTrailModal(sentier!)">Modifier ce sentier</button>
-        <button
-          class="bg-red-800 hover:bg-red-600 text-white"
-          type="button"
-          (click)="openDeleteConfirmModal(sentier!)"
-        >supprimer ce sentier</button>
-
-      } @else {
-        <p>Connectez-vous pour modifier ce sentier</p>
-      }
-
-    }
-
   }
 </div>
 

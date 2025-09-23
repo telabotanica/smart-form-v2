@@ -40,6 +40,9 @@
           [value]="quickSearchValue()"
           (input)="quickSearchValue.set($any($event.target).value); onInputChange()"
         >
+        @if (!form().get('recherche')?.valid && form().get('recherche')?.touched) {
+          <app-error errorMessage="Un individu est obligatoire." />
+        }
 
         @if (taxonSearchService.taxonsQuickSearchResults().pagination > 0 && showQuickSearchResults()) {
           <ul class="">
@@ -73,9 +76,24 @@
       <input formControlName="anecdotes" id="anecdotes" placeholder="Ajouter une anecdote" type="text">
     </div>
 
+    @if (taxonSearchService.loading()) {
+      Chargement des informations du taxon
+    }
+
     <div class="flex justify-between items-center">
-      <button title="Enregistrer l'individu" type="submit">Enregistrer</button>
       <button class="bg-red-200" title="Fermer le formulaire" type="button" (click)="close()">Annuler</button>
+      @if (selectedTaxonName() !== '' && !taxonSearchService.loading() && form().valid) {
+        <button title="Enregistrer l'individu" type="submit">Enregistrer</button>
+      }
+
+      @if (form().dirty && !form().valid) {
+        <app-error errorMessage="Vous devez sélectionner un individu." />
+      }
     </div>
+
+    @if(occurrenceService.error()){
+      <app-error [errorMessage]="occurrenceService.error() ?? ''" />
+    }
+
   </form>
 </div>
