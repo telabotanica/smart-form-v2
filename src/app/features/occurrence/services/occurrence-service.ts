@@ -45,7 +45,6 @@ export class OccurrenceService {
   async updateOccurrence(occurrence: Occurrence): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
-
     try {
       const data = await firstValueFrom(this.http.put<Occurrence>(
         `${this.smartfloreService}occurrence/${occurrence.id}`,

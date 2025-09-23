@@ -566,6 +566,9 @@ export class Map implements AfterViewInit {
   closeOccurrenceModal(): void{
     // this.sharedService.blurBackground.set(false)
     this.showOccurrenceForm.set(false)
+  }
+
+  occurrenceModalSuccessed():void {
     this.singleSentierService.fetchSentier(this.singleSentier()!.id)
   }
 

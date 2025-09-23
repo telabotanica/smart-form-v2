@@ -1,4 +1,14 @@
-import {ChangeDetectionStrategy, Component, effect, HostListener, inject, input, output, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  HostListener,
+  inject,
+  input,
+  OnInit,
+  output,
+  signal
+} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import { TaxonSearchService } from '../../../taxon/services/taxon-search-service';
 import { OccurrenceService } from '../../services/occurrence-service';
@@ -14,9 +24,10 @@ import {Taxon} from '../../../taxon/models/taxon.model';
   templateUrl: './occurrence-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OccurrenceForm {
+export class OccurrenceForm implements OnInit {
   readonly position = input.required<Position>();
   readonly sentier = input.required<Sentier>();
+  readonly occurrence = input<Occurrence | null>(null);
   readonly modalClosed = output<boolean>();
   readonly modalSuccessed = output<boolean>();
 
@@ -50,7 +61,7 @@ export class OccurrenceForm {
   readonly currentStep = signal(1);
   readonly selectedTaxonName = signal<string>('');
   readonly selectedTaxonDetails = signal<Taxon>({} as Taxon);
-  readonly occurrence = signal<Occurrence>({} as Occurrence)
+  readonly newOccurrence = signal<Occurrence>({} as Occurrence)
 
   private debounceTimer?: number;
   constructor() {
@@ -68,6 +79,23 @@ export class OccurrenceForm {
     });
   }
 
+  ngOnInit(): void {
+    const o = this.occurrence();
+    if (o) {
+      this.form().patchValue({
+        referentiel: o.taxon?.taxon_repository ?? 'bdtfx',
+        nom_verna: o.taxon?.vernacular_names ? o.taxon.vernacular_names.length > 0 : false,
+        recherche: o.taxon?.scientific_name ?? '',
+        anecdotes: o.anecdotes ?? '',
+        retour: 'min',
+        limite: 10
+      });
+      this.selectedTaxonName.set(o.taxon?.scientific_name ?? '');
+      this.selectedTaxonDetails.set(o.taxon ?? {} as Taxon);
+      this.newOccurrence.set(o)
+    }
+  }
+
 // TODO: ajouter image
   //TODO: maj anecdotes
   onInputChange(): void {
@@ -79,7 +107,6 @@ export class OccurrenceForm {
     }, 300);
   }
 
-  //
   async searchTaxonsNames(): Promise<void> {
     await this.taxonSearchService.quickSearchTaxons(this.form().value);
     this.showQuickSearchResults.set(true);
@@ -122,7 +149,7 @@ export class OccurrenceForm {
   }
 
   fillOccurrence(): void {
-    this.occurrence.set({
+    this.newOccurrence.set({
       position: this.position(),
       taxon: this.selectedTaxonDetails()
     })
@@ -131,16 +158,19 @@ export class OccurrenceForm {
   }
 
   async submit(): Promise<void> {
-    this.occurrence.update(current => ({
+    this.newOccurrence.update(current => ({
       ...current,
       anecdotes: this.form().get('anecdotes')?.value ?? ''
     }));
 
-    if (!this.form().valid) { return; }
-    //TODO: ajouter même condition si erreur
-
     try {
-      await this.occurrenceService.addOccurrence(this.occurrence(), this.sentier());
+      if (this.occurrence()) {
+        await this.occurrenceService.updateOccurrence(this.newOccurrence());
+      } else {
+        //TODO: ajouter même condition si erreur
+        if (!this.form().valid) { return; }
+        await this.occurrenceService.addOccurrence(this.newOccurrence(), this.sentier());
+      }
 
       if (!this.occurrenceService.error()) {
         this.modalSuccessed.emit(true);

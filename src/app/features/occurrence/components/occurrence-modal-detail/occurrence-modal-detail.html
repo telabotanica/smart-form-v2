@@ -25,10 +25,10 @@
 
       <div class="w-40 h-40 relative">
         <img
-          [alt]="imageAlt()"
           fill
-          [ngSrc]="imageSrc()"
           priority
+          [alt]="imageAlt()"
+          [ngSrc]="imageSrc()"
           [title]="imageTitle()"
         />
       </div>
@@ -40,6 +40,25 @@
       @if (o.anecdotes) {
         <p>{{ o.anecdotes }}</p>
       }
+
+      @if (sharedService.canEditTrail(
+        userService.user(),
+        sentier(),
+        userService.isUserAdmin()
+      )) {
+        <button class="" type="button" (click)="openOccurrenceForm()">Modifier</button>
+      }
+
     </section>
   </article>
+
+  @if (showOccurrenceForm) {
+    <app-occurrence-form
+      [occurrence]="occurrence()"
+      [position]="o.position!"
+      [sentier]="o.sentier!"
+      (modalClosed)="closeOccurrenceForm()"
+      (modalSuccessed)="occurrenceUpdateSuccessed()"
+    />
+  }
 }

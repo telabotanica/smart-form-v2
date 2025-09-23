@@ -2,58 +2,70 @@
   <div class="absolute top-2 right-2 cursor-pointer p-2 z-50" role="button" tabindex="0" (click)="close()" (keydown)="handleKey($event)">
     <span class="material-symbols-outlined text-primary !text-4xl" title="Fermer le formulaire">cancel</span>
   </div>
-  <h3>Ajouter un individu</h3>
+  <h3>{{ occurrence() ? "Modifier l'individu" : "Ajouter un individu" }}</h3>
   <form [formGroup]="form()" (ngSubmit)="submit()">
     <h4>Informations de taxon</h4>
 
-    <div class="">
-      <label for="referentiel">Référentiel</label>
-      <select
-        formControlName="referentiel"
-        id="referentiel">
-        <option value="bdtfx">BDTFX</option>
-        <option value="bdtxa">BDTXA</option>
-        <option value="isfan">ISFAN</option>
-        <option value="apd">APD</option>
-        <option value="taxref">TAXREF</option>
-        <option value="taxreflich">TAXREF LICH</option>
-      </select>
-    </div>
+    @if (!occurrence()) {
+      <div class="">
+        <label for="referentiel">Référentiel</label>
+        <select
+          formControlName="referentiel"
+          id="referentiel">
+          <option value="bdtfx">BDTFX</option>
+          <option value="bdtxa">BDTXA</option>
+          <option value="isfan">ISFAN</option>
+          <option value="apd">APD</option>
+          <option value="taxref">TAXREF</option>
+          <option value="taxreflich">TAXREF LICH</option>
+        </select>
+      </div>
 
-    <div class="">
-      <label>
+      <div class="">
+        <label>
+          <input
+            formControlName="nom_verna"
+            type="checkbox">
+          Nom vernaculaire (sinon nom scientifique)
+        </label>
+      </div>
+
+      <div class="">
+        <label for="recherche">Recherche</label>
         <input
-          formControlName="nom_verna"
-          type="checkbox">
-        Nom vernaculaire (sinon nom scientifique)
-      </label>
-    </div>
-
-    <div class="">
-      <label for="recherche">Recherche</label>
-      <input
-        formControlName="recherche"
-        id="recherche"
-        placeholder="Tapez pour rechercher..."
-        type="text"
-        [value]="quickSearchValue()"
-        (input)="quickSearchValue.set($any($event.target).value); onInputChange()"
+          formControlName="recherche"
+          id="recherche"
+          placeholder="Tapez pour rechercher..."
+          type="text"
+          [value]="quickSearchValue()"
+          (input)="quickSearchValue.set($any($event.target).value); onInputChange()"
         >
 
-      @if (taxonSearchService.taxonsQuickSearchResults().pagination > 0 && showQuickSearchResults()) {
-        <ul class="">
-          @for (result of taxonSearchService.taxonsQuickSearchResults().resultats; track result) {
-            <li
-              class="cursor-pointer border-b-2"
-              role="button"
-              tabindex="0"
-              (click)="selectTaxonName(result)"
-              (keydown)="handleSelectName($event, result)"
-            >{{ result }}</li>
-          }
-        </ul>
+        @if (taxonSearchService.taxonsQuickSearchResults().pagination > 0 && showQuickSearchResults()) {
+          <ul class="">
+            @for (result of taxonSearchService.taxonsQuickSearchResults().resultats; track result) {
+              <li
+                class="cursor-pointer border-b-2"
+                role="button"
+                tabindex="0"
+                (click)="selectTaxonName(result)"
+                (keydown)="handleSelectName($event, result)"
+              >{{ result }}</li>
+            }
+          </ul>
+        }
+      </div>
+    } @else {
+      @if (occurrence()!.taxon?.scientific_name) {
+        <p>Nom scientifique: {{ occurrence()!.taxon!.scientific_name }}</p>
       }
-    </div>
+      @if (occurrence()!.taxon?.taxon_repository) {
+        <p>Référentiel: {{ occurrence()!.taxon!.taxon_repository }}</p>
+      }
+      @if (occurrence()!.taxon?.vernacular_names?.length) {
+        <p>Noms vernaculaires: {{ occurrence()!.taxon!.vernacular_names!.join(', ') }}</p>
+      }
+    }
 
     <h4>Divers</h4>
     <div>

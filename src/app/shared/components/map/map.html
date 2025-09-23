@@ -52,6 +52,7 @@
   <app-occurrence-modal-detail
     [occurrence]="selectedOccurrence()"
     [onClose]="closeOccurrence"
+    [sentier]="singleSentier()!"
   />
 </dialog>
 
@@ -60,6 +61,6 @@
     [position]="occurrenceFormPosition()!"
     [sentier]="singleSentier()!"
     (modalClosed)="closeOccurrenceModal()"
-    (modalSuccessed)="closeOccurrenceModal()"
+    (modalSuccessed)="occurrenceModalSuccessed()"
   />
 }
