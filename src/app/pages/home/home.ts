@@ -20,9 +20,10 @@ export class Home {
   taxonSearchService = inject(TaxonSearchService);
 
     showTaxon(taxon: Taxon): void {
-      this.taxonSearchService.getTaxonFiche(taxon)
+      this.taxonSearchService.getTaxonFiche(taxon.taxon_repository, taxon.name_id)
         .then(() => {
           this.taxon.set(this.taxonSearchService.taxon());
+          // console.log(this.taxon())
         })
         .catch((err) => {
           console.error('Erreur lors de la récupération des détails du taxon', err);

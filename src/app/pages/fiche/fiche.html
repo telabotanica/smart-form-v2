@@ -1,0 +1,45 @@
+@if (taxonSearchService.loading()) {
+  <app-loader />
+}
+
+@if (taxonSearchService.taxon().vernacular_names?.length) {
+  <h2>{{ taxonSearchService.taxon().vernacular_names![0] }}</h2>
+}
+
+<h3>
+  <span class="italic">{{ taxonSearchService.taxon().scientific_name }}</span>
+  Famille des
+  <span>{{ taxonSearchService.taxon().family }}</span>
+</h3>
+
+<div class="whitespace-pre-line" [innerHTML]="renderMarkdown(taxonSearchService.taxon().html_full_scientific_name!)">
+  {{taxonSearchService.taxon().html_full_scientific_name}}
+</div>
+
+<div class="h-40 border">
+  Carousel d'images
+</div>
+
+<div class="mt-4">
+  @for(tab of taxonSearchService.taxon()!.tabs!; track $index){
+      @for(section of tab.sections; track $index){
+        <h4 class="uppercase">{{ section.title }}</h4>
+        <p class="whitespace-pre-line" [innerHTML]="renderMarkdown(section.text)">
+          @if (section.text) {
+            {{ section.text }}
+          } @else {
+            Aucun texte disponible pour cette section.
+          }
+        </p>
+      }
+  }
+</div>
+
+<div class="mt-4">
+  <h4>En savoir plus</h4>
+  @for(tab of taxonSearchService.taxon()!.tabs!; track $index){
+    @if (tab.url) {
+      <p class="mt-4"><a href="{{tab.url}}" target="_blank">{{ tab.title }}</a></p>
+    }
+  }
+</div>

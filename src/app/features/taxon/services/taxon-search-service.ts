@@ -85,13 +85,13 @@ export class TaxonSearchService {
     }
   }
 
-  async getTaxonFiche(taxon: Taxon): Promise<void> {
+  async getTaxonFiche(referentiel: string, num_nom: number): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
 
     try {
       const data = await firstValueFrom(
-        this.http.get<Taxon>(`${this.smartfloreService}taxon/${taxon.taxon_repository}/${taxon.name_id}`)
+        this.http.get<Taxon>(`${this.smartfloreService}taxon/${referentiel}/${num_nom}`)
       );
 
       this._taxon.set(data)
