@@ -1,4 +1,10 @@
 <div>
+  <app-taxon-search (emitTaxon)="showTaxon($event)" />
+  @if (taxon()) {
+    <app-taxon-details [taxon]="taxon()!"/>
+  }
+  <hr />
+
   <app-public-trail-list class=""/>
 </div>
 

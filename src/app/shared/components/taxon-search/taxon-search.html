@@ -1,0 +1,63 @@
+<div><h2>Rechercher une fiche</h2>
+  <form class="flex justify-start items-start gap-2 mb-2" [formGroup]="form()">
+    <div class="">
+      <!--      <label for="referentiel" class="mr-2">Référentiel</label>-->
+      <select
+        formControlName="referentiel"
+        id="referentiel">
+        <option value="bdtfx">BDTFX (France métropolitaine)</option>
+        <option value="bdtxa">BDTXA (Antilles Françaises)</option>
+        <option value="isfan">ISFAN (Afrique du nord)</option>
+        <option value="apd">APD (Afrique du centre et de l'ouest)</option>
+        <option value="taxref">TAXREF (Autre)</option>
+        <option value="taxreflich">TAXREF LICH (Lichens)</option>
+      </select>
+    </div>
+
+    <div class="p-2">
+      <label>
+        <input
+          formControlName="nom_verna"
+          type="checkbox">
+        {{ form().get('nom_verna')?.value ? 'Nom vernaculaire' : 'Nom scientifique' }}
+      </label>
+    </div>
+
+    <div class="relative">
+      <!--      <label for="recherche" class="mr-2">Recherche</label>-->
+      <input
+        formControlName="recherche"
+        id="recherche"
+        placeholder="Rechercher un taxon..."
+        type="text"
+        [value]="quickSearchValue()"
+        (input)="quickSearchValue.set($any($event.target).value); onInputChange()"
+      >
+      <!--      @if (!form().get('recherche')?.valid && form().get('recherche')?.touched) {-->
+      <!--        <app-error errorMessage="Un individu est obligatoire." />-->
+      <!--      }-->
+
+      @if (taxonSearchService.taxonsQuickSearchResults().pagination > 0 && showQuickSearchResults()) {
+        <ul class="absolute top-full left-0 bg-primary p-2 rounded z-40 overflow-y-auto max-h-60 w-54">
+          @for (result of taxonSearchService.taxonsQuickSearchResults().resultats; track result) {
+            <li
+              class="cursor-pointer border-b-2"
+              role="button"
+              tabindex="0"
+              (click)="selectTaxonName(result)"
+              (keydown)="handleSelectName($event, result)"
+            >{{ result }}
+            </li>
+          }
+        </ul>
+      }
+    </div>
+    @if (taxonSearchService.loading()) {
+      <app-loader />
+    }
+
+    @if (taxonSearchService.error()) {
+      <app-error [errorMessage]="taxonSearchService.error() ?? ''" />
+    }
+  </form>
+</div>

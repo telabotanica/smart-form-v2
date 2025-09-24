@@ -4,6 +4,7 @@ import {environment} from '../../../../environments/environment';
 import {firstValueFrom} from 'rxjs';
 import {TaxonSearchResultats} from '../models/taxon-search-resultats.model';
 import {FicheCollection} from '../models/fiche-collection.model';
+import {Taxon} from '../models/taxon.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,11 +15,13 @@ export class TaxonSearchService {
 
   private readonly _taxonsQuickSearchResults = signal<TaxonSearchResultats>({} as TaxonSearchResultats);
   private readonly _taxonsSearchResults = signal<FicheCollection>({} as FicheCollection);
+  private readonly _taxon = signal<Taxon>({} as Taxon);
   private readonly _loading = signal(false);
   private readonly _error = signal<string | null>(null);
 
   readonly taxonsQuickSearchResults = computed(() => this._taxonsQuickSearchResults());
   readonly taxonsSearchResults = computed(() => this._taxonsSearchResults());
+  readonly taxon = computed(() => this._taxon());
   readonly loading = computed(() => this._loading());
   readonly error = computed(() => this._error());
 
@@ -80,5 +83,25 @@ export class TaxonSearchService {
     } finally {
       this._loading.set(false);
     }
+  }
+
+  async getTaxonFiche(taxon: Taxon): Promise<void> {
+    this._loading.set(true);
+    this._error.set(null);
+
+    try {
+      const data = await firstValueFrom(
+        this.http.get<Taxon>(`${this.smartfloreService}taxon/${taxon.taxon_repository}/${taxon.name_id}`)
+      );
+
+      this._taxon.set(data)
+    } catch (err: unknown){
+      this._error.set(
+        err instanceof Error ? err.message : 'Erreur lors de la recherche de taxons'
+      );
+    } finally {
+      this._loading.set(false);
+    }
+
   }
 }

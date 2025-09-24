@@ -1,44 +1,26 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  HostListener,
-  inject,
-  input,
-  OnInit,
-  output,
-  signal
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, HostListener, inject, output, signal} from '@angular/core';
+import {TaxonSearchService} from '../../../features/taxon/services/taxon-search-service';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import { TaxonSearchService } from '../../../taxon/services/taxon-search-service';
-import { OccurrenceService } from '../../services/occurrence-service';
-import { Position } from '../../../../shared/models/position.model';
-import { Sentier } from '../../../sentier/models/sentier.model';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {Occurrence} from '../../models/occurrence.model';
-import {Taxon} from '../../../taxon/models/taxon.model';
-import {ErrorComponent} from '../../../../shared/components/error/error';
-import {Loader} from '../../../../shared/components/loader/loader';
+import {Taxon} from '../../../features/taxon/models/taxon.model';
+import {ErrorComponent} from '../error/error';
+import {Loader} from '../loader/loader';
 
 @Component({
-  selector: 'app-occurrence-form',
-  imports: [ReactiveFormsModule, ErrorComponent, Loader],
-  templateUrl: './occurrence-form.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-taxon-search',
+  imports: [
+    ErrorComponent,
+    ReactiveFormsModule,
+    Loader
+  ],
+  templateUrl: './taxon-search.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OccurrenceForm implements OnInit {
-  readonly position = input.required<Position>();
-  readonly sentier = input.required<Sentier>();
-  readonly occurrence = input<Occurrence | null>(null);
-  readonly modalClosed = output<boolean>();
-  readonly modalSuccessed = output<boolean>();
+export class TaxonSearch {
+  readonly emitTaxon = output<Taxon>()
 
   taxonSearchService = inject(TaxonSearchService);
-  occurrenceService = inject(OccurrenceService);
   private fb = inject(FormBuilder);
-
-  readonly quickSearchValue = signal('');
-  readonly showQuickSearchResults = signal(false)
 
   readonly form = signal(this.fb.group({
     referentiel: this.fb.control('bdtfx', { validators: [Validators.required] }),
@@ -59,16 +41,17 @@ export class OccurrenceForm implements OnInit {
     { initialValue: this.form().get('nom_verna')!.value }
   );
 
-  // State signals
+  readonly quickSearchValue = signal('');
+  readonly showQuickSearchResults = signal(false)
   readonly selectedTaxonName = signal<string>('');
   readonly selectedTaxonDetails = signal<Taxon>({} as Taxon);
-  readonly newOccurrence = signal<Occurrence>({} as Occurrence)
 
   private debounceTimer?: number;
+
   constructor() {
     effect(() => {
       const ref = this.referentielSignal();
-      if (!ref) { return };
+      if (!ref) { return; }
 
       this.form().patchValue({ recherche: '' });
       this.selectedTaxonName.set('');
@@ -87,25 +70,6 @@ export class OccurrenceForm implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    const o = this.occurrence();
-    if (o) {
-      this.form().patchValue({
-        referentiel: o.taxon?.taxon_repository ?? 'bdtfx',
-        nom_verna: o.taxon?.vernacular_names ? o.taxon.vernacular_names.length > 0 : false,
-        recherche: o.taxon?.scientific_name ?? '',
-        anecdotes: o.anecdotes ?? '',
-        retour: 'min',
-        limite: 10
-      });
-      this.selectedTaxonName.set(o.taxon?.scientific_name ?? '');
-      this.quickSearchValue.set(o.taxon?.scientific_name ?? '')
-      this.selectedTaxonDetails.set(o.taxon ?? {} as Taxon);
-      this.newOccurrence.set(o)
-    }
-  }
-
-// TODO: ajouter image
   onInputChange(): void {
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
@@ -131,11 +95,19 @@ export class OccurrenceForm implements OnInit {
       }
     )
 
-   await this.getTaxonDetails()
-   this.fillOccurrence()
+    try {
+      await this.getTaxonDetails()
+        .then(() => {
+        this.emitTaxon.emit(this.selectedTaxonDetails());
+        })
+        .catch((err) => {
+        console.error(err)
+        })
+    } catch (error) { console.error(error); }
+
+    // this.fillOccurrence()
   }
 
-  // Récupération du détail du taxon
   async getTaxonDetails(): Promise<void> {
     await this.taxonSearchService.searchTaxons(this.form().value);
     const results = this.taxonSearchService.taxonsSearchResults()?.resultats ?? [];
@@ -155,47 +127,10 @@ export class OccurrenceForm implements OnInit {
     } as Taxon);
   }
 
-  fillOccurrence(): void {
-    this.newOccurrence.set({
-      position: this.position(),
-      taxon: this.selectedTaxonDetails()
-    })
-    //TODO: A supprimer après mise en place du loader
-    console.log("occurrence prête à être envoyé")
-  }
-
-  async submit(): Promise<void> {
-    this.newOccurrence.update(current => ({
-      ...current,
-      anecdotes: this.form().get('anecdotes')?.value ?? ''
-    }));
-
-    try {
-      if (this.occurrence()) {
-        await this.occurrenceService.updateOccurrence(this.newOccurrence());
-      } else {
-        //TODO: ajouter même condition si erreur
-        if (!this.form().valid) { return; }
-        await this.occurrenceService.addOccurrence(this.newOccurrence(), this.sentier());
-      }
-
-      if (!this.occurrenceService.error()) {
-        this.modalSuccessed.emit(true);
-        this.close()
-      }
-    } catch (error) {
-      console.error('Error submitting occurrence:', error);
-    }
-  }
-
-  close(): void {
-    this.modalClosed.emit(true);
-  }
-
   handleKey(event: KeyboardEvent): void {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      this.close();
+      this.showQuickSearchResults.set(false);
     }
   }
 
@@ -209,7 +144,7 @@ export class OccurrenceForm implements OnInit {
   @HostListener('window:keydown', ['$event'])
   onEscape(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
-      this.close();
+      this.showQuickSearchResults.set(false);
     }
   }
 }

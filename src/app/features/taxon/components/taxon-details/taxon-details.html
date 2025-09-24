@@ -1,0 +1,23 @@
+<div class="flex justify-start items-center gap-4 mb-4">
+  <div>
+    {{ taxon().scientific_name }}
+  </div>
+
+  <div>
+    @if (taxon().vernacular_names?.length) {
+      {{ taxon().vernacular_names!.join(', ') }}
+    }
+  </div>
+
+  <div>
+    Espèce: {{ taxon().espece }}
+  </div>
+
+  <div>
+    Famille: {{ taxon().family }}
+  </div>
+
+  <div>
+    TODO: fiche (voir/editer), QR code, exporter en pdf, image ?
+  </div>
+</div>
