@@ -1,5 +1,5 @@
 <div>
-  <app-taxon-search (emitTaxon)="showTaxon($event)" />
+  <app-taxon-search (emitClear)="resetTaxonDetail()" (emitTaxon)="showTaxon($event)"/>
   @if (taxon()) {
     <app-taxon-details [taxon]="taxon()!"/>
   }

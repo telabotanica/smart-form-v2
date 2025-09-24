@@ -18,6 +18,7 @@ import {Loader} from '../loader/loader';
 })
 export class TaxonSearch {
   readonly emitTaxon = output<Taxon>()
+  readonly emitClear = output<void>()
 
   taxonSearchService = inject(TaxonSearchService);
   private fb = inject(FormBuilder);
@@ -57,6 +58,7 @@ export class TaxonSearch {
       this.selectedTaxonName.set('');
       this.quickSearchValue.set('');
       this.showQuickSearchResults.set(false);
+      this.emitClear.emit();
     });
 
     effect(() => {
@@ -67,6 +69,7 @@ export class TaxonSearch {
       this.selectedTaxonName.set('');
       this.quickSearchValue.set('');
       this.showQuickSearchResults.set(false);
+      this.emitClear.emit();
     });
   }
 
@@ -76,6 +79,7 @@ export class TaxonSearch {
     }
     this.debounceTimer = window.setTimeout(() => {
       this.selectedTaxonName.set('');
+      this.emitClear.emit();
       this.searchTaxonsNames()
     }, 300);
   }
@@ -98,14 +102,14 @@ export class TaxonSearch {
     try {
       await this.getTaxonDetails()
         .then(() => {
-        this.emitTaxon.emit(this.selectedTaxonDetails());
+            this.emitTaxon.emit(this.selectedTaxonDetails());
         })
         .catch((err) => {
-        console.error(err)
+          console.error(err)
         })
-    } catch (error) { console.error(error); }
-
-    // this.fillOccurrence()
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async getTaxonDetails(): Promise<void> {
