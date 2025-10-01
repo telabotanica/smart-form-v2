@@ -24,7 +24,8 @@
       @for (fiche of error()?.fiches_incompletes; track fiche.occurrence_id) {
         <ul class="ml-6 mb-2">
           <li>
-            <span class="underline font-bold">Taxon:</span> <span class="italic">{{ fiche?.taxon?.scientific_name }}</span>
+            <span class="underline font-bold">Occurrence:</span> #{{ fiche?.occurrence_id }}
+            - <span class="underline font-bold">Taxon:</span> <span class="italic">{{ fiche?.taxon?.scientific_name }}</span>
             - <span class="underline font-bold">Référentiel:</span> {{ fiche?.taxon?.taxon_repository }}
             - <span class="underline font-bold">Erreur:</span> {{ fiche.error }}
           </li>

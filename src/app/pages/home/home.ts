@@ -1,9 +1,8 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {PublicTrailList} from "../public-trail-list/public-trail-list";
 import {Taxon} from '../../features/taxon/models/taxon.model';
 import {TaxonSearch} from '../../shared/components/taxon-search/taxon-search';
 import {TaxonDetails} from '../../features/taxon/components/taxon-details/taxon-details';
-import {TaxonSearchService} from '../../features/taxon/services/taxon-search-service';
 
 @Component({
   selector: 'app-home',
@@ -15,18 +14,14 @@ import {TaxonSearchService} from '../../features/taxon/services/taxon-search-ser
   templateUrl: './home.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Home {
+export class Home implements OnInit {
   readonly taxon = signal<Taxon | null>(null)
-  taxonSearchService = inject(TaxonSearchService);
 
+  ngOnInit(): void {
+    this.resetTaxonDetail();
+  }
     showTaxon(taxon: Taxon): void {
-      this.taxonSearchService.getTaxonFiche(taxon.taxon_repository, taxon.name_id)
-        .then(() => {
-          this.taxon.set(this.taxonSearchService.taxon());
-        })
-        .catch((err) => {
-          console.error('Erreur lors de la récupération des détails du taxon', err);
-        });
+      this.taxon.set(taxon);
     }
 
     resetTaxonDetail(): void {

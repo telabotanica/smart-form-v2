@@ -1,4 +1,4 @@
-import {Entete} from './entete.model';
+import {Entete} from '../../taxon/models/entete.model';
 import {FicheResultats} from './fiche-resultats.model';
 
 export type FicheCollection = {

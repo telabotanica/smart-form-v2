@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
 import {firstValueFrom} from 'rxjs';
 import {TaxonSearchResultats} from '../models/taxon-search-resultats.model';
-import {FicheCollection} from '../models/fiche-collection.model';
+import {FicheCollection} from '../../fiche/models/fiche-collection.model';
 import {Taxon} from '../models/taxon.model';
 
 @Injectable({
@@ -88,6 +88,7 @@ export class TaxonSearchService {
   async getTaxonFiche(referentiel: string, num_nom: number): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
+    this._taxon.set({} as Taxon);
 
     try {
       const data = await firstValueFrom(

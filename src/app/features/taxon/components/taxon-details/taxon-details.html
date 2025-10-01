@@ -10,18 +10,42 @@
   </div>
 
   <div>
-    Espèce: {{ taxon().espece }}
-  </div>
+    @if (ficheExiste()) {
+      <button title="Ouvrir la fiche" type="button">
+        <a
+          target="_blank"
+          [routerLink]="['/fiche', taxon().taxon_repository, taxon().taxonomic_id, taxon().name_id]"
+        >
+          Voir la fiche
+        </a>
+      </button>
 
-  <div>
-    Famille: {{ taxon().family }}
-  </div>
+      @if (userService.isLoggedIn()){
+        <button title="Créer la fiche" type="button" (click)="openFicheModal()">
+          Modifier la fiche
+        </button>
+      }
+    } @else {
+      @if (userService.isLoggedIn()){
+        <button title="Créer la fiche" type="button" (click)="openFicheModal()">
+          Créer la fiche
+        </button>
+      }
+    }
 
-  <div>
-    <button type="button"><a [routerLink]="['/fiche', taxon().taxon_repository, taxon().taxonomic_id, taxon().name_id]">Ouvrir</a></button>
   </div>
 
   <div>
     TODO: fiche (voir/editer), QR code, exporter en pdf, image ?
   </div>
 </div>
+
+@if (showFicheModal) {
+  <app-fiche-form
+    [fiche]="fiche() ?? null"
+    [referentiel]="taxon().taxon_repository"
+    [taxonomic_id]="taxon().taxonomic_id!"
+    (modalClosed)="closeFicheModal()"
+    (modalSucceed)="ficheCreationSuccess()"
+  />
+}

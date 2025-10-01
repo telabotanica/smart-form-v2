@@ -10,7 +10,7 @@ import {SentierValidationError} from '../../shared/models/sentier-validation-err
 import {SentierCheckErrors} from '../../shared/components/sentier-check-errors/sentier-check-errors';
 import {ModalDeleteConfirmation} from '../../shared/components/modal-delete-confirmation/modal-delete-confirmation';
 import {SharedService} from '../../shared/services/shared.service';
-import {SentierForm} from '../../features/sentier/forms/sentier-form/sentier-form';
+import {SentierForm} from '../../features/sentier/components/sentier-form/sentier-form';
 import {Map} from '../../shared/components/map/map';
 import {Loader} from '../../shared/components/loader/loader';
 

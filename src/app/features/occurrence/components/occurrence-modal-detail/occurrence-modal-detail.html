@@ -33,10 +33,6 @@
         />
       </div>
 
-      @if (!o.card_tag) {
-        <p>Pas de fiche</p>
-      }
-
       @if (o.anecdotes) {
         <p>{{ o.anecdotes }}</p>
       }
@@ -46,10 +42,32 @@
         sentier(),
         userService.isUserAdmin()
       )) {
-        <button class="" title="modifier l'individu" type="button" (click)="openOccurrenceForm()">Modifier</button>
-        <button class="bg-red-800 hover:bg-red-600 text-white" title="supprimer l'individu" type="button" (click)="openDeleteConfirmation()">Supprimer</button>
+        <div>
+          <button class="" title="modifier l'individu" type="button" (click)="openOccurrenceForm()">Modifier</button>
+          <button class="bg-red-800 hover:bg-red-600 text-white" title="supprimer l'individu" type="button" (click)="openDeleteConfirmation()">Supprimer</button>
+        </div>
       }
 
+      @if (o.card_tag){
+        <div>
+          <button title="Voir la fiche" type="button">
+            <a target="_blank" [routerLink]="['/fiche', o.taxon!.taxon_repository, o.taxon!.taxonomic_id, o.taxon!.name_id]">Voir la fiche</a>
+          </button>
+
+          @if (userService.isLoggedIn()){
+            <button title="Editer la fiche" type="button" (click)="editFicheModal()">
+              Editer la fiche
+            </button>
+          }
+        </div>
+      } @else {
+        <p>Pas de fiche</p>
+        @if (userService.isLoggedIn()){
+          <button title="Créer la fiche" type="button" (click)="createFicheModal()">
+            Créer la fiche
+          </button>
+        }
+      }
     </section>
   </article>
 
@@ -69,6 +87,16 @@
       [type]="'occurrence'"
       (modalClosed)="closeDeleteConfirmModal()"
       (modalSucceed)="deleteOccurrence()"
+    />
+  }
+
+  @if (showFicheModal()) {
+    <app-fiche-form
+      [fiche]="fiche() ?? null"
+      [referentiel]="o.taxon!.taxon_repository"
+      [taxonomic_id]="o.taxon!.taxonomic_id!"
+      (ficheCreated)="ficheCreationSuccess()"
+      (modalClosed)="closeFicheModal()"
     />
   }
 }

@@ -1,0 +1,50 @@
+<div class="popup !h-1/2 sm:!w-6/10 !w-full !left-0 !top-2/10 sm:!left-2/10 bg-background! relative z-40">
+  <div class="absolute top-2 right-2 cursor-pointer p-2 z-50" role="button" tabindex="0" (click)="closeModal()" (keydown)="handleKey($event)">
+    <span class="material-symbols-outlined text-primary !text-4xl" title="Fermer le formulaire">cancel</span>
+  </div>
+  <h3>{{ fiche() ? "Modifier la fiche" : "Créer la fiche" }}</h3>
+  <form [formGroup]="form()" (ngSubmit)="submit()">
+    <div>
+      <label for="description">Description</label>
+      <textarea formControlName="description" id="description" placeholder="Ajouter une description" rows="5"></textarea>
+      @if (form().get('description')?.invalid && (form().get('description')?.touched || form().dirty || submitted)) {
+        <app-error errorMessage="Une description est obligatoire" />
+      }
+    </div>
+
+    <div>
+      <label for="usages">Usages</label>
+      <textarea formControlName="usages" id="usages" placeholder="Ajouter les usages" rows="5"></textarea>
+    </div>
+
+    <div>
+      <label for="ecologie">Ecologie</label>
+      <textarea formControlName="ecologie" id="ecologie" placeholder="Ajouter les données écologiques" rows="5"></textarea>
+    </div>
+
+    <div>
+      <label for="sources">Sources</label>
+      <textarea formControlName="sources" id="sources" placeholder="Ajouter une description" rows="5"></textarea>
+      @if (form().get('sources')?.invalid && (form().get('sources')?.touched || form().dirty || submitted)) {
+        <app-error errorMessage="Lees sources sont obligatoires" />
+      }
+    </div>
+
+    <div class="flex justify-between items-center">
+      <button class="bg-red-200" title="Fermer le formulaire" type="button" (click)="closeModal()">Annuler</button>
+
+<!--      @if (selectedTaxonName() !== '' && !taxonSearchService.loading() && form().valid) {-->
+        <button title="Enregistrer l'individu" type="submit">Enregistrer</button>
+<!--      }-->
+
+<!--      @if (form().dirty && !form().valid) {-->
+<!--        <app-error errorMessage="Vous devez au moins ajouter une description" />-->
+<!--      }-->
+    </div>
+
+    @if(ficheService.errorUpdate()){
+      <app-error [errorMessage]="ficheService.errorUpdate() ?? ''" />
+    }
+
+  </form>
+</div>
