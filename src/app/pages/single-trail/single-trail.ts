@@ -41,19 +41,27 @@ export class SingleTrail implements OnInit {
   readonly isLoggedIn = signal(false);
   readonly sentierCheck = signal({} as SentierValidationCheck);
   readonly sentierCheckError = signal<SentierValidationError | null>(null);
+  readonly trailQrCode= signal("");
 
   sentierService= inject(SingleSentierService)
   userService = inject(UserService);
   sharedService = inject(SharedService);
 
+  baseUrl = this.sharedService.url().origin
+
   constructor() {
     this.isLoggedIn.set(this.userService.isLoggedIn());
     this.user = this.userService.user();
+
 
     effect(()=>{
       this.isLoggedIn.set(this.userService.isLoggedIn());
       this.user = this.userService.user();
       this.sentier = this.sentierService.sentier();
+
+      this.trailQrCode.set(
+        `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl}/trail/${this.id()}.png
+      `)
     })
   }
   ngOnInit(): void {

@@ -23,6 +23,14 @@
 
     <app-map [singleSentier]="sentier"/>
 
+    <img
+      alt="QR code du sentier"
+      height="100"
+      priority
+      width="100"
+      [ngSrc]="trailQrCode()"
+    />
+
     <ul>
       @if (sentier!.image) {
         <div class="w-40 h-40 relative">

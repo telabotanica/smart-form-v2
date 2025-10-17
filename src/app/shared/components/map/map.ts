@@ -28,12 +28,13 @@ import {UserService} from '../../../core/auth/services/user.service';
 import {User} from '../../../core/auth/user.model';
 import {SentierPublicListService} from '../../../features/sentier/services/sentier-public-list-service';
 import {Loader} from '../loader/loader';
+import {QrCodeButton} from '../qr-code-button/qr-code-button';
 
 type LatLngTuple = [number, number];
 
 @Component({
   selector: 'app-map',
-  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent, WaypointListComponent, OccurrenceForm, Loader],
+  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent, WaypointListComponent, OccurrenceForm, Loader, QrCodeButton],
   templateUrl: './map.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

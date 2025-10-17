@@ -43,6 +43,7 @@
       </section>
       <footer class="mt-3">
         <a class="text-sky-700 underline" [routerLink]="['/trail', s.id]">Ouvrir le sentier</a>
+        <app-qr-code-button [sentier]="s" />
       </footer>
     </article>
   }
