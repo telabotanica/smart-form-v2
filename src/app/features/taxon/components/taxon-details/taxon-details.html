@@ -20,6 +20,8 @@
         </a>
       </button>
 
+      <app-qr-code-button [taxon]="taxon()"/>
+
       @if (userService.isLoggedIn()){
         <button title="Créer la fiche" type="button" (click)="openFicheModal()">
           Modifier la fiche
@@ -36,7 +38,7 @@
   </div>
 
   <div>
-    TODO: fiche (voir/editer), QR code, exporter en pdf, image ?
+    TODO: exporter en pdf, image ?
   </div>
 </div>
 

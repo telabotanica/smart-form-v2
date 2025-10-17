@@ -14,10 +14,11 @@ import {RouterLink} from '@angular/router';
 import {Fiche} from '../../../fiche/models/fiche.model';
 import {FicheForm} from '../../../fiche/components/fiche-form/fiche-form';
 import {FicheService} from '../../../fiche/services/fiche-service';
+import {QrCodeButton} from '../../../../shared/components/qr-code-button/qr-code-button';
 
 @Component({
   selector: 'app-occurrence-modal-detail',
-  imports: [NgOptimizedImage, OccurrenceForm, ModalDeleteConfirmation, RouterLink, FicheForm],
+  imports: [NgOptimizedImage, OccurrenceForm, ModalDeleteConfirmation, RouterLink, FicheForm, QrCodeButton],
   templateUrl: './occurrence-modal-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

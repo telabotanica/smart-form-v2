@@ -7,12 +7,14 @@ import {UserService} from '../../../../core/auth/services/user.service';
 import {FicheService} from '../../../fiche/services/fiche-service';
 import {Fiche} from '../../../fiche/models/fiche.model';
 import {TaxonSearchService} from '../../services/taxon-search-service';
+import {QrCodeButton} from '../../../../shared/components/qr-code-button/qr-code-button';
 
 @Component({
   selector: 'app-taxon-details',
   imports: [
     RouterLink,
-    FicheForm
+    FicheForm,
+    QrCodeButton
   ],
   templateUrl: './taxon-details.html',
   changeDetection: ChangeDetectionStrategy.OnPush

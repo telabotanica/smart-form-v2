@@ -54,6 +54,8 @@
             <a target="_blank" [routerLink]="['/fiche', o.taxon!.taxon_repository, o.taxon!.taxonomic_id, o.taxon!.name_id]">Voir la fiche</a>
           </button>
 
+          <app-qr-code-button [taxon]="o.taxon!"/>
+
           @if (userService.isLoggedIn()){
             <button title="Editer la fiche" type="button" (click)="editFicheModal()">
               Editer la fiche
