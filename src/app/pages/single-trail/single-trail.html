@@ -29,11 +29,14 @@
         @if (sentierCheckError() && sentier!.status !== 'En attente') {
           <h3>Erreurs détectées:</h3>
           <app-sentier-check-errors [error]="sentierCheckError()!" />
+          <h5 class="border border-2 p-2 border-primary">Merci de résoudre les erreurs ci-dessus afin de pouvoir envoyer votre sentier aux administrateurs pour vérification et publication.</h5>
         }
 
         @if (sentierCheck().status && !sentierCheckError() && sentier!.status !== 'En attente') {
           <button class="" type="button" (click)="sendTrailToReview(sentier!)">Publier</button>
         }
+
+<!--        TODO: ajouter bouton pour admin pour pouvoir valider le sentier-->
 
       } @else {
         <p>Connectez-vous pour modifier ce sentier</p>
