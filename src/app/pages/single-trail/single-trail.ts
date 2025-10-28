@@ -69,14 +69,6 @@ export class SingleTrail implements OnInit {
     this.sharedService.blurBackground.set(false)
   }
 
-  //TODO edit sentier
-  editSentier(sentier: Sentier): Sentier {
-    sentier.name = sentier.display_name + ' (modifié2)';
-
-    this.sentierService.updateSentier(sentier);
-    return sentier;
-  }
-
   async checkSentier(sentier: Sentier): Promise<void> {
     const { check, error } = await this.sentierService.checkSentier(sentier);
     this.sentierCheck.set(check);
