@@ -1,6 +1,6 @@
 <div id="login">
   @if(!userService.isLoggedIn()){
-    <h2 class="w-full text-end cursor-pointer" role="button" tabindex="0" title="Se connecter"
+    <h2 class="w-full cursor-pointer" role="button" tabindex="0" title="Se connecter"
   (click)="openLoginPopup()" (keydown.enter)="openLoginPopup()" (keydown.space)="openLoginPopup()">Connexion</h2>
   } @else {
     <div class="flex w-full justify-between items-center no-wrap">

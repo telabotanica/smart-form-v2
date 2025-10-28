@@ -32,10 +32,23 @@
       <option [ngValue]="1">accessible PMR</option>
     </select>
 
-    <div class="modal-actions">
+    <div class="modal-actions mb-2">
       <button type="submit">Valider</button>
       <button type="button" (click)="closeModal()">Annuler</button>
     </div>
+
+    @if ((form().dirty && !form().valid) || nameError) {
+      <app-error errorMessage="Le sentier doit avoir un nom."/>
+    }
+
+    @if (!this.userService.isLoggedIn()) {
+      <hr class="my-4">
+      <div>
+        <app-error errorMessage="Vous devez être connecté pour créer un sentier." />
+        <app-auth />
+      </div>
+    }
+
   </form>
 
 </div>

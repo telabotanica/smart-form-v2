@@ -1,6 +1,5 @@
 <div [class.blur-2xl]="sharedService.blurBackground()">
   <h1>Mes sentiers</h1>
-  <button class="" type="button" (click)="openTrailModal()">Créer un sentier</button>
   @if (mesSentiersService.loading()) {
     <app-loader />
   } @else if (mesSentiersService.error()) {

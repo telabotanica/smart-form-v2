@@ -2,10 +2,8 @@
   @if (sentierService.loading()) {
     <app-loader />
   } @else if (sentierService.error()) {
-    <button class="" type="button" (click)="openTrailModal()">Créer un sentier</button>
     <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
   } @else {
-    <button class="" type="button" (click)="openTrailModal()">Créer un sentier</button>
     <h2>{{ sentier!.display_name }}</h2>
 
     @if (sentier!.status !== 'Validé') {
@@ -61,7 +59,6 @@
       } @else {
         <li>Aucune image disponible</li>
       }
-      <li>id: {{ sentier!.id }}</li>
       <li>auteur_id: {{ sentier!.author_id }}</li>
       <li>auteur: {{ sentier!.author }}</li>
       <li>email: {{ sentier!.author_email }}</li>

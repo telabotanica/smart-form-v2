@@ -5,7 +5,7 @@
     <app-header class="flex justify-between content-center gap-6"/>
   </section>
 
-  <section class="p-2 sm:ml-44 min-h-(--screenH)" id="content">
+  <section class="p-2 sm:ml-44 min-h-(--screenH)" id="content" [class.blur-2xl]="sharedService.blurBackgroundApp()">
     <router-outlet />
   </section>
 

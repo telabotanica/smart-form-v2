@@ -8,11 +8,16 @@ import {environment} from '../../../environments/environment';
 })
 export class SharedService {
   readonly blurBackground = signal(false);
+  readonly blurBackgroundApp = signal(false);
   readonly url = signal(new URL(window.location.href));
   readonly env = signal(environment)
 
   toggleBlurBackground(): void {
     this.blurBackground.set(!this.blurBackground())
+  }
+
+  toggleBlurBackgroundApp(): void {
+    this.blurBackgroundApp.set(!this.blurBackgroundApp())
   }
 
   canEditTrail(user: User | null, trail: Sentier, isAdmin: boolean): boolean {

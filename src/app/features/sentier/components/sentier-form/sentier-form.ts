@@ -5,10 +5,13 @@ import {SingleSentierService} from '../../services/single-sentier-service';
 import {FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {Router} from '@angular/router';
+import {UserService} from '../../../../core/auth/services/user.service';
+import {ErrorComponent} from '../../../../shared/components/error/error';
+import AuthComponent from '../../../../core/auth/components/auth';
 
 @Component({
   selector: 'app-sentier-form',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ErrorComponent, AuthComponent],
   templateUrl: './sentier-form.html',
   styleUrl: './sentier-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -19,8 +22,11 @@ export class SentierForm implements OnInit {
 
   sharedService = inject(SharedService);
   sentierService= inject(SingleSentierService)
+  userService = inject(UserService);
   private fb = inject(FormBuilder);
   private readonly router = inject(Router);
+
+  nameError = false;
 
   readonly form = signal(this.fb.group({
     name: this.fb.control(''),
@@ -52,7 +58,14 @@ export class SentierForm implements OnInit {
   }
 
   async submit(): Promise<void> {
-    if (!this.form().valid) {return;}
+    this.nameError = false;
+
+    if (!this.form().valid) {
+      this.nameError = true;
+      return;
+    }
+
+    if(!this.userService.isLoggedIn()){return;}
 
     const formValue = this.form().value;
     const bestSeasonTuple: [boolean, boolean, boolean, boolean] = [
@@ -74,7 +87,7 @@ export class SentierForm implements OnInit {
       await this.sentierService.updateSentier(sentierPayload);
     } else {
       const newSentier = await this.sentierService.addSentier(sentierPayload);
-      if (newSentier) {
+      if (newSentier && !this.sentierService.errorUpdate()) {
         await this.router.navigate(['/trail', newSentier.id]);
       }
     }
