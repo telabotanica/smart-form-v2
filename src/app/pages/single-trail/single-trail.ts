@@ -105,4 +105,7 @@ export class SingleTrail implements OnInit {
   }
   // --- End of Add / Edit methods ---
 
+  async sendTrailToReview(sentier: Sentier): Promise<void> {
+    await this.sentierService.reviewSentier(sentier);
+  }
 }

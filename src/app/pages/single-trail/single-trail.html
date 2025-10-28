@@ -9,6 +9,8 @@
     <h2>{{ sentier!.display_name }}</h2>
 
     @if (sentier!.status !== 'Validé') {
+      <p>État: {{ sentier!.status ?? 'brouillon' }}</p>
+
       @if (isLoggedIn() && user && user.id === sentier!.author_id) {
         <button class="" type="button" (click)="openTrailModal(sentier!)">Modifier ce sentier</button>
         <button
@@ -16,6 +18,23 @@
           type="button"
           (click)="openDeleteConfirmModal(sentier!)"
         >supprimer ce sentier</button>
+
+        @if (sentier!.status !== 'Validé' && sentier!.status !== 'En attente') {
+          <button class="" type="button" (click)="checkSentier(sentier!)">Vérifier ce sentier</button>
+        }
+
+        @if (sentierCheck().status && sentier!.status !== 'En attente') {
+          <app-sentier-check-errors [check]="sentierCheck()!" />
+        }
+        @if (sentierCheckError() && sentier!.status !== 'En attente') {
+          <h3>Erreurs détectées:</h3>
+          <app-sentier-check-errors [error]="sentierCheckError()!" />
+        }
+
+        @if (sentierCheck().status && !sentierCheckError() && sentier!.status !== 'En attente') {
+          <button class="" type="button" (click)="sendTrailToReview(sentier!)">Publier</button>
+        }
+
       } @else {
         <p>Connectez-vous pour modifier ce sentier</p>
       }
@@ -60,7 +79,6 @@
           <span class="inline-block bg-gray-200 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{{ season }}</span>
         }
       }
-      <li>{{ sentier!.status ?? 'brouillon' }}</li>
 
       <hr />
       @if (!sentier!.position || !sentier!.position.start) {
@@ -105,17 +123,7 @@
     </ul>
 
     <hr />
-    @if (sentier!.status !== 'Validé') {
-      <button class="" type="button" (click)="checkSentier(sentier!)">Vérifier ce sentier</button>
-    }
 
-    @if (sentierCheck().status) {
-      <app-sentier-check-errors [check]="sentierCheck()!" />
-    }
-    @if (sentierCheckError()) {
-      <h3>Erreurs détectées:</h3>
-      <app-sentier-check-errors [error]="sentierCheckError()!" />
-    }
   }
 </div>
 
