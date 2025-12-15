@@ -1,22 +1,36 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {inject, Pipe, PipeTransform} from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Pipe({
   name: 'wikiToHtml',
   standalone: true
 })
 export class WikiToHtmlPipe implements PipeTransform {
-  transform(text: string): string {
-    if (!text) { return '' };
+  private sanitizer = inject(DomSanitizer);
 
-    // Convertir les liens wiki [[url]] en balises <a>
-    const linkRegex = /\[\[([^\]]+)\]\]/g;
+  transform(text: string): SafeHtml {
+    if (!text) { return '' }
 
-    return text.replace(linkRegex, (match, url) => {
+    let processedText = text;
+
+    // 1. Convertir d'abord les liens wiki [[url]] en balises <a>
+    const wikiLinkRegex = /\[\[([^\]]+)\]\]/g;
+    processedText = processedText.replace(wikiLinkRegex, (match, url) => {
       const trimmedUrl = url.trim();
-      // Extraire le nom de domaine pour l'affichage
       const displayText = this.extractDisplayText(trimmedUrl);
       return `<a href="${trimmedUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">${displayText}</a>`;
     });
+
+    // 2. Convertir les URLs directes (http:// ou https://) qui ne sont pas déjà dans des balises <a>
+    // On utilise un lookbehind négatif pour éviter de matcher les URLs déjà dans href=""
+    const urlRegex = /(?<!href=["'])https?:\/\/[^\s<>"]+/gi;
+    processedText = processedText.replace(urlRegex, (url) => {
+      const displayText = this.extractDisplayText(url);
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">${displayText}</a>`;
+    });
+
+    // Sanitize le HTML pour la sécurité
+    return this.sanitizer.bypassSecurityTrustHtml(processedText);
   }
 
   private extractDisplayText(url: string): string {

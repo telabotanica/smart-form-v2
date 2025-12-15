@@ -22,7 +22,6 @@ export class Fiche implements OnInit {
   taxonSearchService = inject(TaxonSearchService);
   private sanitizer = inject(DomSanitizer);
 
-
   ngOnInit(): void {
     this.taxonSearchService.getTaxonFiche(this.referentiel(), this.num_nom())
   }

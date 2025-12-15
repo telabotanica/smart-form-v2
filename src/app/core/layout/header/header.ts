@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, effect, inject, signal} from '@angular/core';
 import AuthComponent from '../../auth/components/auth';
 import {SentierForm} from '../../../features/sentier/components/sentier-form/sentier-form';
-import {Sentier} from '../../../features/sentier/models/sentier.model';
 import {UserService} from '../../auth/services/user.service';
 import {SharedService} from '../../../shared/services/shared.service';
 import {User} from '../../auth/user.model';
@@ -35,7 +34,7 @@ export class Header {
       this.user = this.userService.user();
     })
   }
-  openTrailModal(sentier: Sentier | null = null): void {
+  openTrailModal(): void {
     this.sharedService.toggleBlurBackgroundApp()
     this.showTrailModal = true;
   }
