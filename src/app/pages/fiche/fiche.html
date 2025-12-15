@@ -24,13 +24,11 @@
   @for(tab of taxonSearchService.taxon()!.tabs!; track $index){
       @for(section of tab.sections; track $index){
         <h4 class="uppercase">{{ section.title }}</h4>
-        <p class="whitespace-pre-line" [innerHTML]="renderMarkdown(section.text)">
-          @if (section.text) {
-            {{ section.text }}
-          } @else {
-            Aucun texte disponible pour cette section.
-          }
-        </p>
+        @if (section.text) {
+          <p class="whitespace-pre-line" [innerHTML]="section.text | wikiToHtml"></p>
+        } @else {
+          <p>Aucun texte disponible pour cette section.</p>
+        }
       }
   }
 </div>

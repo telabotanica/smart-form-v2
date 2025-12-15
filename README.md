@@ -1,6 +1,6 @@
 # SmartFormV2
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.0.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.
 
 Node v24 is needed.
 
@@ -26,9 +26,7 @@ ng generate --help
 
 Run `ng build --configuration beta --base-href=/smart-form/` to build the project on production server. The build artifacts will be stored in the `dist/` directory.
 
-You will need to copy the content of the `dist/identiplante/browser` on your server
-
-Or authorize ssh connection and create a script `./deploy.sh beta`
+You will need to copy the content of the `dist/smart-form/beta/browser` on your server or authorize ssh connection and create a script `./deploy.sh beta`
 
 ## Building
 
@@ -40,8 +38,7 @@ ng build --configuration production --base-href=/smart-form/
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
-You will need to copy the content of the `dist/identiplante/browser` on your server
-Or authorize ssh connection and create a script `./deploy.sh production`
+You will need to copy the content of the `dist/smart-form/production/browser` on your server or authorize ssh connection and create a script `./deploy.sh production`.
 ## Running unit tests
 
 To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
