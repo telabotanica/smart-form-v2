@@ -12,9 +12,7 @@
   <span>{{ taxonSearchService.taxon().family }}</span>
 </h3>
 
-@if (taxonSearchService.taxon().html_full_scientific_name) {
-  <div class="whitespace-pre-line" [innerHTML]="renderMarkdown(taxonSearchService.taxon().html_full_scientific_name!)"></div>
-}
+<div class="whitespace-pre-line" [innerHTML]="taxonSearchService.taxon().html_full_scientific_name | markdown"></div>
 <div class="h-40 border">
   Carousel d'images
 </div>
