@@ -1,7 +1,7 @@
 <div><h2>Rechercher une fiche</h2>
   <form class="flex justify-start items-start gap-2 mb-2" [formGroup]="form()">
     <div class="">
-      <!--      <label for="referentiel" class="mr-2">Référentiel</label>-->
+      <label for="referentiel" class="sr-only">Référentiel</label>
       <select
         formControlName="referentiel"
         id="referentiel">
@@ -24,7 +24,7 @@
     </div>
 
     <div class="relative">
-      <!--      <label for="recherche" class="mr-2">Recherche</label>-->
+            <label for="recherche" class="sr-only ">Recherche</label>
       <input
         formControlName="recherche"
         id="recherche"
