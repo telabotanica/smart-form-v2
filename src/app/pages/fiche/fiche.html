@@ -2,6 +2,10 @@
   <app-loader />
 }
 
+@if (taxonSearchService.error()) {
+  <app-error [errorMessage]="taxonSearchService.error() ?? ''" />
+}
+
 @if (taxonSearchService.taxon().vernacular_names?.length) {
   <h2>{{ taxonSearchService.taxon().vernacular_names![0] }}</h2>
 }

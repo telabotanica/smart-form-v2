@@ -1,6 +1,7 @@
 export type ErrorApi = {
   error: {
     error: string;
+    message: string;
   };
   headers: Record<string, string>;
   message: string;

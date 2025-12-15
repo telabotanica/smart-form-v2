@@ -3,13 +3,15 @@ import {TaxonSearchService} from '../../features/taxon/services/taxon-search-ser
 import {Loader} from '../../shared/components/loader/loader';
 import {WikiToHtmlPipe} from '../../features/fiche/pipes/WikiToHtmlPipe';
 import {MarkdownPipe} from '../../features/fiche/pipes/MarkdownPipe';
+import {ErrorComponent} from '../../shared/components/error/error';
 
 @Component({
   selector: 'app-fiche',
   imports: [
     Loader,
     WikiToHtmlPipe,
-    MarkdownPipe
+    MarkdownPipe,
+    ErrorComponent
   ],
   templateUrl: './fiche.html',
   changeDetection: ChangeDetectionStrategy.OnPush

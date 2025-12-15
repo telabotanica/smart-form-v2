@@ -5,6 +5,7 @@ import {firstValueFrom} from 'rxjs';
 import {TaxonSearchResultats} from '../models/taxon-search-resultats.model';
 import {FicheCollection} from '../../fiche/models/fiche-collection.model';
 import {Taxon} from '../models/taxon.model';
+import {ErrorApi} from '../../../core/models/error-api.model';
 
 @Injectable({
   providedIn: 'root'
@@ -97,8 +98,9 @@ export class TaxonSearchService {
 
       this._taxon.set(data)
     } catch (err: unknown){
+      const apiError = err as ErrorApi;
       this._error.set(
-        err instanceof Error ? err.message : 'Erreur lors de la recherche de taxons'
+        apiError.error?.error ?? 'Erreur lors de la recherche de taxons'
       );
     } finally {
       this._loading.set(false);
