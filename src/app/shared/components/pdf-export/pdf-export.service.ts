@@ -4,6 +4,7 @@ import QRCode from 'qrcode';
 import { Taxon } from '../../../features/taxon/models/taxon.model';
 import { Fiche } from '../../../features/fiche/models/fiche.model';
 import { SharedService } from '../../services/shared.service';
+import {Tab} from '../../../features/fiche/models/tabs.model';
 
 type PdfColors = {
   primary: [number, number, number];
@@ -96,8 +97,6 @@ export class PdfExportService {
     //   // Logo non chargé, on continue sans
     // }
     const titleHeight = 10;
-    const lineHeight = 5;
-    const sectionSpacing = 8;
     const startX = (this.margin *2) + logoWidth
     const startYSf = startY + (logoHeight / 2) + (titleHeight/2)
 
@@ -142,7 +141,6 @@ export class PdfExportService {
     const hasImage = !!imageUrl;
     const imageWidth = 45;
     const imageHeight = 50;
-    const imageOverflow = 5;
     const textStartX = hasImage ? this.margin + imageWidth + 5 : this.margin;
     const textMaxWidth = this.pageWidth - textStartX - this.margin;
 
@@ -323,5 +321,19 @@ export class PdfExportService {
 
   private sanitizeFileName(name: string): string {
     return name.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  }
+
+  getFirstImageUrl(taxon: Taxon): string | null {
+    // const taxonInfo = this.taxonInfos();
+    if (!taxon?.tabs) {
+      return null;
+    }
+
+    const galleryTab = taxon.tabs.find((tab: Tab) => tab.type === 'gallery');
+    if (galleryTab?.images && galleryTab.images.length > 0) {
+      return galleryTab.images[0].url;
+    }
+
+    return null;
   }
 }

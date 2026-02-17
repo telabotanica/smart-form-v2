@@ -9,7 +9,7 @@ import {Fiche} from '../../../fiche/models/fiche.model';
 import {TaxonSearchService} from '../../services/taxon-search-service';
 import {QrCodeButton} from '../../../../shared/components/qr-code-button/qr-code-button';
 import {PdfExport} from '../../../../shared/components/pdf-export/pdf-export';
-import {Tab} from '../../../fiche/models/tabs.model';
+import {PdfExportService} from '../../../../shared/components/pdf-export/pdf-export.service';
 
 @Component({
   selector: 'app-taxon-details',
@@ -34,6 +34,7 @@ export class TaxonDetails implements OnInit {
   userService = inject(UserService);
   ficheService = inject(FicheService);
   taxonSearchService = inject(TaxonSearchService);
+  exportService = inject(PdfExportService);
 
   ngOnInit(): void {
     this.ficheExiste.set(false);
@@ -74,17 +75,7 @@ export class TaxonDetails implements OnInit {
   }
 
   getFirstImageUrl(): string | null {
-    const taxonInfo = this.taxonInfos();
-    if (!taxonInfo?.tabs) {
-      return null;
-    }
-
-    const galleryTab = taxonInfo.tabs.find((tab: Tab) => tab.type === 'gallery');
-    if (galleryTab?.images && galleryTab.images.length > 0) {
-      return galleryTab.images[0].url;
-    }
-
-    return null;
+    return this.exportService.getFirstImageUrl(this.taxonInfos()!);
   }
 
   openFicheModal(): void {

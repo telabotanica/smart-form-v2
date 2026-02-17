@@ -56,6 +56,12 @@
 
           <app-qr-code-button [taxon]="o.taxon!"/>
 
+          <app-pdf-export
+            [fiche]="fiche()"
+            [imageUrl]="getFirstImageUrl()"
+            [taxon]="o.taxon!"
+          />
+
           @if (userService.isLoggedIn()){
             <button title="Editer la fiche" type="button" (click)="editFicheModal()">
               Editer la fiche
