@@ -31,6 +31,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Prefer Reactive forms instead of Template-driven ones
 - Do NOT use `ngClass`, use `class` bindings instead
 - Do NOT use `ngStyle`, use `style` bindings instead
+- When using external templates/styles, use paths relative to the component TS file.
 
 ## State Management
 
@@ -44,13 +45,11 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Keep templates simple and avoid complex logic
 - Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
 - Use the async pipe to handle observables
+- Do not assume globals like (`new Date()`) are available.
+- Do not write arrow functions in templates (they are not supported).
 
 ## Services
 
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
-
-## Commands
-
-- Do not run any command without asking
