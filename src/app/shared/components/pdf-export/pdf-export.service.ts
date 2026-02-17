@@ -55,8 +55,8 @@ export class PdfExportService {
     // Step 3: Content sections
     if (fiche) {
       y = this.renderSection(doc, 'Description', fiche.description, y);
-      y = this.renderSection(doc, 'Usages', fiche.usages, y);
-      y = this.renderSection(doc, 'Écologie', fiche.ecologie, y);
+      y = this.renderSection(doc, 'Usages', fiche.usages, y-12);
+      y = this.renderSection(doc, 'Écologie', fiche.ecologie, y-5);
       this.renderSection(doc, 'Sources', fiche.sources, y);
     }
 
@@ -217,7 +217,7 @@ export class PdfExportService {
     }
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
+    doc.setFontSize(12);
     doc.setTextColor(...this.colors.accent);
     doc.text(title.toUpperCase(), this.margin, startY + titleHeight);
 
@@ -247,7 +247,7 @@ export class PdfExportService {
 
       // Redraw title on new page
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(14);
+      doc.setFontSize(12);
       doc.setTextColor(...this.colors.accent);
       doc.text(title.toUpperCase(), this.margin, startY + titleHeight);
 
@@ -266,13 +266,13 @@ export class PdfExportService {
 
     doc.text(splitContent, this.margin, startY + titleHeight + sectionSpacing);
 
-    return startY + titleHeight + contentHeight + sectionSpacing + 5;
+    return startY + titleHeight + contentHeight + sectionSpacing;
   }
 
   private renderFooter(doc: jsPDF): void {
     const footerY = this.pageHeight - 10;
     const dateStr = new Date().toLocaleDateString('fr-FR');
-    const footerText = `Généré le ${dateStr} • smart-form-v2`;
+    const footerText = `Généré le ${dateStr} • Smart'Flore par Tela Botanica`;
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);

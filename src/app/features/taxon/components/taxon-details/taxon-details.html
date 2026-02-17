@@ -38,7 +38,7 @@
   </div>
 
   <div>
-    @if (ficheExiste()) {
+    @if (ficheExiste() && !taxonSearchService.loading()) {
       <app-pdf-export
         [fiche]="fiche()"
         [imageUrl]="getFirstImageUrl()"
