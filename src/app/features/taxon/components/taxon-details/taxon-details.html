@@ -38,7 +38,13 @@
   </div>
 
   <div>
-    TODO: exporter en pdf, image ?
+    @if (ficheExiste()) {
+      <app-pdf-export
+        [fiche]="fiche()"
+        [imageUrl]="getFirstImageUrl()"
+        [taxon]="taxon()"
+      />
+    }
   </div>
 </div>
 

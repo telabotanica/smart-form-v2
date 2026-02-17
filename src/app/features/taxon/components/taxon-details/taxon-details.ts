@@ -8,13 +8,16 @@ import {FicheService} from '../../../fiche/services/fiche-service';
 import {Fiche} from '../../../fiche/models/fiche.model';
 import {TaxonSearchService} from '../../services/taxon-search-service';
 import {QrCodeButton} from '../../../../shared/components/qr-code-button/qr-code-button';
+import {PdfExport} from '../../../../shared/components/pdf-export/pdf-export';
+import {Tab} from '../../../fiche/models/tabs.model';
 
 @Component({
   selector: 'app-taxon-details',
   imports: [
     RouterLink,
     FicheForm,
-    QrCodeButton
+    QrCodeButton,
+    PdfExport
   ],
   templateUrl: './taxon-details.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -68,6 +71,20 @@ export class TaxonDetails implements OnInit {
       .catch((err) => {
         console.error('Erreur lors de la récupération des détails du taxon', err);
       });
+  }
+
+  getFirstImageUrl(): string | null {
+    const taxonInfo = this.taxonInfos();
+    if (!taxonInfo?.tabs) {
+      return null;
+    }
+
+    const galleryTab = taxonInfo.tabs.find((tab: Tab) => tab.type === 'gallery');
+    if (galleryTab?.images && galleryTab.images.length > 0) {
+      return galleryTab.images[0].url;
+    }
+
+    return null;
   }
 
   openFicheModal(): void {
