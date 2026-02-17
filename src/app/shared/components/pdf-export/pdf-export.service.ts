@@ -84,6 +84,29 @@ export class PdfExportService {
       // Logo non chargé, on continue sans
     }
 
+    //Ajout logo Smart'Flore
+    // try {
+    //   const logoSfUrl = 'assets/images/logo_smartflore.png';
+    //   await this.loadImage(logoSfUrl);
+    //   const logoSfRatio = 200 / 200;
+    //   const logoSfWidth = logoHeight * logoSfRatio;
+    //   const qrXSf = (this.margin *2) + logoWidth
+    //   doc.addImage(logoSfUrl, 'PNG', qrXSf, startY, logoSfWidth, logoHeight);
+    // } catch {
+    //   // Logo non chargé, on continue sans
+    // }
+    const titleHeight = 10;
+    const lineHeight = 5;
+    const sectionSpacing = 8;
+    const startX = (this.margin *2) + logoWidth
+    const startYSf = startY + (logoHeight / 2) + (titleHeight/2)
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(16);
+    doc.setTextColor(...this.colors.accent);
+    doc.text('Smart\'Flore', startX, startYSf);
+
+
     // Generate and render QR code directly
     try {
       const qrCodeDataUrl = await this.generateQrCodeDataUrl(taxon);
