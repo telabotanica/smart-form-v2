@@ -43,10 +43,13 @@
 
     <app-pdf-export
       type="sentier"
-      [sentier]="sentier!"
+      [sentier]="getSentierWithEnrichedOccurrences()"
+      [mapImageUrl]="mapImageUrl()"
+      [isLoading]="isLoadingTaxa()"
+      (beforeExport)="captureMap()"
     />
 
-    <app-map [singleSentier]="sentier"/>
+    <app-map #mapComponent [singleSentier]="sentier"/>
 
     <img
       alt="QR code du sentier"
@@ -98,29 +101,25 @@
       <hr />
       <li>Nombre d'occurrences: {{ sentier!.occurrences_count }}</li>
       <li>Nombre de taxons: {{ sentier!.nb_taxons }}</li>
-      @if (sentier!.occurrences && sentier!.occurrences.length > 0) {
+
+      @if (isLoadingTaxa()) {
+        <li>Chargement des occurrences...</li>
+      } @else if (enrichedOccurrences().length > 0) {
         <li class="mt-2">
+          <h3>Occurrences du sentier:</h3>
           <ul class="mt-2">
-            @for (occurrence of sentier!.occurrences; track occurrence.id) {
-              @if (!occurrence.position) {
-                <li class="mb-2"><span class="font-bold underline">Occurrence sans localisation:</span>
-                  Id: {{ occurrence.id}} -
-                  {{ occurrence.anecdotes }} -
-                  nt: {{ occurrence.taxon?.taxonomic_id }} -
-                  name_id: {{ occurrence.taxon?.name_id }} -
-                  {{ occurrence.taxon?.scientific_name }} -
-                  {{ occurrence.taxon?.taxon_repository }} -
-                  {{ occurrence.taxon?.tabs ?? 'Pas de fiche'}} -
-                  @if (occurrence.taxon?.vernacular_names?.length) {
-                    {{ occurrence.taxon!.vernacular_names!.join(', ') }}
-                  }
-                  @if (occurrence.images && occurrence.images.length > 0) {
-                    <div class="w-40 h-40 relative">
-                      <img alt="Image de l'occurrence {{ occurrence.id }}" class="" fill ngSrc="{{ occurrence.images[0].url }}" priority />
-                    </div>
-                  }
-                </li>
-              }
+            @for (occurrence of enrichedOccurrences(); track occurrence.id) {
+              <li class="mb-4 p-2 border rounded">
+                <div class="font-bold">{{ occurrence.taxon?.scientific_name }}</div>
+                @if (occurrence.taxon?.vernacular_names?.length) {
+                  <div class="text-sm text-gray-600">{{ occurrence.taxon!.vernacular_names!.join(', ') }}</div>
+                }
+                @if (occurrence.ficheExiste) {
+                  <span class="text-green-600 text-sm">✓ Fiche disponible</span>
+                } @else {
+                  <span class="text-gray-400 text-sm">✗ Pas de fiche</span>
+                }
+              </li>
             }
           </ul>
         </li>

@@ -1,16 +1,22 @@
 import { inject, Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
 import { Taxon } from '../../../features/taxon/models/taxon.model';
 import { Fiche } from '../../../features/fiche/models/fiche.model';
 import { Sentier } from '../../../features/sentier/models/sentier.model';
 import { Occurrence } from '../../../features/occurrence/models/occurrence.model';
 import { SharedService } from '../../services/shared.service';
-import { environment } from '../../../../environments/environment';
 import { Tab } from '../../../features/fiche/models/tabs.model';
-import {TaxonSearchService} from '../../../features/taxon/services/taxon-search-service';
+
+interface EnrichedOccurrence extends Occurrence {
+  fiche?: Fiche | null;
+  taxonDetails?: Taxon | null;
+  ficheExiste?: boolean;
+}
+
+interface SentierWithEnrichedOccurrences extends Sentier {
+  enrichedOccurrences?: EnrichedOccurrence[];
+}
 
 type PdfColors = {
   primary: [number, number, number];
@@ -25,9 +31,7 @@ type PdfColors = {
   providedIn: 'root',
 })
 export class PdfExportService {
-  private http = inject(HttpClient);
   private sharedService = inject(SharedService);
-  private taxonSearchService = inject(TaxonSearchService);
 
   private readonly colors: PdfColors = {
     primary: [255, 116, 105],
@@ -59,8 +63,8 @@ export class PdfExportService {
 
     if (fiche) {
       y = this.renderSection(doc, 'Description', fiche.description, y);
-      y = this.renderSection(doc, 'Usages', fiche.usages, y-12);
-      y = this.renderSection(doc, 'Écologie', fiche.ecologie, y-5);
+      y = this.renderSection(doc, 'Usages', fiche.usages, y);
+      y = this.renderSection(doc, 'Écologie', fiche.ecologie, y);
       this.renderSection(doc, 'Sources', fiche.sources, y);
     }
 
@@ -69,7 +73,7 @@ export class PdfExportService {
   }
 
   async generateTrailPdf(
-    sentier: Sentier,
+    sentier: SentierWithEnrichedOccurrences,
     mapImageUrl: string | null
   ): Promise<void> {
     const doc = new jsPDF('p', 'mm', 'a4');
@@ -83,11 +87,12 @@ export class PdfExportService {
     y = await this.renderTrailTaxaList(doc, sentier, y);
 
     // Following pages: Taxa fiches
-    if (sentier.occurrences && sentier.occurrences.length > 0) {
-      for (const occurrence of sentier.occurrences) {
+    const occurrences = sentier.enrichedOccurrences || sentier.occurrences || [];
+    if (occurrences.length > 0) {
+      for (const occurrence of occurrences) {
         if (occurrence.taxon) {
           doc.addPage();
-          await this.renderTaxonFichePage(doc, occurrence);
+          await this.renderTaxonFichePage(doc, occurrence as EnrichedOccurrence);
         }
       }
     }
@@ -136,7 +141,6 @@ export class PdfExportService {
     doc.setTextColor(...this.colors.accent);
     doc.text('Smart\'Flore', startX, startYSf);
 
-
     // Generate and render QR code directly
     try {
       let qrCodeDataUrl: string;
@@ -157,13 +161,21 @@ export class PdfExportService {
   private async generateTaxonQrCodeDataUrl(taxon: Taxon): Promise<string> {
     const baseUrl = this.sharedService.url().origin;
     const url = `${baseUrl}/fiche/${taxon.taxon_repository}/${taxon.taxonomic_id}/${taxon.name_id}`;
-    return QRCode.toDataURL(url, { width: 200, margin: 1, color: { dark: '#000000', light: '#FFFFFF' } });
+    return QRCode.toDataURL(url, {
+      width: 200,
+      margin: 1,
+      color: { dark: '#000000', light: '#FFFFFF' },
+    });
   }
 
   private async generateSentierQrCodeDataUrl(sentier: Sentier): Promise<string> {
     const baseUrl = this.sharedService.url().origin;
     const url = `${baseUrl}/trail/${sentier.id}`;
-    return QRCode.toDataURL(url, { width: 200, margin: 1, color: { dark: '#000000', light: '#FFFFFF' } });
+    return QRCode.toDataURL(url, {
+      width: 200,
+      margin: 1,
+      color: { dark: '#000000', light: '#FFFFFF' },
+    });
   }
 
   private async renderColoredBanner(
@@ -265,22 +277,13 @@ export class PdfExportService {
       // Continue without logo
     }
 
-    const titleHeight = 10;
-    const startX = (this.margin *2) + logoWidth
-    const startYSf = startY + (logoHeight / 2) + (titleHeight/2)
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(16);
-    doc.setTextColor(...this.colors.accent);
-    doc.text('Smart\'Flore', startX, startYSf);
-
     // QR Code
     try {
       const qrCodeDataUrl = await this.generateSentierQrCodeDataUrl(sentier);
       const qrX = this.pageWidth - this.margin - qrSize;
       doc.addImage(qrCodeDataUrl, 'PNG', qrX, startY, qrSize, qrSize);
     } catch {
-      // Continue without logo
+      // Continue without QR code
     }
 
     let y = startY + Math.max(logoHeight, qrSize) + 8;
@@ -294,6 +297,7 @@ export class PdfExportService {
     y += 12;
 
     // Map image if available
+    /*
     if (mapImageUrl) {
       try {
         const mapImg = await this.loadImage(mapImageUrl);
@@ -316,10 +320,10 @@ export class PdfExportService {
         doc.addImage(mapImageUrl, 'PNG', x, y, imgW, imgH);
         y += imgH + 8;
       } catch {
-      // Continue without logo
+        // Continue without map
+      }
     }
-    }
-
+    */
     return y;
   }
 
@@ -395,7 +399,11 @@ export class PdfExportService {
     return activeSeasons.join(', ');
   }
 
-  private async renderTrailTaxaList(doc: jsPDF, sentier: Sentier, startY: number): Promise<number> {
+  private async renderTrailTaxaList(
+    doc: jsPDF,
+    sentier: SentierWithEnrichedOccurrences,
+    startY: number
+  ): Promise<number> {
     let y = startY;
 
     doc.setFont('helvetica', 'bold');
@@ -404,7 +412,9 @@ export class PdfExportService {
     doc.text('TAXONS DU SENTIER', this.margin, y);
     y += 8;
 
-    if (!sentier.occurrences || sentier.occurrences.length === 0) {
+    const occurrences = sentier.enrichedOccurrences || sentier.occurrences || [];
+
+    if (occurrences.length === 0) {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
       doc.setTextColor(...this.colors.gray);
@@ -419,8 +429,8 @@ export class PdfExportService {
     const lineHeight = 5;
     const maxWidth = this.contentWidth;
 
-    for (let i = 0; i < sentier.occurrences.length; i++) {
-      const occurrence = sentier.occurrences[i];
+    for (let i = 0; i < occurrences.length; i++) {
+      const occurrence = occurrences[i];
       if (!occurrence.taxon) { continue; }
 
       const taxon = occurrence.taxon;
@@ -452,61 +462,35 @@ export class PdfExportService {
     return y;
   }
 
-  private async renderTaxonFichePage(doc: jsPDF, occurrence: Occurrence): Promise<void> {
-    let taxon: Taxon = occurrence.taxon!
+  private async renderTaxonFichePage(doc: jsPDF, occurrence: EnrichedOccurrence): Promise<void> {
+    const taxon = occurrence.taxon!;
+    const fiche = occurrence.fiche || null;
+    const taxonDetails = occurrence.taxonDetails || null;
 
-    // this.taxonSearchService.getDetailTaxonInfos(occurrence);
-    this.taxonSearchService.getTaxonFiche(occurrence.taxon!.taxon_repository, occurrence.taxon!.name_id)
-      .then(() => {
-        taxon = this.taxonSearchService.taxon()
-      })
-      .catch((err) => {
-        console.error('Erreur lors de la récupération des détails du taxon', err);
-        return null;
-      });
+    // Get image URL from taxonDetails if available
+    let imageUrl: string | null = null;
+    if (taxonDetails?.tabs) {
+      const galleryTab = taxonDetails.tabs.find((tab: Tab) => tab.type === 'gallery');
+      if (galleryTab?.images && galleryTab.images.length > 0) {
+        imageUrl = galleryTab.images[0].url;
+      }
+    }
 
     let y = this.topMargin;
+    y = await this.renderLogoAndQrCodeForTaxonPage(doc, taxon, y);
+    y = await this.renderColoredBannerForTaxonPage(doc, taxon, imageUrl, y);
 
-    // Fetch fiche for this taxon
-    let fiche: Fiche | null = null;
-    let imageUrl: string | null = null;
-
-    if (taxon) {
-      try {
-        const data = await firstValueFrom(
-          this.http.get<Fiche>(
-            `${environment.smartfloreService}fiche/${taxon.taxon_repository}/${taxon.taxonomic_id}`
-          )
-        );
-        fiche = data;
-      } catch {
-        console.log('Fiche non disponible pour ce taxon');
-      }
-
-      console.log(taxon.scientific_name)
-      y = await this.renderLogoAndQrCodeForTaxonPage(doc, taxon, y);
-
-      try {
-        imageUrl = this.getFirstImageUrl(taxon)
-        y = await this.renderColoredBannerForTaxonPage(doc, taxon, imageUrl, y);
-      } catch {
-        console.log('Image non disponible pour ce taxon');
-      }
-
-      if (fiche) {
-        y = this.renderSection(doc, 'Description', fiche.description, y);
-        y = this.renderSection(doc, 'Usages', fiche.usages, y);
-        y = this.renderSection(doc, 'Écologie', fiche.ecologie, y);
-        this.renderSection(doc, 'Sources', fiche.sources, y);
-      } else {
-        // Show minimal info if no fiche
-        doc.setFont('helvetica', 'italic');
-        doc.setFontSize(11);
-        doc.setTextColor(...this.colors.gray);
-        doc.text('Aucune fiche détaillée disponible pour ce taxon.', this.margin, y+50);
-      }
+    if (fiche) {
+      y = this.renderSection(doc, 'Description', fiche.description, y);
+      y = this.renderSection(doc, 'Usages', fiche.usages, y);
+      y = this.renderSection(doc, 'Écologie', fiche.ecologie, y);
+      this.renderSection(doc, 'Sources', fiche.sources, y);
     } else {
-      console.log('Taxon non disponible pour cette occurrence');
+      // Show minimal info if no fiche
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(11);
+      doc.setTextColor(...this.colors.gray);
+      doc.text('Aucune fiche détaillée disponible pour ce taxon.', this.margin, y+50);
     }
   }
 
@@ -538,7 +522,7 @@ export class PdfExportService {
       const qrX = this.pageWidth - this.margin - qrSize;
       doc.addImage(qrCodeDataUrl, 'PNG', qrX, startY, qrSize, qrSize);
     } catch {
-      // Continue without logo
+      // Continue without QR code
     }
 
     return startY + Math.max(logoHeight, qrSize) + 5;
@@ -599,8 +583,8 @@ export class PdfExportService {
         const imgX = this.margin;
         doc.addImage(imageUrl, 'JPEG', imgX, imgY, imgW, imgH);
       } catch {
-      // Continue without logo
-    }
+        // Continue without image
+      }
     }
 
     if (taxon.vernacular_names && taxon.vernacular_names.length > 0) {
@@ -735,7 +719,7 @@ export class PdfExportService {
   // Helper method to get first image URL from taxon
   getFirstImageUrl(taxon: Taxon): string | null {
     if (!taxon?.tabs) {
-      return '';
+      return null;
     }
 
     const galleryTab = taxon.tabs.find((tab: Tab) => tab.type === 'gallery');
@@ -743,6 +727,6 @@ export class PdfExportService {
       return galleryTab.images[0].url;
     }
 
-    return '';
+    return null;
   }
 }

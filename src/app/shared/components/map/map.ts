@@ -202,6 +202,32 @@ export class Map implements AfterViewInit {
     }
   }
 
+  /**
+   * Force map render before capture (e.g., for PDF export)
+   * Invalidates size and pans to ensure all elements are correctly positioned
+   */
+  forceRender(): void {
+    const map = this.leafletMap;
+    if (!map) { return; }
+    
+    // Invalidate size to force recalculation
+    map.invalidateSize();
+    
+    // Get current center and zoom
+    const center = map.getCenter();
+    const zoom = map.getZoom();
+    
+    // Pan to same position to force redraw of all layers
+    map.setView(center, zoom, { animate: false });
+    
+    // Force redraw of tile layer
+    map.eachLayer((layer) => {
+      if (layer instanceof L.TileLayer) {
+        layer.redraw();
+      }
+    });
+  }
+
   private getSentierLatLng(s: Sentier): LatLngTuple | null {
     const lat = s.position?.start?.lat ?? s.path?.coordinates?.[0]?.lat;
     const lng = s.position?.start?.lng ?? s.path?.coordinates?.[0]?.lng;
