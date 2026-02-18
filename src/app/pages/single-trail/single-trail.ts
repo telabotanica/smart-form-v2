@@ -13,6 +13,7 @@ import {SharedService} from '../../shared/services/shared.service';
 import {SentierForm} from '../../features/sentier/components/sentier-form/sentier-form';
 import {Map} from '../../shared/components/map/map';
 import {Loader} from '../../shared/components/loader/loader';
+import {PdfExport} from '../../shared/components/pdf-export/pdf-export';
 
 @Component({
   selector: 'app-single-trail',
@@ -24,7 +25,8 @@ import {Loader} from '../../shared/components/loader/loader';
     DatePipe,
     SentierForm,
     Map,
-    Loader
+    Loader,
+    PdfExport
   ],
   templateUrl: './single-trail.html',
   changeDetection: ChangeDetectionStrategy.OnPush

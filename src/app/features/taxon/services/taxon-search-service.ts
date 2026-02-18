@@ -6,6 +6,7 @@ import {TaxonSearchResultats} from '../models/taxon-search-resultats.model';
 import {FicheCollection} from '../../fiche/models/fiche-collection.model';
 import {Taxon} from '../models/taxon.model';
 import {ErrorApi} from '../../../core/models/error-api.model';
+import {Occurrence} from '../../occurrence/models/occurrence.model';
 
 @Injectable({
   providedIn: 'root'
@@ -107,4 +108,20 @@ export class TaxonSearchService {
     }
 
   }
+
+  getDetailTaxonInfos(occurrence: Occurrence): Taxon | null {
+    if (!occurrence){ return null}
+
+    this.getTaxonFiche(occurrence.taxon!.taxon_repository, occurrence.taxon!.name_id)
+      .then(() => {
+        return this.taxon()
+      })
+      .catch((err) => {
+        console.error('Erreur lors de la récupération des détails du taxon', err);
+        return null;
+      });
+
+    return this.taxon();
+  }
+
 }

@@ -1,10 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { Taxon } from '../../../features/taxon/models/taxon.model';
 import { Fiche } from '../../../features/fiche/models/fiche.model';
+import { Sentier } from '../../../features/sentier/models/sentier.model';
+import { Occurrence } from '../../../features/occurrence/models/occurrence.model';
 import { SharedService } from '../../services/shared.service';
-import {Tab} from '../../../features/fiche/models/tabs.model';
+import { environment } from '../../../../environments/environment';
+import { Tab } from '../../../features/fiche/models/tabs.model';
+import {TaxonSearchService} from '../../../features/taxon/services/taxon-search-service';
 
 type PdfColors = {
   primary: [number, number, number];
@@ -19,7 +25,9 @@ type PdfColors = {
   providedIn: 'root',
 })
 export class PdfExportService {
+  private http = inject(HttpClient);
   private sharedService = inject(SharedService);
+  private taxonSearchService = inject(TaxonSearchService);
 
   private readonly colors: PdfColors = {
     primary: [255, 116, 105],
@@ -46,14 +54,9 @@ export class PdfExportService {
     const fileName = `fiche-${this.sanitizeFileName(taxon.scientific_name)}-${dateStr}.pdf`;
 
     let y = this.topMargin;
-
-    // Step 1: Logo and QR code at the top (5mm margin)
-    y = await this.renderLogoAndQrCode(doc, taxon, y);
-
-    // Step 2: Colored banner with image + text (image overflows by 5mm)
+    y = await this.renderLogoAndQrCode(doc, taxon, y, 'taxon');
     y = await this.renderColoredBanner(doc, taxon, imageUrl, y);
 
-    // Step 3: Content sections
     if (fiche) {
       y = this.renderSection(doc, 'Description', fiche.description, y);
       y = this.renderSection(doc, 'Usages', fiche.usages, y-12);
@@ -62,14 +65,42 @@ export class PdfExportService {
     }
 
     this.renderFooter(doc);
+    doc.save(fileName);
+  }
 
+  async generateTrailPdf(
+    sentier: Sentier,
+    mapImageUrl: string | null
+  ): Promise<void> {
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const dateStr = new Date().toISOString().split('T')[0];
+    const fileName = `sentier-${this.sanitizeFileName(sentier.display_name || 'sentier')}-${dateStr}.pdf`;
+
+    // Page 1: Trail information
+    let y = this.topMargin;
+    y = await this.renderTrailHeader(doc, sentier, y, mapImageUrl);
+    y = this.renderTrailDetails(doc, sentier, y);
+    y = await this.renderTrailTaxaList(doc, sentier, y);
+
+    // Following pages: Taxa fiches
+    if (sentier.occurrences && sentier.occurrences.length > 0) {
+      for (const occurrence of sentier.occurrences) {
+        if (occurrence.taxon) {
+          doc.addPage();
+          await this.renderTaxonFichePage(doc, occurrence);
+        }
+      }
+    }
+
+    this.renderFooter(doc);
     doc.save(fileName);
   }
 
   private async renderLogoAndQrCode(
     doc: jsPDF,
-    taxon: Taxon,
-    startY: number
+    data: Taxon | Sentier,
+    startY: number,
+    type: 'taxon' | 'sentier'
   ): Promise<number> {
     const logoHeight = 20;
     const logoRatio = 500 / 204;
@@ -82,7 +113,7 @@ export class PdfExportService {
       await this.loadImage(logoUrl);
       doc.addImage(logoUrl, 'WEBP', this.margin, startY, logoWidth, logoHeight);
     } catch {
-      // Logo non chargé, on continue sans
+      // Continue without logo
     }
 
     //Ajout logo Smart'Flore
@@ -108,28 +139,31 @@ export class PdfExportService {
 
     // Generate and render QR code directly
     try {
-      const qrCodeDataUrl = await this.generateQrCodeDataUrl(taxon);
+      let qrCodeDataUrl: string;
+      if (type === 'taxon') {
+        qrCodeDataUrl = await this.generateTaxonQrCodeDataUrl(data as Taxon);
+      } else {
+        qrCodeDataUrl = await this.generateSentierQrCodeDataUrl(data as Sentier);
+      }
       const qrX = this.pageWidth - this.margin - qrSize;
       doc.addImage(qrCodeDataUrl, 'PNG', qrX, startY, qrSize, qrSize);
     } catch {
-      // QR code non généré, on continue sans
+      // Continue without QR code
     }
 
     return startY + Math.max(logoHeight, qrSize) + 5;
   }
 
-  private async generateQrCodeDataUrl(taxon: Taxon): Promise<string> {
+  private async generateTaxonQrCodeDataUrl(taxon: Taxon): Promise<string> {
     const baseUrl = this.sharedService.url().origin;
     const url = `${baseUrl}/fiche/${taxon.taxon_repository}/${taxon.taxonomic_id}/${taxon.name_id}`;
+    return QRCode.toDataURL(url, { width: 200, margin: 1, color: { dark: '#000000', light: '#FFFFFF' } });
+  }
 
-    return QRCode.toDataURL(url, {
-      width: 200,
-      margin: 1,
-      color: {
-        dark: '#000000',
-        light: '#FFFFFF',
-      },
-    });
+  private async generateSentierQrCodeDataUrl(sentier: Sentier): Promise<string> {
+    const baseUrl = this.sharedService.url().origin;
+    const url = `${baseUrl}/trail/${sentier.id}`;
+    return QRCode.toDataURL(url, { width: 200, margin: 1, color: { dark: '#000000', light: '#FFFFFF' } });
   }
 
   private async renderColoredBanner(
@@ -144,33 +178,20 @@ export class PdfExportService {
     const textStartX = hasImage ? this.margin + imageWidth + 5 : this.margin;
     const textMaxWidth = this.pageWidth - textStartX - this.margin;
 
-    // Calculate text height needed
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
+
+    const vernacularHeight = 7;
     const scientificNameHeight = 7;
 
-    let vernacularHeight = 0;
-    let vernacularLines: string[] = [];
-    if (taxon.vernacular_names && taxon.vernacular_names.length > 0) {
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(11);
-      const vernacularText = taxon.vernacular_names.join(', ');
-      vernacularLines = doc.splitTextToSize(vernacularText, textMaxWidth);
-      vernacularHeight = vernacularLines.length * 5 + 3;
-    }
-
     const totalTextHeight = scientificNameHeight + vernacularHeight + 5;
-    // Banner height is just enough for text + small padding (10mm total)
     const bannerHeight = Math.max(25, totalTextHeight + 10);
 
-    // Draw colored background (full width)
     doc.setFillColor(...this.colors.primary);
     doc.rect(0, startY, this.pageWidth, bannerHeight, 'F');
 
-    // Calculate vertical center of text
     const textCenterY = startY + bannerHeight / 2;
 
-    // Render image if available (centered vertically on text, overflows by 5mm)
     if (hasImage && imageUrl) {
       try {
         const img = await this.loadImage(imageUrl);
@@ -179,7 +200,6 @@ export class PdfExportService {
         const maxW = imageWidth;
         const maxH = imageHeight;
 
-        // Scale maintaining aspect ratio
         if (imgW > maxW) {
           imgH = (imgH * maxW) / imgW;
           imgW = maxW;
@@ -189,32 +209,427 @@ export class PdfExportService {
           imgH = maxH;
         }
 
-        // Position image to be centered vertically on text
-        // Image overflows by 5mm above and below the banner
         const imgY = textCenterY - imgH / 2;
         const imgX = this.margin;
         doc.addImage(imageUrl, 'JPEG', imgX, imgY, imgW, imgH);
       } catch {
-        // Image non chargée, on continue sans
+        // Continue without image
       }
     }
 
-    // Render scientific name (vertically centered)
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(...this.colors.white);
-    const nameY = textCenterY - totalTextHeight / 2 + 7;
-    doc.text(taxon.scientific_name, textStartX, nameY);
+    if (taxon.vernacular_names && taxon.vernacular_names.length > 0) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.setTextColor(...this.colors.white);
+      const nameY = textCenterY - totalTextHeight / 2 + 7;
+      doc.text(taxon.vernacular_names[0], textStartX, nameY);
 
-    // Render vernacular names
-    if (vernacularLines.length > 0) {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
       doc.setTextColor(...this.colors.white);
-      doc.text(vernacularLines, textStartX, nameY + 8);
+      let text = `${taxon.scientific_name} famille des ${taxon.family}`
+      doc.text(text, textStartX, nameY + 6);
+    } else {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.setTextColor(...this.colors.white);
+      const nameY = textCenterY - totalTextHeight / 2 + 7;
+      doc.text(taxon.scientific_name, textStartX, nameY);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      doc.setTextColor(...this.colors.white);
+      doc.text(`Famille des ${taxon.family}`, textStartX, nameY + 6);
     }
 
     return startY + bannerHeight + 10;
+  }
+
+  private async renderTrailHeader(
+    doc: jsPDF,
+    sentier: Sentier,
+    startY: number,
+    mapImageUrl: string | null
+  ): Promise<number> {
+    const logoHeight = 20;
+    const logoRatio = 500 / 204;
+    const logoWidth = logoHeight * logoRatio;
+    const qrSize = 25;
+
+    // Logo
+    try {
+      const logoUrl = 'assets/images/tela-botanica.webp';
+      await this.loadImage(logoUrl);
+      doc.addImage(logoUrl, 'WEBP', this.margin, startY, logoWidth, logoHeight);
+    } catch {
+      // Continue without logo
+    }
+
+    const titleHeight = 10;
+    const startX = (this.margin *2) + logoWidth
+    const startYSf = startY + (logoHeight / 2) + (titleHeight/2)
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(16);
+    doc.setTextColor(...this.colors.accent);
+    doc.text('Smart\'Flore', startX, startYSf);
+
+    // QR Code
+    try {
+      const qrCodeDataUrl = await this.generateSentierQrCodeDataUrl(sentier);
+      const qrX = this.pageWidth - this.margin - qrSize;
+      doc.addImage(qrCodeDataUrl, 'PNG', qrX, startY, qrSize, qrSize);
+    } catch {
+      // Continue without logo
+    }
+
+    let y = startY + Math.max(logoHeight, qrSize) + 8;
+
+    // Title
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.setTextColor(...this.colors.text);
+    const displayName = sentier.display_name || sentier.name || 'Sentier sans nom';
+    doc.text(displayName, this.margin, y);
+    y += 12;
+
+    // Map image if available
+    if (mapImageUrl) {
+      try {
+        const mapImg = await this.loadImage(mapImageUrl);
+        const maxWidth = this.contentWidth;
+        const maxHeight = 60;
+
+        let imgW = mapImg.width;
+        let imgH = mapImg.height;
+
+        if (imgW > maxWidth) {
+          imgH = (imgH * maxWidth) / imgW;
+          imgW = maxWidth;
+        }
+        if (imgH > maxHeight) {
+          imgW = (imgW * maxHeight) / imgH;
+          imgH = maxHeight;
+        }
+
+        const x = (this.pageWidth - imgW) / 2;
+        doc.addImage(mapImageUrl, 'PNG', x, y, imgW, imgH);
+        y += imgH + 8;
+      } catch {
+      // Continue without logo
+    }
+    }
+
+    return y;
+  }
+
+  private renderTrailDetails(doc: jsPDF, sentier: Sentier, startY: number): number {
+    let y = startY;
+    const lineHeight = 6;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.setTextColor(...this.colors.text);
+
+    // Author
+    if (sentier.author) {
+      doc.text(`Auteur: ${sentier.author}`, this.margin, y);
+      y += lineHeight;
+    }
+
+    // Creation date
+    if (sentier.date_creation) {
+      const date = new Date(sentier.date_creation).toLocaleDateString('fr-FR');
+      doc.text(`Créé le: ${date}`, this.margin, y);
+      y += lineHeight;
+    }
+
+    // PMR Accessibility
+    const pmrText = this.getPmrText(sentier.prm);
+    doc.text(`Accessibilité PMR: ${pmrText}`, this.margin, y);
+    y += lineHeight;
+
+    // Best seasons
+    const seasonsText = this.getSeasonsText(sentier.best_season);
+    doc.text(`Meilleures saisons: ${seasonsText}`, this.margin, y);
+    y += lineHeight + 2;
+
+    // Stats
+    doc.setFont('helvetica', 'bold');
+    const length = sentier.path_length ? `${(sentier.path_length / 1000).toFixed(2)} km` : 'Non défini';
+    const occurrences = sentier.occurrences_count || 0;
+    const taxons = sentier.nb_taxons || 0;
+
+    doc.text(`Longueur: ${length}`, this.margin, y);
+    y += lineHeight;
+    doc.text(`Nombre d'occurrences: ${occurrences}`, this.margin, y);
+    y += lineHeight;
+    doc.text(`Nombre de taxons: ${taxons}`, this.margin, y);
+    y += lineHeight + 4;
+
+    // Separator
+    doc.setDrawColor(...this.colors.primary);
+    doc.setLineWidth(0.5);
+    doc.line(this.margin, y, this.pageWidth - this.margin, y);
+    y += 8;
+
+    return y;
+  }
+
+  private getPmrText(prm: number | undefined): string {
+    switch (prm) {
+      case -1: return 'Information non disponible';
+      case 0: return 'Non accessible PMR';
+      case 1: return 'Accessible PMR';
+      default: return 'Information non disponible';
+    }
+  }
+
+  private getSeasonsText(seasons: [boolean, boolean, boolean, boolean] | undefined): string {
+    if (!seasons || seasons.every(s => !s)) {
+      return 'Information non disponible';
+    }
+
+    const seasonNames = ['Printemps', 'Été', 'Automne', 'Hiver'];
+    const activeSeasons = seasonNames.filter((_, index) => seasons[index]);
+    return activeSeasons.join(', ');
+  }
+
+  private async renderTrailTaxaList(doc: jsPDF, sentier: Sentier, startY: number): Promise<number> {
+    let y = startY;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(...this.colors.accent);
+    doc.text('TAXONS DU SENTIER', this.margin, y);
+    y += 8;
+
+    if (!sentier.occurrences || sentier.occurrences.length === 0) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      doc.setTextColor(...this.colors.gray);
+      doc.text('Aucun taxon associé à ce sentier', this.margin, y);
+      return y + 6;
+    }
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(...this.colors.text);
+
+    const lineHeight = 5;
+    const maxWidth = this.contentWidth;
+
+    for (let i = 0; i < sentier.occurrences.length; i++) {
+      const occurrence = sentier.occurrences[i];
+      if (!occurrence.taxon) { continue; }
+
+      const taxon = occurrence.taxon;
+
+      let text = '';
+      if (taxon.vernacular_names && taxon.vernacular_names.length > 0) {
+        text += `${i + 1}. ${taxon.vernacular_names[0]}`;
+      } else {
+        text += `${i + 1}. ${taxon.scientific_name}`;
+      }
+
+      // let text = `${i + 1}. ${taxon.scientific_name}`;
+      // if (taxon.vernacular_names && taxon.vernacular_names.length > 0) {
+      //   text += ` - ${taxon.vernacular_names.join(', ')}`;
+      // }
+
+      const splitText = doc.splitTextToSize(text, maxWidth);
+
+      // Check if we need a new page
+      if (y + splitText.length * lineHeight > this.pageHeight - this.margin - 20) {
+        doc.addPage();
+        y = this.margin;
+      }
+
+      doc.text(splitText, this.margin, y);
+      y += splitText.length * lineHeight + 2;
+    }
+
+    return y;
+  }
+
+  private async renderTaxonFichePage(doc: jsPDF, occurrence: Occurrence): Promise<void> {
+    let taxon: Taxon = occurrence.taxon!
+
+    // this.taxonSearchService.getDetailTaxonInfos(occurrence);
+    this.taxonSearchService.getTaxonFiche(occurrence.taxon!.taxon_repository, occurrence.taxon!.name_id)
+      .then(() => {
+        taxon = this.taxonSearchService.taxon()
+      })
+      .catch((err) => {
+        console.error('Erreur lors de la récupération des détails du taxon', err);
+        return null;
+      });
+
+    let y = this.topMargin;
+
+    // Fetch fiche for this taxon
+    let fiche: Fiche | null = null;
+    let imageUrl: string | null = null;
+
+    if (taxon) {
+      try {
+        const data = await firstValueFrom(
+          this.http.get<Fiche>(
+            `${environment.smartfloreService}fiche/${taxon.taxon_repository}/${taxon.taxonomic_id}`
+          )
+        );
+        fiche = data;
+      } catch {
+        console.log('Fiche non disponible pour ce taxon');
+      }
+
+      console.log(taxon.scientific_name)
+      y = await this.renderLogoAndQrCodeForTaxonPage(doc, taxon, y);
+
+      try {
+        imageUrl = this.getFirstImageUrl(taxon)
+        y = await this.renderColoredBannerForTaxonPage(doc, taxon, imageUrl, y);
+      } catch {
+        console.log('Image non disponible pour ce taxon');
+      }
+
+      if (fiche) {
+        y = this.renderSection(doc, 'Description', fiche.description, y);
+        y = this.renderSection(doc, 'Usages', fiche.usages, y);
+        y = this.renderSection(doc, 'Écologie', fiche.ecologie, y);
+        this.renderSection(doc, 'Sources', fiche.sources, y);
+      } else {
+        // Show minimal info if no fiche
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(11);
+        doc.setTextColor(...this.colors.gray);
+        doc.text('Aucune fiche détaillée disponible pour ce taxon.', this.margin, y+50);
+      }
+    } else {
+      console.log('Taxon non disponible pour cette occurrence');
+    }
+  }
+
+  private async renderLogoAndQrCodeForTaxonPage(doc: jsPDF, taxon: Taxon, startY: number): Promise<number> {
+    const logoHeight = 15;
+    const logoRatio = 500 / 204;
+    const logoWidth = logoHeight * logoRatio;
+    const qrSize = 20;
+
+    try {
+      const logoUrl = 'assets/images/tela-botanica.webp';
+      await this.loadImage(logoUrl);
+      doc.addImage(logoUrl, 'WEBP', this.margin, startY, logoWidth, logoHeight);
+    } catch {
+      // Continue without logo
+    }
+
+    const titleHeight = 10;
+    const startX = (this.margin *2) + logoWidth
+    const startYSf = startY + (logoHeight / 2) + (titleHeight/2)
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(16);
+    doc.setTextColor(...this.colors.accent);
+    doc.text('Smart\'Flore', startX, startYSf);
+
+    try {
+      const qrCodeDataUrl = await this.generateTaxonQrCodeDataUrl(taxon);
+      const qrX = this.pageWidth - this.margin - qrSize;
+      doc.addImage(qrCodeDataUrl, 'PNG', qrX, startY, qrSize, qrSize);
+    } catch {
+      // Continue without logo
+    }
+
+    return startY + Math.max(logoHeight, qrSize) + 5;
+  }
+
+  private async renderColoredBannerForTaxonPage(
+    doc: jsPDF,
+    taxon: Taxon,
+    imageUrl: string | null,
+    startY: number
+  ): Promise<number> {
+    const hasImage = !!imageUrl;
+    const imageWidth = 40;
+    const imageHeight = 45;
+    const textStartX = hasImage ? this.margin + imageWidth + 5 : this.margin;
+    const textMaxWidth = this.pageWidth - textStartX - this.margin;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    const scientificNameHeight = 6;
+
+    let vernacularHeight = 0;
+    let vernacularLines: string[] = [];
+    if (taxon.vernacular_names && taxon.vernacular_names.length > 0) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      const vernacularText = taxon.vernacular_names.join(', ');
+      vernacularLines = doc.splitTextToSize(vernacularText, textMaxWidth);
+      vernacularHeight = vernacularLines.length * 4 + 2;
+    }
+
+    const totalTextHeight = scientificNameHeight + vernacularHeight + 3;
+    const bannerHeight = Math.max(20, totalTextHeight + 8);
+
+    doc.setFillColor(...this.colors.primary);
+    doc.rect(0, startY, this.pageWidth, bannerHeight, 'F');
+
+    const textCenterY = startY + bannerHeight / 2;
+
+    if (hasImage && imageUrl) {
+      try {
+        const img = await this.loadImage(imageUrl);
+        let imgW = img.width;
+        let imgH = img.height;
+        const maxW = imageWidth;
+        const maxH = imageHeight;
+
+        if (imgW > maxW) {
+          imgH = (imgH * maxW) / imgW;
+          imgW = maxW;
+        }
+        if (imgH > maxH) {
+          imgW = (imgW * maxH) / imgH;
+          imgH = maxH;
+        }
+
+        const imgY = textCenterY - imgH / 2;
+        const imgX = this.margin;
+        doc.addImage(imageUrl, 'JPEG', imgX, imgY, imgW, imgH);
+      } catch {
+      // Continue without logo
+    }
+    }
+
+    if (taxon.vernacular_names && taxon.vernacular_names.length > 0) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(...this.colors.white);
+      const nameY = textCenterY - totalTextHeight / 2 + 5;
+      doc.text(taxon.vernacular_names[0], textStartX, nameY);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(...this.colors.white);
+
+      let text = `${taxon.scientific_name} famille des ${taxon.family}`
+      doc.text(text, textStartX, nameY + 6);
+    } else {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(...this.colors.white);
+      const nameY = textCenterY - totalTextHeight / 2 + 5;
+      doc.text(taxon.scientific_name, textStartX, nameY);
+
+      doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(...this.colors.white);
+        doc.text(`Famille des ${taxon.family}`, textStartX, nameY + 6);
+    }
+
+    return startY + bannerHeight + 8;
   }
 
   private renderSection(
@@ -231,7 +646,6 @@ export class PdfExportService {
     const lineHeight = 5;
     const sectionSpacing = 8;
 
-    // Check if we need to add a page before the title
     if (startY + titleHeight + 20 > this.pageHeight - this.margin) {
       doc.addPage();
       startY = this.margin;
@@ -258,15 +672,10 @@ export class PdfExportService {
     const splitContent = doc.splitTextToSize(content, this.contentWidth);
     const contentHeight = splitContent.length * lineHeight;
 
-    // Check if content fits on current page, if not add new page
-    if (
-      startY + titleHeight + contentHeight + sectionSpacing >
-      this.pageHeight - this.margin
-    ) {
+    if (startY + titleHeight + contentHeight + sectionSpacing > this.pageHeight - this.margin) {
       doc.addPage();
       startY = this.margin;
 
-      // Redraw title on new page
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
       doc.setTextColor(...this.colors.accent);
@@ -323,10 +732,10 @@ export class PdfExportService {
     return name.replace(/[^a-z0-9]/gi, '-').toLowerCase();
   }
 
+  // Helper method to get first image URL from taxon
   getFirstImageUrl(taxon: Taxon): string | null {
-    // const taxonInfo = this.taxonInfos();
     if (!taxon?.tabs) {
-      return null;
+      return '';
     }
 
     const galleryTab = taxon.tabs.find((tab: Tab) => tab.type === 'gallery');
@@ -334,6 +743,6 @@ export class PdfExportService {
       return galleryTab.images[0].url;
     }
 
-    return null;
+    return '';
   }
 }

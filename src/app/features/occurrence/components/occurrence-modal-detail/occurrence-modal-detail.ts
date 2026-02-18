@@ -69,7 +69,7 @@ export class OccurrenceModalDetail{
   constructor() {
     effect(() => {
       const occurrence = this.occurrence();
-      if (!occurrence){ return };
+      if (!occurrence){ return }
 
       this.fiche.set(null);
       this.ficheExiste.set(false);
@@ -86,7 +86,7 @@ export class OccurrenceModalDetail{
 
   reloadTrail(): void {
     const occurrence = this.occurrence();
-    if (!occurrence){ return };
+    if (!occurrence){ return }
 
     this.fetchFiche(occurrence);
     this.getDetailTaxonInfos(occurrence)
@@ -145,7 +145,7 @@ export class OccurrenceModalDetail{
   }
 
   fetchFiche(occurrence: Occurrence): void {
-    if (!occurrence){ return };
+    if (!occurrence){ return }
 
     this.fiche.set(null);
 
@@ -181,7 +181,7 @@ export class OccurrenceModalDetail{
 
   getFirstImageUrl(): string | null {
     const taxon = this.taxonInfos();
-    if (!taxon){ return null };
+    if (!taxon){ return null }
 
     return this.exportService.getFirstImageUrl(taxon);
   }
