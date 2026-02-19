@@ -34,7 +34,7 @@
           <button class="" type="button" (click)="sendTrailToReview(sentier!)">Publier</button>
         }
 
-<!--        TODO: ajouter bouton pour admin pour pouvoir valider le sentier-->
+        <!--        TODO: ajouter bouton pour admin pour pouvoir valider le sentier-->
 
       } @else {
         <p>Connectez-vous pour modifier ce sentier</p>
@@ -43,13 +43,14 @@
 
     <app-pdf-export
       type="sentier"
-      [sentier]="getSentierWithEnrichedOccurrences()"
+      [sentier]="sentier!"
+      [taxons]="taxonSearchService.taxons()"
       [mapImageUrl]="mapImageUrl()"
-      [isLoading]="isLoadingTaxa()"
+      [isLoading]="taxonSearchService.loading()"
       (beforeExport)="captureMap()"
     />
 
-    <app-map #mapComponent [singleSentier]="sentier"/>
+    <app-map #mapComponent [singleSentier]="sentier" />
 
     <img
       alt="QR code du sentier"
@@ -67,9 +68,14 @@
       } @else {
         <li>Aucune image disponible</li>
       }
+<!--      TODO: A n'afficher que pour les admins-->
       <li>auteur_id: {{ sentier!.author_id }}</li>
+
       <li>auteur: {{ sentier!.author }}</li>
+
+<!--TODO: A n'afficher que pour les admins-->
       <li>email: {{ sentier!.author_email }}</li>
+
       <li>Créée le : {{ sentier!.date_creation | date:"d MMMM y" }}</li>
       @if (sentier!.date_modification) {
         <li>modifié le : {{ sentier!.date_modification | date:"d MMMM y" }}</li>
@@ -77,7 +83,6 @@
       @if (sentier!.date_publication) {
         <li>publié le : {{ sentier!.date_publication | date:"d MMMM y" }}</li>
       }
-      <li>url: {{ sentier!.details }}</li>
 
       <hr />
       <li>Accessibilité PMR: {{ sentier!.prm }}</li>
@@ -93,7 +98,7 @@
         <li>Aucune position de départ/arrivée définie</li>
       }
 
-      @if (!sentier!.path || sentier!.path.coordinates.length === 0){
+      @if (!sentier!.path || sentier!.path.coordinates.length === 0) {
         <li>Aucun chemin défini</li>
       }
       <li>Longueur: {{ sentier!.path_length }} m</li>
@@ -102,28 +107,49 @@
       <li>Nombre d'occurrences: {{ sentier!.occurrences_count }}</li>
       <li>Nombre de taxons: {{ sentier!.nb_taxons }}</li>
 
-      @if (isLoadingTaxa()) {
-        <li>Chargement des occurrences...</li>
-      } @else if (enrichedOccurrences().length > 0) {
-        <li class="mt-2">
-          <h3>Occurrences du sentier:</h3>
-          <ul class="mt-2">
-            @for (occurrence of enrichedOccurrences(); track occurrence.id) {
-              <li class="mb-4 p-2 border rounded">
-                <div class="font-bold">{{ occurrence.taxon?.scientific_name }}</div>
-                @if (occurrence.taxon?.vernacular_names?.length) {
-                  <div class="text-sm text-gray-600">{{ occurrence.taxon!.vernacular_names!.join(', ') }}</div>
+      <li class="mt-2">
+        <h3>Taxons du sentier:</h3>
+        <ul class="mt-2">
+          @for (occurrence of occurencesUniques(); track occurrence.id) {
+            @let taxon = taxonSearchService.getFullTaxon(occurrence);
+            <li class="mb-4 p-2 border rounded">
+              @if (occurrence.taxon!.vernacular_names?.length) {
+                <div class="font-bold">{{ occurrence.taxon!.vernacular_names!.join(', ') }}</div>
+                <div class="text-sm italic text-gray-600">{{ occurrence.taxon!.scientific_name }}</div>
+              } @else {
+                <div class="font-bold italic">{{ occurrence.taxon!.scientific_name }}</div>
+              }
+
+              @if (taxon && taxonSearchService.hasFiche(occurrence)) {
+                <span class="text-green-600 text-sm">✓ Fiche disponible</span>
+
+                @if (taxonSearchService.isFicheFullyCompleted(taxon)) {
+                  <span class="text-green-600 text-sm"> ✓ Fiche complète</span>
                 }
-                @if (occurrence.ficheExiste) {
-                  <span class="text-green-600 text-sm">✓ Fiche disponible</span>
-                } @else {
-                  <span class="text-gray-400 text-sm">✗ Pas de fiche</span>
-                }
-              </li>
-            }
-          </ul>
-        </li>
-      }
+
+                <button title="Voir la fiche" type="button">
+                  <a target="_blank"
+                     [routerLink]="['/fiche', occurrence.taxon!.taxon_repository, occurrence.taxon!.taxonomic_id, occurrence.taxon!.name_id]">
+                    Voir la fiche
+                  </a>
+                </button>
+
+                <app-qr-code-button [taxon]="occurrence.taxon!" />
+
+                <button title="Voir le détail" type="button" (click)="openOccurrence(occurrence)">
+                  Voir le détail
+                </button>
+              } @else {
+                <span class="text-gray-400 text-sm">✗ Pas de fiche</span>
+                <button title="Voir le détail" type="button" (click)="openOccurrence(occurrence)">
+                  Voir le détail
+                </button>
+              }
+            </li>
+          }
+        </ul>
+      </li>
+      <!--      }-->
     </ul>
 
     <hr />
@@ -144,3 +170,15 @@
     (modalClosed)="closeDeleteConfirmModal()"
   />
 }
+
+<dialog
+  #occurrenceListDialog
+  class="border-0 rounded-xl p-0 shadow-2xl"
+  (close)="closeOccurrence()"
+>
+  <app-occurrence-modal-detail
+    [occurrence]="selectedOccurrence()"
+    [onClose]="closeOccurrence"
+    [sentier]="sentier!"
+  />
+</dialog>

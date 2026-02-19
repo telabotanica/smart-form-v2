@@ -7,6 +7,8 @@ import {FicheCollection} from '../../fiche/models/fiche-collection.model';
 import {Taxon} from '../models/taxon.model';
 import {ErrorApi} from '../../../core/models/error-api.model';
 import {Occurrence} from '../../occurrence/models/occurrence.model';
+import {Sentier} from '../../sentier/models/sentier.model';
+import {Tab, TabSection} from '../../fiche/models/tabs.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +20,14 @@ export class TaxonSearchService {
   private readonly _taxonsQuickSearchResults = signal<TaxonSearchResultats>({} as TaxonSearchResultats);
   private readonly _taxonsSearchResults = signal<FicheCollection>({} as FicheCollection);
   private readonly _taxon = signal<Taxon>({} as Taxon);
+  private readonly _taxons = signal<Taxon[]>([]);
   private readonly _loading = signal(false);
   private readonly _error = signal<string | null>(null);
 
   readonly taxonsQuickSearchResults = computed(() => this._taxonsQuickSearchResults());
   readonly taxonsSearchResults = computed(() => this._taxonsSearchResults());
   readonly taxon = computed(() => this._taxon());
+  readonly taxons = computed(() => this._taxons());
   readonly loading = computed(() => this._loading());
   readonly error = computed(() => this._error());
 
@@ -122,6 +126,62 @@ export class TaxonSearchService {
       });
 
     return this.taxon();
+  }
+
+  async getUniqueTaxonsBelongingToTrail(sentierId: number):Promise<void> {
+    this._loading.set(true);
+    this._error.set(null);
+
+    try {
+      const data = await firstValueFrom(
+        this.http.get<Taxon[]>(`${this.smartfloreService}trail/${sentierId}/taxons`)
+      );
+
+      this._taxons.set(data ?? [])
+    } catch (err: unknown){
+      const apiError = err as ErrorApi;
+      this._error.set(
+        apiError.error?.error ?? 'Erreur lors de la recherche de taxons'
+      );
+    } finally {
+      this._loading.set(false);
+    }
+  }
+
+  getFullTaxon(occurrence: Occurrence): Taxon | null {
+    return this.taxons().find(
+      t => t.name_id === occurrence.taxon?.name_id
+    ) ?? null;
+  }
+
+  hasFiche(occurrence: Occurrence): boolean {
+    const fullTaxon = this.taxons().find(
+      t => t.name_id === occurrence.taxon?.name_id
+    );
+    return fullTaxon?.tabs?.some(tab => tab.type === 'card') ?? false;
+  }
+
+  isFicheFullyCompleted(taxon: Taxon): boolean {
+    let fiche: Tab | undefined = {} as Tab;
+    if (! taxon.tabs){ return false;}
+
+    fiche = taxon.tabs.find((tab: Tab) => tab.title === "Fiche Smart’Flore");
+
+    if (!fiche || !fiche.sections) { return false; }
+
+    const description = fiche.sections.find(
+      (section: TabSection) => section.title?.trim().toLowerCase() === 'description'
+    );
+
+    if (!description){ return false ;}
+
+    const sources = fiche.sections.find(
+      (section: TabSection) => section.title?.trim().toLowerCase() === 'sources'
+    );
+
+    if (!sources){ return false ;}
+
+    return true;
   }
 
 }

@@ -6,17 +6,7 @@ import { Fiche } from '../../../features/fiche/models/fiche.model';
 import { Sentier } from '../../../features/sentier/models/sentier.model';
 import { Occurrence } from '../../../features/occurrence/models/occurrence.model';
 import { SharedService } from '../../services/shared.service';
-import { Tab } from '../../../features/fiche/models/tabs.model';
-
-interface EnrichedOccurrence extends Occurrence {
-  fiche?: Fiche | null;
-  taxonDetails?: Taxon | null;
-  ficheExiste?: boolean;
-}
-
-interface SentierWithEnrichedOccurrences extends Sentier {
-  enrichedOccurrences?: EnrichedOccurrence[];
-}
+import {Tab, TabSection} from '../../../features/fiche/models/tabs.model';
 
 type PdfColors = {
   primary: [number, number, number];
@@ -47,6 +37,7 @@ export class PdfExportService {
   private readonly margin = 20;
   private readonly contentWidth = 170;
   private readonly topMargin = 5;
+  private sentier = {} as Sentier
 
   async generateTaxonFichePdf(
     taxon: Taxon,
@@ -73,9 +64,11 @@ export class PdfExportService {
   }
 
   async generateTrailPdf(
-    sentier: SentierWithEnrichedOccurrences,
-    mapImageUrl: string | null
+    sentier: Sentier,
+    mapImageUrl: string | null,
+    taxons: Taxon[] = []
   ): Promise<void> {
+    this.sentier = sentier;
     const doc = new jsPDF('p', 'mm', 'a4');
     const dateStr = new Date().toISOString().split('T')[0];
     const fileName = `sentier-${this.sanitizeFileName(sentier.display_name || 'sentier')}-${dateStr}.pdf`;
@@ -84,16 +77,13 @@ export class PdfExportService {
     let y = this.topMargin;
     y = await this.renderTrailHeader(doc, sentier, y, mapImageUrl);
     y = this.renderTrailDetails(doc, sentier, y);
-    y = await this.renderTrailTaxaList(doc, sentier, y);
+    await this.renderTrailTaxaList(doc, taxons, y);
 
     // Following pages: Taxa fiches
-    const occurrences = sentier.enrichedOccurrences || sentier.occurrences || [];
-    if (occurrences.length > 0) {
-      for (const occurrence of occurrences) {
-        if (occurrence.taxon) {
-          doc.addPage();
-          await this.renderTaxonFichePage(doc, occurrence as EnrichedOccurrence);
-        }
+    if (taxons.length > 0) {
+      for (const taxon of taxons) {
+        doc.addPage();
+        await this.renderTaxonFichePage(doc, taxon);
       }
     }
 
@@ -188,7 +178,6 @@ export class PdfExportService {
     const imageWidth = 45;
     const imageHeight = 50;
     const textStartX = hasImage ? this.margin + imageWidth + 5 : this.margin;
-    const textMaxWidth = this.pageWidth - textStartX - this.margin;
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
@@ -239,7 +228,7 @@ export class PdfExportService {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
       doc.setTextColor(...this.colors.white);
-      let text = `${taxon.scientific_name} famille des ${taxon.family}`
+      const text = `${taxon.scientific_name} famille des ${taxon.family}`
       doc.text(text, textStartX, nameY + 6);
     } else {
       doc.setFont('helvetica', 'bold');
@@ -276,6 +265,15 @@ export class PdfExportService {
     } catch {
       // Continue without logo
     }
+
+    const titleHeight = 10;
+    const startX = (this.margin *2) + logoWidth
+    const startYSf = startY + (logoHeight / 2) + (titleHeight/2)
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(16);
+    doc.setTextColor(...this.colors.accent);
+    doc.text("Smart'Flore", startX, startYSf);
 
     // QR Code
     try {
@@ -401,7 +399,7 @@ export class PdfExportService {
 
   private async renderTrailTaxaList(
     doc: jsPDF,
-    sentier: SentierWithEnrichedOccurrences,
+    taxons: Taxon[],
     startY: number
   ): Promise<number> {
     let y = startY;
@@ -412,9 +410,7 @@ export class PdfExportService {
     doc.text('TAXONS DU SENTIER', this.margin, y);
     y += 8;
 
-    const occurrences = sentier.enrichedOccurrences || sentier.occurrences || [];
-
-    if (occurrences.length === 0) {
+    if (taxons.length === 0) {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
       doc.setTextColor(...this.colors.gray);
@@ -427,29 +423,15 @@ export class PdfExportService {
     doc.setTextColor(...this.colors.text);
 
     const lineHeight = 5;
-    const maxWidth = this.contentWidth;
 
-    for (let i = 0; i < occurrences.length; i++) {
-      const occurrence = occurrences[i];
-      if (!occurrence.taxon) { continue; }
+    for (let i = 0; i < taxons.length; i++) {
+      const taxon = taxons[i];
+      const label = taxon.vernacular_names?.length
+        ? `${i + 1}. ${taxon.vernacular_names[0]}`
+        : `${i + 1}. ${taxon.scientific_name}`;
 
-      const taxon = occurrence.taxon;
+      const splitText = doc.splitTextToSize(label, this.contentWidth);
 
-      let text = '';
-      if (taxon.vernacular_names && taxon.vernacular_names.length > 0) {
-        text += `${i + 1}. ${taxon.vernacular_names[0]}`;
-      } else {
-        text += `${i + 1}. ${taxon.scientific_name}`;
-      }
-
-      // let text = `${i + 1}. ${taxon.scientific_name}`;
-      // if (taxon.vernacular_names && taxon.vernacular_names.length > 0) {
-      //   text += ` - ${taxon.vernacular_names.join(', ')}`;
-      // }
-
-      const splitText = doc.splitTextToSize(text, maxWidth);
-
-      // Check if we need a new page
       if (y + splitText.length * lineHeight > this.pageHeight - this.margin - 20) {
         doc.addPage();
         y = this.margin;
@@ -462,15 +444,16 @@ export class PdfExportService {
     return y;
   }
 
-  private async renderTaxonFichePage(doc: jsPDF, occurrence: EnrichedOccurrence): Promise<void> {
-    const taxon = occurrence.taxon!;
-    const fiche = occurrence.fiche || null;
-    const taxonDetails = occurrence.taxonDetails || null;
+  private async renderTaxonFichePage(doc: jsPDF, taxon: Taxon): Promise<void> {
+    let fiche: Tab | undefined = {} as Tab;
+    if (taxon.tabs){
+      fiche = taxon.tabs.find((tab: Tab) => tab.title === "Fiche Smart’Flore");
+    }
 
     // Get image URL from taxonDetails if available
     let imageUrl: string | null = null;
-    if (taxonDetails?.tabs) {
-      const galleryTab = taxonDetails.tabs.find((tab: Tab) => tab.type === 'gallery');
+    if (taxon.tabs) {
+      const galleryTab = taxon.tabs.find((tab: Tab) => tab.type === 'gallery');
       if (galleryTab?.images && galleryTab.images.length > 0) {
         imageUrl = galleryTab.images[0].url;
       }
@@ -480,11 +463,27 @@ export class PdfExportService {
     y = await this.renderLogoAndQrCodeForTaxonPage(doc, taxon, y);
     y = await this.renderColoredBannerForTaxonPage(doc, taxon, imageUrl, y);
 
-    if (fiche) {
-      y = this.renderSection(doc, 'Description', fiche.description, y);
-      y = this.renderSection(doc, 'Usages', fiche.usages, y);
-      y = this.renderSection(doc, 'Écologie', fiche.ecologie, y);
-      this.renderSection(doc, 'Sources', fiche.sources, y);
+    if (fiche?.sections) {
+      const description = fiche.sections.find(
+        (section: TabSection) => section.title?.trim().toLowerCase() === 'description'
+      );
+
+      const usages = fiche.sections.find(
+        (section: TabSection) => section.title?.trim().toLowerCase() === 'usages'
+      );
+
+      const ecologie = fiche.sections.find(
+        (section: TabSection) => section.title?.trim().toLowerCase() === 'ecologie'
+      );
+
+      const sources = fiche.sections.find(
+        (section: TabSection) => section.title?.trim().toLowerCase() === 'sources'
+      );
+
+      y = this.renderSection(doc, 'Description', description?.text, y);
+      y = this.renderSection(doc, 'Usages', usages?.text, y);
+      y = this.renderSection(doc, 'Écologie', ecologie?.text, y);
+      this.renderSection(doc, 'Sources', sources?.text, y);
     } else {
       // Show minimal info if no fiche
       doc.setFont('helvetica', 'italic');
@@ -515,7 +514,7 @@ export class PdfExportService {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(16);
     doc.setTextColor(...this.colors.accent);
-    doc.text('Smart\'Flore', startX, startYSf);
+    doc.text(this.sentier.display_name ?? "Smart'Flore", startX, startYSf);
 
     try {
       const qrCodeDataUrl = await this.generateTaxonQrCodeDataUrl(taxon);
@@ -598,7 +597,7 @@ export class PdfExportService {
       doc.setFontSize(10);
       doc.setTextColor(...this.colors.white);
 
-      let text = `${taxon.scientific_name} famille des ${taxon.family}`
+      const text = `${taxon.scientific_name} famille des ${taxon.family}`
       doc.text(text, textStartX, nameY + 6);
     } else {
       doc.setFont('helvetica', 'bold');

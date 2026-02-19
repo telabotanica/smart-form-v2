@@ -1,4 +1,14 @@
-import {ChangeDetectionStrategy, Component, effect, inject, input, OnInit, signal, viewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  OnInit,
+  signal,
+  viewChild
+} from '@angular/core';
 import {SingleSentierService} from '../../features/sentier/services/single-sentier-service';
 import {ErrorComponent} from '../../shared/components/error/error';
 import {UserService} from '../../core/auth/services/user.service';
@@ -17,15 +27,13 @@ import {PdfExport} from '../../shared/components/pdf-export/pdf-export';
 import {FicheService} from '../../features/fiche/services/fiche-service';
 import {TaxonSearchService} from '../../features/taxon/services/taxon-search-service';
 import {Occurrence} from '../../features/occurrence/models/occurrence.model';
-import {Fiche} from '../../features/fiche/models/fiche.model';
 import {Taxon} from '../../features/taxon/models/taxon.model';
 import html2canvas from 'html2canvas';
-
-interface EnrichedOccurrence extends Occurrence {
-  fiche?: Fiche | null;
-  taxonDetails?: Taxon | null;
-  ficheExiste?: boolean;
-}
+import {QrCodeButton} from '../../shared/components/qr-code-button/qr-code-button';
+import {RouterLink} from '@angular/router';
+import {
+  OccurrenceModalDetail
+} from '../../features/occurrence/components/occurrence-modal-detail/occurrence-modal-detail';
 
 @Component({
   selector: 'app-single-trail',
@@ -38,7 +46,10 @@ interface EnrichedOccurrence extends Occurrence {
     SentierForm,
     Map,
     Loader,
-    PdfExport
+    PdfExport,
+    QrCodeButton,
+    RouterLink,
+    OccurrenceModalDetail
   ],
   templateUrl: './single-trail.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -56,9 +67,11 @@ export class SingleTrail implements OnInit {
   readonly sentierCheck = signal({} as SentierValidationCheck);
   readonly sentierCheckError = signal<SentierValidationError | null>(null);
   readonly trailQrCode= signal("");
-  readonly enrichedOccurrences = signal<EnrichedOccurrence[]>([]);
-  readonly isLoadingTaxa = signal(false);
   readonly mapImageUrl = signal<string | null>(null);
+  readonly taxons = signal<Taxon[]>([]);
+  readonly occurencesUniques = signal<Occurrence[]>([]);
+  readonly occurrenceDialog = viewChild<ElementRef<HTMLDialogElement>>('occurrenceListDialog');
+  readonly selectedOccurrence = signal<Occurrence | null>(null);
 
   readonly mapComponent = viewChild<Map>('mapComponent');
 
@@ -79,70 +92,34 @@ export class SingleTrail implements OnInit {
       this.user = this.userService.user();
       this.sentier = this.sentierService.sentier();
 
+      this.fillUniqueOccurrences();
+
       this.trailQrCode.set(
         `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl}/trail/${this.id()}.png`
       );
+    })
 
-      // Load taxa details when sentier changes
-      if (this.sentier?.occurrences && this.sentier.occurrences.length > 0) {
-        this.loadAllTaxaDetails();
-      }
+    effect(()=>{
+      this.taxons.set(this.taxonSearchService.taxons());
+      // console.log(this.taxons())
     })
   }
 
   ngOnInit(): void {
     this.sentierService.fetchSentier(this.id());
+    this.taxonSearchService.getUniqueTaxonsBelongingToTrail(this.id())
     this.sharedService.blurBackground.set(false)
   }
 
-  async loadAllTaxaDetails(): Promise<void> {
-    if (!this.sentier?.occurrences) return;
-
-    this.isLoadingTaxa.set(true);
-    const enriched: EnrichedOccurrence[] = [];
-
-    for (const occurrence of this.sentier.occurrences) {
-      if (!occurrence.taxon) {
-        enriched.push(occurrence as EnrichedOccurrence);
-        continue;
-      }
-
-      const enrichedOccurrence: EnrichedOccurrence = { ...occurrence };
-      
-      // Load fiche
-      try {
-        await this.ficheService.fetchFiche(
-          occurrence.taxon.taxon_repository,
-          occurrence.taxon.taxonomic_id!
-        );
-        if (!this.ficheService.error()) {
-          enrichedOccurrence.fiche = this.ficheService.fiche();
-          enrichedOccurrence.ficheExiste = true;
-        } else {
-          enrichedOccurrence.fiche = null;
-          enrichedOccurrence.ficheExiste = false;
-        }
-      } catch {
-        enrichedOccurrence.fiche = null;
-        enrichedOccurrence.ficheExiste = false;
-      }
-
-      // Load taxon details (for images)
-      try {
-        await this.taxonSearchService.getTaxonFiche(
-          occurrence.taxon.taxon_repository,
-          occurrence.taxon.name_id
-        );
-        enrichedOccurrence.taxonDetails = this.taxonSearchService.taxon();
-      } catch {
-        enrichedOccurrence.taxonDetails = null;
-      }
-
-      enriched.push(enrichedOccurrence);
-    }
-
-    this.enrichedOccurrences.set(enriched);
-    this.isLoadingTaxa.set(false);
+  fillUniqueOccurrences(): void{
+    const occurrences = this.sentier!.occurrences ?? [];
+    const seen = new Set<number>();
+    const uniques = occurrences.filter(o => {
+      if (!o.taxon?.name_id || seen.has(o.taxon?.name_id)) return false;
+      seen.add(o.taxon?.name_id);
+      return true;
+    });
+    this.occurencesUniques.set(uniques);
   }
 
   async captureMap(): Promise<void> {
@@ -154,7 +131,7 @@ export class SingleTrail implements OnInit {
 
     // Force map render before capture
     mapComponent.forceRender();
-    
+
     // Wait for render to complete
     await new Promise(resolve => setTimeout(resolve, 300));
 
@@ -176,13 +153,6 @@ export class SingleTrail implements OnInit {
     } catch {
       this.mapImageUrl.set(null);
     }
-  }
-
-  getSentierWithEnrichedOccurrences(): Sentier & { enrichedOccurrences?: EnrichedOccurrence[] } {
-    return {
-      ...this.sentier!,
-      enrichedOccurrences: this.enrichedOccurrences()
-    };
   }
 
   async checkSentier(sentier: Sentier): Promise<void> {
@@ -220,4 +190,14 @@ export class SingleTrail implements OnInit {
   async sendTrailToReview(sentier: Sentier): Promise<void> {
     await this.sentierService.reviewSentier(sentier);
   }
+
+  openOccurrence(o: Occurrence): void {
+    this.selectedOccurrence.set(o);
+    this.occurrenceDialog()?.nativeElement?.showModal();
+  }
+
+  closeOccurrence = (): void => {
+    this.occurrenceDialog()?.nativeElement?.close();
+    this.selectedOccurrence.set(null);
+  };
 }
