@@ -29,11 +29,10 @@ import {TaxonSearchService} from '../../features/taxon/services/taxon-search-ser
 import {Occurrence} from '../../features/occurrence/models/occurrence.model';
 import {Taxon} from '../../features/taxon/models/taxon.model';
 import html2canvas from 'html2canvas';
-import {QrCodeButton} from '../../shared/components/qr-code-button/qr-code-button';
-import {RouterLink} from '@angular/router';
 import {
   OccurrenceModalDetail
 } from '../../features/occurrence/components/occurrence-modal-detail/occurrence-modal-detail';
+import {OccurrenceCard} from '../../features/occurrence/components/occurrence-card/occurrence-card';
 
 @Component({
   selector: 'app-single-trail',
@@ -47,9 +46,8 @@ import {
     Map,
     Loader,
     PdfExport,
-    QrCodeButton,
-    RouterLink,
-    OccurrenceModalDetail
+    OccurrenceModalDetail,
+    OccurrenceCard
   ],
   templateUrl: './single-trail.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -115,7 +113,7 @@ export class SingleTrail implements OnInit {
     const occurrences = this.sentier!.occurrences ?? [];
     const seen = new Set<number>();
     const uniques = occurrences.filter(o => {
-      if (!o.taxon?.name_id || seen.has(o.taxon?.name_id)) return false;
+      if (!o.taxon?.name_id || seen.has(o.taxon?.name_id)){ return false };
       seen.add(o.taxon?.name_id);
       return true;
     });
@@ -194,10 +192,12 @@ export class SingleTrail implements OnInit {
   openOccurrence(o: Occurrence): void {
     this.selectedOccurrence.set(o);
     this.occurrenceDialog()?.nativeElement?.showModal();
+    this.sharedService.blurBackground.set(true)
   }
 
   closeOccurrence = (): void => {
     this.occurrenceDialog()?.nativeElement?.close();
     this.selectedOccurrence.set(null);
+    this.sharedService.blurBackground.set(false)
   };
 }

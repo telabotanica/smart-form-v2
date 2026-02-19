@@ -81,6 +81,7 @@ export class OccurrenceModalDetail{
     await this.occurrenceService.deleteOccurrence(this.occurrence()!).then(() => {
       this.reloadTrail();
       this.sharedService.toggleBlurBackground()
+      this.sharedService.toggleBlurBackgroundModal()
     })
   }
 
@@ -95,21 +96,25 @@ export class OccurrenceModalDetail{
 
   openDeleteConfirmation(): void {
     this.sharedService.toggleBlurBackground()
+    this.sharedService.toggleBlurBackgroundModal()
     this.showDeleteConfirmModal = true;
   }
 
   closeDeleteConfirmModal(): void {
     this.sharedService.toggleBlurBackground()
+    this.sharedService.toggleBlurBackgroundModal()
     this.showDeleteConfirmModal = false;
   }
 
   openOccurrenceForm(): void {
     this.sharedService.toggleBlurBackground()
+    this.sharedService.toggleBlurBackgroundModal()
     this.showOccurrenceForm = true;
   }
 
   closeOccurrenceForm(): void {
     this.sharedService.toggleBlurBackground()
+    this.sharedService.toggleBlurBackgroundModal()
     this.showOccurrenceForm = false;
   }
 
@@ -126,18 +131,21 @@ export class OccurrenceModalDetail{
     this.fiche.set(this.ficheService.fiche());
     this.showFicheModal.set(true);
     this.sharedService.toggleBlurBackground()
+    this.sharedService.toggleBlurBackgroundModal()
   }
 
   createFicheModal(): void {
     this.fiche.set(null);
     this.showFicheModal.set(true);
     this.sharedService.toggleBlurBackground()
+    this.sharedService.toggleBlurBackgroundModal()
   }
 
   closeFicheModal(): void {
     this.fiche.set(null);
     this.showFicheModal.set(false);
     this.sharedService.toggleBlurBackground()
+    this.sharedService.toggleBlurBackgroundModal()
   }
 
   ficheCreationSuccess(): void {

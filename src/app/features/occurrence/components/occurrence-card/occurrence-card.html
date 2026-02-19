@@ -1,0 +1,47 @@
+@let occ = occurrence();
+<li class="flex flex-col gap-2 p-4 bg-accent-50 rounded-xl shadow border border-background-200">
+
+  @if (occ.taxon!.vernacular_names?.length) {
+    <p class="font-bold text-text font-title">{{ occ.taxon!.vernacular_names!.join(', ') }}</p>
+    <p class="text-sm italic text-text-500">{{ occ.taxon!.scientific_name }}</p>
+  } @else {
+    <p class="font-bold italic text-text font-title">{{ occ.taxon!.scientific_name }}</p>
+  }
+
+  @if (taxonSearchService.loading()) {
+    <app-loader />
+  } @else {
+    @if (fullTaxon && hasFiche) {
+      <div class="flex flex-wrap gap-2 text-sm">
+        <span class="text-green-600">✓ Fiche disponible</span>
+        @if (!isFicheComplete) {
+          <span class="text-destructive">✓ Fiche Incomplète</span>
+        }
+      </div>
+
+      <div class="flex flex-wrap gap-2 mt-auto pt-2 border-t border-background-200">
+        <button class="bg-background" role="button" title="Voir la fiche" type="button" >
+          <a class="mt-2"
+             role="button"
+             target="_blank"
+             title="Voir la fiche"
+             [routerLink]="['/fiche', occ.taxon!.taxon_repository, occ.taxon!.taxonomic_id, occ.taxon!.name_id]">
+            <span class="material-symbols-outlined ">article</span>
+          </a>
+        </button>
+        <app-qr-code-button [taxon]="occ.taxon!" />
+        <button title="Voir le détail" type="button" (click)="openOccurrence.emit(occ)">
+          Voir le détail
+        </button>
+      </div>
+
+    } @else {
+      <span class="text-sm text-text-400">✗ Pas de fiche</span>
+      <div class="mt-auto pt-2 border-t border-background-200">
+        <button title="Voir le détail" type="button" (click)="openOccurrence.emit(occ)">
+          Voir le détail
+        </button>
+      </div>
+    }
+  }
+</li>

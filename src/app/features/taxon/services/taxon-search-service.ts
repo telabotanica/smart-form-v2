@@ -7,7 +7,6 @@ import {FicheCollection} from '../../fiche/models/fiche-collection.model';
 import {Taxon} from '../models/taxon.model';
 import {ErrorApi} from '../../../core/models/error-api.model';
 import {Occurrence} from '../../occurrence/models/occurrence.model';
-import {Sentier} from '../../sentier/models/sentier.model';
 import {Tab, TabSection} from '../../fiche/models/tabs.model';
 
 @Injectable({

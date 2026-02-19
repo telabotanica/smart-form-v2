@@ -6,16 +6,6 @@ import {PdfExportService} from './pdf-export.service';
 
 type ExportType = 'taxon' | 'sentier';
 
-interface EnrichedOccurrence {
-  fiche?: Fiche | null;
-  taxonDetails?: Taxon | null;
-  ficheExiste?: boolean;
-}
-
-interface SentierWithEnrichedOccurrences extends Sentier {
-  enrichedOccurrences?: EnrichedOccurrence[];
-}
-
 @Component({
   selector: 'app-pdf-export',
   imports: [],
@@ -27,7 +17,7 @@ export class PdfExport {
   readonly taxon = input<Taxon | null>(null);
   readonly fiche = input<Fiche | null>(null);
   readonly imageUrl = input<string | null>(null);
-  readonly sentier = input<SentierWithEnrichedOccurrences | null>(null);
+  readonly sentier = input<Sentier | null>(null);
   readonly mapImageUrl = input<string | null>(null);
   readonly isLoading = input<boolean>(false);
   readonly taxons = input<Taxon[]>([]);

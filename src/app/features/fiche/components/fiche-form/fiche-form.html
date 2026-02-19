@@ -1,50 +1,167 @@
-<div class="popup !h-1/2 sm:!w-6/10 !w-full !left-0 !top-2/10 sm:!left-2/10 bg-background! relative z-40">
-  <div class="absolute top-2 right-2 cursor-pointer p-2 z-50" role="button" tabindex="0" (click)="closeModal()" (keydown)="handleKey($event)">
-    <span class="material-symbols-outlined text-primary !text-4xl" title="Fermer le formulaire">cancel</span>
+<div class="fixed top-0 w-full z-40 flex items-center justify-center p-4 bg-background backdrop-blur-sm">
+
+  <!-- Decorative vertical lines -->
+  <div aria-hidden="true" class="fixed inset-0 pointer-events-none flex justify-evenly">
+    <span class="w-px h-full bg-gradient-to-b from-transparent via-green-800/20 to-transparent"></span>
+    <span class="w-px h-full bg-gradient-to-b from-transparent via-green-800/20 to-transparent"></span>
+    <span class="w-px h-full bg-gradient-to-b from-transparent via-green-800/20 to-transparent"></span>
   </div>
-  <h3>{{ fiche() ? "Modifier la fiche" : "Créer la fiche" }}</h3>
-  <form [formGroup]="form()" (ngSubmit)="submit()">
-    <div>
-      <label for="description">Description</label>
-      <textarea formControlName="description" id="description" placeholder="Ajouter une description" rows="5"></textarea>
-      @if (form().get('description')?.invalid && (form().get('description')?.touched || form().dirty || submitted)) {
-        <app-error errorMessage="Une description est obligatoire" />
+
+  <!-- Panel -->
+  <div class="relative z-10 w-full max-w-xl bg-stone-50 rounded-xl shadow-2xl overflow-hidden">
+
+    <!-- Header -->
+    <header class="relative px-8 pt-8 pb-5">
+      <p class="tracking-[.18em] uppercase mb-2">Fiche Botanique</p>
+      <h3 class="text-3xl font-semibold  tracking-tight">
+        {{ fiche() ? "Modifier la fiche" : "Nouvelle fiche" }}
+      </h3>
+      <button
+        class="absolute top-4 right-4 grid place-items-center w-9 h-9 rounded-full text-text-50 hover:text-text"
+        title="Fermer le formulaire"
+        type="button"
+        (click)="closeModal()"
+        (keydown)="handleKey($event)"
+      >
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </header>
+
+    <!-- Progress bar -->
+    <div class="h-[3px] bg-stone-200">
+      <div
+        class="h-full bg-gradient-to-r from-green-800 to-green-500 transition-[width] duration-300 ease-in-out"
+        [style.width.%]="formProgress()"
+      ></div>
+    </div>
+
+    <!-- Form body -->
+    <form class="flex flex-col gap-5 px-8 py-7" [formGroup]="form()" (ngSubmit)="submit()">
+
+      <!-- Description -->
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-baseline justify-between">
+          <label class="flex items-baseline gap-2 text-[.68rem] tracking-[.1em] uppercase text-green-800 cursor-pointer" for="description">
+            <span class="bg-stone-900 text-stone-200 text-[.58rem] px-1.5 py-0.5 rounded">01</span>
+            Description
+            <span class="text-amber-600 text-sm leading-none">*</span>
+          </label>
+          <span class="text-[.62rem] text-stone-400">{{ form().get('description')?.value?.length ?? 0 }}</span>
+        </div>
+        <div class="relative">
+          <textarea
+            class="w-full px-4 pr-9 py-3 text-[1.05rem] leading-relaxed text-stone-800 bg-white border-[1.5px] rounded-lg resize-y placeholder:text-stone-300 placeholder:italic transition focus:outline-none focus:ring-[3px]"
+            formControlName="description"
+            id="description"
+            placeholder="Décrivez l'espèce avec précision…"
+            rows="4"
+            [class.bg-red-50]="form().get('description')?.invalid && (form().get('description')?.touched || form().dirty || submitted)"
+            [class.border-red-400]="form().get('description')?.invalid && (form().get('description')?.touched || form().dirty || submitted)"
+            [class.border-stone-200]="!(form().get('description')?.invalid && (form().get('description')?.touched || form().dirty || submitted))"
+            [class.focus:border-green-500]="!(form().get('description')?.invalid && (form().get('description')?.touched || form().dirty || submitted))"
+            [class.focus:ring-green-500]="!(form().get('description')?.invalid && (form().get('description')?.touched || form().dirty || submitted))"></textarea>
+          <span class="material-symbols-outlined absolute right-3 top-3 text-[1rem] text-stone-300 pointer-events-none">article</span>
+        </div>
+        @if (form().get('description')?.invalid && (form().get('description')?.touched || form().dirty || submitted)) {
+          <app-error [errorMessage]="'Une description est obligatoire'" />
+        }
+      </div>
+
+      <!-- Usages -->
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-baseline justify-between">
+          <label class="flex items-baseline gap-2 text-[.68rem] tracking-[.1em] uppercase text-green-800 cursor-pointer" for="usages">
+            <span class="bg-stone-900 text-stone-200 text-[.58rem] px-1.5 py-0.5 rounded">02</span>
+            Usages
+          </label>
+          <span class="text-[.62rem] text-stone-400">{{ form().get('usages')?.value?.length ?? 0 }}</span>
+        </div>
+        <div class="relative">
+          <textarea
+            class="w-full px-4 pr-9 py-3 text-[1.05rem] leading-relaxed text-stone-800 bg-white border-[1.5px] border-stone-200 rounded-lg resize-y placeholder:text-stone-300 placeholder:italic transition focus:outline-none focus:border-green-500 focus:ring-[3px] focus:ring-green-500/15"
+            formControlName="usages"
+            id="usages"
+            placeholder="Usages ethnobotaniques, médicinaux, alimentaires…"
+            rows="4"
+            ></textarea>
+          <span class="material-symbols-outlined absolute right-3 top-3 text-[1rem] text-stone-300 pointer-events-none">spa</span>
+        </div>
+      </div>
+
+      <!-- Écologie -->
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-baseline justify-between">
+          <label class="flex items-baseline gap-2 text-[.68rem] tracking-[.1em] uppercase text-green-800 cursor-pointer" for="ecologie">
+            <span class="bg-stone-900 text-stone-200 text-[.58rem] px-1.5 py-0.5 rounded">03</span>
+            Écologie
+          </label>
+          <span class="text-[.62rem] text-stone-400">{{ form().get('ecologie')?.value?.length ?? 0 }}</span>
+        </div>
+        <div class="relative">
+          <textarea
+            class="w-full px-4 pr-9 py-3 text-[1.05rem] leading-relaxed text-stone-800 bg-white border-[1.5px] border-stone-200 rounded-lg resize-y placeholder:text-stone-300 placeholder:italic transition focus:outline-none focus:border-green-500 focus:ring-[3px] focus:ring-green-500/15"
+            formControlName="ecologie"
+            id="ecologie"
+            placeholder="Habitat, substrat, altitude, associations végétales…"
+            rows="4"
+            ></textarea>
+          <span class="material-symbols-outlined absolute right-3 top-3 text-[1rem] text-stone-300 pointer-events-none">forest</span>
+        </div>
+      </div>
+
+      <!-- Sources -->
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-baseline justify-between">
+          <label class="flex items-baseline gap-2 text-[.68rem] tracking-[.1em] uppercase text-green-800 cursor-pointer" for="sources">
+            <span class="bg-stone-900 text-stone-200 text-[.58rem] px-1.5 py-0.5 rounded">04</span>
+            Sources
+            <span class="text-amber-600 text-sm leading-none">*</span>
+          </label>
+          <span class="text-[.62rem] text-stone-400">{{ form().get('sources')?.value?.length ?? 0 }}</span>
+        </div>
+        <div class="relative">
+          <textarea
+            class="w-full px-4 pr-9 py-3 text-[1.05rem] leading-relaxed text-stone-800 bg-white border-[1.5px] rounded-lg resize-y placeholder:text-stone-300 placeholder:italic transition focus:outline-none focus:ring-[3px]"
+            formControlName="sources"
+            id="sources"
+            placeholder="Références bibliographiques, auteurs, années…"
+            rows="4"
+            [class.bg-red-50]="form().get('sources')?.invalid && (form().get('sources')?.touched || form().dirty || submitted)"
+            [class.border-red-400]="form().get('sources')?.invalid && (form().get('sources')?.touched || form().dirty || submitted)"
+            [class.border-stone-200]="!(form().get('sources')?.invalid && (form().get('sources')?.touched || form().dirty || submitted))"
+            [class.focus:border-green-500]="!(form().get('sources')?.invalid && (form().get('sources')?.touched || form().dirty || submitted))"
+            [class.focus:ring-green-500]="!(form().get('sources')?.invalid && (form().get('sources')?.touched || form().dirty || submitted))"></textarea>
+          <span class="material-symbols-outlined absolute right-3 top-3 text-[1rem] text-stone-300 pointer-events-none">menu_book</span>
+        </div>
+        @if (form().get('sources')?.invalid && (form().get('sources')?.touched || form().dirty || submitted)) {
+          <app-error [errorMessage]="'Les sources sont obligatoires'" />
+        }
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-between gap-3 pt-4 border-t border-stone-200">
+        <button
+          class="inline-flex items-center gap-1.5 px-4 py-2.5text-[.7rem] tracking-[.06em] border border-stone-200 rounded-md hover:text-stone-800 hover:border-stone-400 hover:bg-stone-100 transition-colors focus-visible:outline-2 focus-visible:outline-green-600 focus-visible:outline-offset-2"
+          type="button"
+          (click)="closeModal()"
+          >
+          <span class="material-symbols-outlined text-[.9rem]">arrow_back</span>
+          Annuler
+        </button>
+        <button
+          class="inline-flex items-center gap-2 px-5 py-2.5 text-[.72rem] tracking-[.08em] uppercase text-white bg-green-800 rounded-md shadow-md hover:bg-green-900 hover:-translate-y-px hover:shadow-lg active:translate-y-0 active:shadow-sm transition-all focus-visible:outline-2 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
+          title="Enregistrer la fiche"
+          type="submit"
+        >
+          {{ fiche() ? "Mettre à jour" : "Créer la fiche" }}
+          <span class="material-symbols-outlined text-[.9rem]">check</span>
+        </button>
+      </div>
+
+      @if (ficheService.errorUpdate()) {
+        <app-error [errorMessage]="ficheService.errorUpdate() ?? ''" />
       }
-    </div>
 
-    <div>
-      <label for="usages">Usages</label>
-      <textarea formControlName="usages" id="usages" placeholder="Ajouter les usages" rows="5"></textarea>
-    </div>
-
-    <div>
-      <label for="ecologie">Ecologie</label>
-      <textarea formControlName="ecologie" id="ecologie" placeholder="Ajouter les données écologiques" rows="5"></textarea>
-    </div>
-
-    <div>
-      <label for="sources">Sources</label>
-      <textarea formControlName="sources" id="sources" placeholder="Ajouter une description" rows="5"></textarea>
-      @if (form().get('sources')?.invalid && (form().get('sources')?.touched || form().dirty || submitted)) {
-        <app-error errorMessage="Lees sources sont obligatoires" />
-      }
-    </div>
-
-    <div class="flex justify-between items-center">
-      <button class="bg-red-200" title="Fermer le formulaire" type="button" (click)="closeModal()">Annuler</button>
-
-<!--      @if (selectedTaxonName() !== '' && !taxonSearchService.loading() && form().valid) {-->
-        <button title="Enregistrer l'individu" type="submit">Enregistrer</button>
-<!--      }-->
-
-<!--      @if (form().dirty && !form().valid) {-->
-<!--        <app-error errorMessage="Vous devez au moins ajouter une description" />-->
-<!--      }-->
-    </div>
-
-    @if(ficheService.errorUpdate()){
-      <app-error [errorMessage]="ficheService.errorUpdate() ?? ''" />
-    }
-
-  </form>
+    </form>
+  </div>
 </div>

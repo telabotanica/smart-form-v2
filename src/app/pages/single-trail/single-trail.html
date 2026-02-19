@@ -43,10 +43,10 @@
 
     <app-pdf-export
       type="sentier"
+      [isLoading]="taxonSearchService.loading()"
+      [mapImageUrl]="mapImageUrl()"
       [sentier]="sentier!"
       [taxons]="taxonSearchService.taxons()"
-      [mapImageUrl]="mapImageUrl()"
-      [isLoading]="taxonSearchService.loading()"
       (beforeExport)="captureMap()"
     />
 
@@ -107,53 +107,19 @@
       <li>Nombre d'occurrences: {{ sentier!.occurrences_count }}</li>
       <li>Nombre de taxons: {{ sentier!.nb_taxons }}</li>
 
-      <li class="mt-2">
-        <h3>Taxons du sentier:</h3>
-        <ul class="mt-2">
+      <div class="mt-2">
+        <h3>Taxons du sentier</h3>
+        <ul class="grid grid-cols-1 gap-4 mt-2 sm:grid-cols-2 lg:grid-cols-3">
           @for (occurrence of occurencesUniques(); track occurrence.id) {
-            @let taxon = taxonSearchService.getFullTaxon(occurrence);
-            <li class="mb-4 p-2 border rounded">
-              @if (occurrence.taxon!.vernacular_names?.length) {
-                <div class="font-bold">{{ occurrence.taxon!.vernacular_names!.join(', ') }}</div>
-                <div class="text-sm italic text-gray-600">{{ occurrence.taxon!.scientific_name }}</div>
-              } @else {
-                <div class="font-bold italic">{{ occurrence.taxon!.scientific_name }}</div>
-              }
-
-              @if (taxon && taxonSearchService.hasFiche(occurrence)) {
-                <span class="text-green-600 text-sm">✓ Fiche disponible</span>
-
-                @if (taxonSearchService.isFicheFullyCompleted(taxon)) {
-                  <span class="text-green-600 text-sm"> ✓ Fiche complète</span>
-                }
-
-                <button title="Voir la fiche" type="button">
-                  <a target="_blank"
-                     [routerLink]="['/fiche', occurrence.taxon!.taxon_repository, occurrence.taxon!.taxonomic_id, occurrence.taxon!.name_id]">
-                    Voir la fiche
-                  </a>
-                </button>
-
-                <app-qr-code-button [taxon]="occurrence.taxon!" />
-
-                <button title="Voir le détail" type="button" (click)="openOccurrence(occurrence)">
-                  Voir le détail
-                </button>
-              } @else {
-                <span class="text-gray-400 text-sm">✗ Pas de fiche</span>
-                <button title="Voir le détail" type="button" (click)="openOccurrence(occurrence)">
-                  Voir le détail
-                </button>
-              }
-            </li>
+            <app-occurrence-card
+              [occurrence]="occurrence"
+              (openOccurrence)="openOccurrence($event)"
+            />
           }
         </ul>
-      </li>
-      <!--      }-->
+      </div>
     </ul>
-
     <hr />
-
   }
 </div>
 
@@ -173,7 +139,7 @@
 
 <dialog
   #occurrenceListDialog
-  class="border-0 rounded-xl p-0 shadow-2xl"
+  class="border-0 rounded-xl p-0 shadow-2xl top-50 left-1/2 translate-y--50 -translate-x-1/2 w-full max-w-2xl"
   (close)="closeOccurrence()"
 >
   <app-occurrence-modal-detail

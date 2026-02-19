@@ -1,5 +1,14 @@
-import {ChangeDetectionStrategy, Component, HostListener, inject, input, OnInit, output, signal} from '@angular/core';
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  HostListener,
+  inject,
+  input,
+  OnInit,
+  output
+} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {FicheService} from '../../services/fiche-service';
 import {Fiche} from '../../models/fiche.model';
 import {ErrorComponent} from '../../../../shared/components/error/error';
@@ -26,12 +35,22 @@ export class FicheForm implements OnInit {
   private fb = inject(FormBuilder);
   ficheService = inject(FicheService);
 
-  readonly form = signal(this.fb.group({
-    description: this.fb.control('', { validators: [Validators.required] }),
-    usages: this.fb.control(''),
-    ecologie: this.fb.control(''),
-    sources: this.fb.control('', { validators: [Validators.required] })
-  }));
+  readonly form = computed(() => {
+    const f = this.fiche();
+    return new FormGroup({
+      description: new FormControl(f?.description ?? '', Validators.required),
+      usages:      new FormControl(f?.usages      ?? ''),
+      ecologie:    new FormControl(f?.ecologie    ?? ''),
+      sources:     new FormControl(f?.sources     ?? '', Validators.required),
+    });
+  });
+
+  readonly formProgress = computed(() => {
+    const f = this.form();
+    const fields = ['description', 'usages', 'ecologie', 'sources'];
+    const filled = fields.filter(k => f.get(k)?.value?.trim().length > 0).length;
+    return (filled / fields.length) * 100;
+  });
 
   submitted = false;
 

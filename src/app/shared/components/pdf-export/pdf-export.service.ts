@@ -4,7 +4,6 @@ import QRCode from 'qrcode';
 import { Taxon } from '../../../features/taxon/models/taxon.model';
 import { Fiche } from '../../../features/fiche/models/fiche.model';
 import { Sentier } from '../../../features/sentier/models/sentier.model';
-import { Occurrence } from '../../../features/occurrence/models/occurrence.model';
 import { SharedService } from '../../services/shared.service';
 import {Tab, TabSection} from '../../../features/fiche/models/tabs.model';
 
