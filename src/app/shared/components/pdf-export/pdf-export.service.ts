@@ -377,7 +377,7 @@ export class PdfExportService {
     return y;
   }
 
-  public getPmrText(prm: number | undefined): string {
+  getPmrText(prm: number | undefined): string {
     switch (prm) {
       case -1: return 'Information non disponible';
       case 0: return 'Non accessible PMR';

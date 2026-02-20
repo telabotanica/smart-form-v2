@@ -4,152 +4,228 @@
   } @else if (sentierService.error()) {
     <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
   } @else {
-    <h2>{{ sentier!.display_name }}</h2>
+    <!-- HEADER -->
+    <section class="px-4 pt-6 pb-2 flex flex-col gap-1">
+      <div class="flex items-start justify-between gap-4 flex-wrap">
+        <h2 class="!m-0 !p-0 text-2xl font-bold text-text">{{ sentier!.display_name }}</h2>
 
-    <p>Créée le : <span class="font-bold">{{ sentier!.date_creation | date:"d MMMM y" }}</span></p>
-    @if (sentier!.date_modification) {
-      <p>modifié le : <span class="font-bold">{{ sentier!.date_modification | date:"d MMMM y" }}</span></p>
-    }
-    @if (sentier!.date_publication) {
-      <p>publié le : <span class="font-bold">{{ sentier!.date_publication | date:"d MMMM y" }}</span></p>
-    }
-    <p>auteur: <span class="font-bold">{{ sentier!.author }}</span></p>
+        @if (sentier!.status !== 'Validé') {
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+            bg-primary-100 text-secondary border border-primary-200">
+            {{ sentier!.status ?? 'Brouillon' }}
+          </span>
+        } @else {
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+            bg-accent-100 text-accent border border-accent-200">
+            Validé
+          </span>
+        }
+      </div>
 
-    @if (userService.isUserAdmin()) {
-      <p>auteur_id: <span class="font-bold">{{ sentier!.author_id }}</span>
-         / <span class="font-bold">email: {{ sentier!.author_email }}</span></p>
-    }
+      <!-- Métadonnées compactes -->
+      <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-text-500 mt-1">
+        <span>Créé le <span class="text-text font-medium">{{ sentier!.date_creation | date:"d MMM y" }}</span></span>
+        @if (sentier!.date_modification) {
+          <span>· Modifié le <span class="text-text font-medium">{{ sentier!.date_modification | date:"d MMM y" }}</span></span>
+        }
+        @if (sentier!.date_publication) {
+          <span>· Publié le <span class="text-text font-medium">{{ sentier!.date_publication | date:"d MMM y" }}</span></span>
+        }
+        <span>· Par <span class="text-text font-medium">{{ sentier!.author }}</span></span>
+        @if (userService.isUserAdmin()) {
+          <span class="text-text-400">· ID {{ sentier!.author_id }} · {{ sentier!.author_email }}</span>
+        }
+      </div>
+    </section>
 
-    @if (sentier!.status !== 'Validé') {
-      <p>État: <span class="font-bold">{{ sentier!.status ?? 'brouillon' }}</span></p>
-
-      @if (isLoggedIn() && user && user.id === sentier!.author_id) {
-        <button class="" type="button" (click)="openTrailModal(sentier!)">Modifier ce sentier</button>
-        <button
-          class="bg-red-800 hover:bg-red-600 text-white"
-          role="button"
-          title="Supprimer ce sentier"
-          type="button"
-          (click)="openDeleteConfirmModal(sentier!)"
-        >supprimer ce sentier</button>
+    <!-- ACTIONS (owner ou admin) -->
+    @if (sentier!.status !== 'Validé' && isLoggedIn() && user && user.id === sentier!.author_id) {
+      <section class="mx-4 mt-4 p-4 rounded-xl bg-background-50 border border-background-200 flex flex-wrap gap-2">
+        <button class="mt-0 mx-0" role="button" title="Modifier le sentier" type="button" (click)="openTrailModal(sentier!)">
+          ✏️ Modifier
+        </button>
 
         @if (sentier!.status !== 'Validé' && sentier!.status !== 'En attente') {
-          <button class="" role="button" title="vérifier si ce sentier peut être publier" type="button" (click)="checkSentier(sentier!)">Vérifier ce sentier</button>
-        }
-
-        @if (sentierCheck().status && sentier!.status !== 'En attente') {
-          <app-sentier-check-errors [check]="sentierCheck()!" />
-        }
-        @if (sentierCheckError() && sentier!.status !== 'En attente') {
-          <h3>Erreurs détectées:</h3>
-          <app-sentier-check-errors [error]="sentierCheckError()!" />
-          <h5 class="border border-2 p-2 border-primary">Merci de résoudre les erreurs ci-dessus afin de pouvoir envoyer votre sentier aux administrateurs pour vérification et publication.</h5>
+          <button class="mt-0 mx-0 bg-accent hover:bg-accent-600 text-white" role="button" title="Vérifier le sentier" type="button" (click)="checkSentier(sentier!)">
+            🔍 Vérifier
+          </button>
         }
 
         @if (sentierCheck().status && !sentierCheckError() && sentier!.status !== 'En attente') {
-          <button class="" role="button" title="Envoyer ce sentier en validation" type="button" (click)="sendTrailToReview(sentier!)">Envoyer en validation</button>
+          <button class="mt-0 mx-0 bg-accent hover:bg-accent-700 text-white" role="button" title="Envoyer en validation" type="button" (click)="sendTrailToReview(sentier!)">
+            🚀 Envoyer en validation
+          </button>
         }
 
-      } @else {
-        <p>Connectez-vous pour modifier ce sentier</p>
-      }
+        <button
+          class="mt-0 mx-0 bg-red-700 hover:bg-red-600 text-white border-red-700"
+          role="button"
+          title="Supprimer le sentier"
+          type="button"
+          (click)="openDeleteConfirmModal(sentier!)"
+        >
+          🗑️ Supprimer
+        </button>
+      </section>
     }
 
-    <app-pdf-export
-      type="sentier"
-      [isLoading]="taxonSearchService.loading()"
-      [mapImageUrl]="mapImageUrl()"
-      [sentier]="sentier!"
-      [taxons]="taxonSearchService.taxons()"
-      (beforeExport)="captureMap()"
-    />
+    @if (sentier!.status !== 'Validé' && !(isLoggedIn() && user && user.id === sentier!.author_id)) {
+      <p class="mx-4 mt-3 text-text-400 text-xs italic">Connectez-vous pour modifier ce sentier.</p>
+    }
 
+    <!-- FEEDBACK VALIDATION -->
+    @if (sentierCheck().status && sentier!.status !== 'En attente') {
+      <section class="mx-4 mt-3">
+        <app-sentier-check-errors [check]="sentierCheck()!" />
+      </section>
+    }
+    @if (sentierCheckError() && sentier!.status !== 'En attente') {
+      <section class="mx-4 mt-3 p-4 rounded-xl border-2 border-primary bg-primary-50">
+        <h5 class="m-0 p-0 text-sm font-semibold text-secondary mb-2">⚠️ Erreurs détectées</h5>
+        <app-sentier-check-errors [error]="sentierCheckError()!" />
+        <p class="mt-2 text-xs text-secondary font-medium">Résolvez les erreurs ci-dessus pour pouvoir soumettre ce sentier.</p>
+      </section>
+    }
+
+    <!-- ADMIN SECTION -->
     @if (userService.isUserAdmin() && sentier!.status === 'En attente') {
-      <section class="mt-4">
-        <hr />
-        <h2>Options admins</h2>
-        <button role="button" title="vérifier si ce sentier peut être publier" type="button" (click)="checkSentier(sentier!)">Vérifier ce sentier</button>
+      <section class="mx-4 mt-4 p-4 rounded-xl bg-accent-50 border border-accent-200">
+        <h3 class="m-0 p-0 ml-0 text-base font-bold text-accent mb-3">🔐 Options administrateur</h3>
+        <div class="flex flex-wrap gap-2 mt-2">
+          <button class="mt-0 mx-0" role="button" title="Vérifier le sentier" type="button" (click)="checkSentier(sentier!)">Vérifier</button>
+          <button class="mt-0 mx-0 bg-accent hover:bg-accent-700 text-white" role="button" title="Publier le sentier" type="button">✅ Publier</button>
+          <button class="mt-0 mx-0 bg-red-700 hover:bg-red-600 text-white border-red-700" role="button" title="Refuser le sentier" type="button">❌ Refuser</button>
+        </div>
         <app-sentier-check-errors [check]="sentierCheck()!" />
         @if (sentierCheckError()) {
-          <h3>Erreurs détectées:</h3>
-          <app-sentier-check-errors [error]="sentierCheckError()!" />
-          <h5 class="border border-2 p-2 border-primary">Merci de résoudre les erreurs ci-dessus afin de pouvoir envoyer votre sentier aux administrateurs pour vérification et publication.</h5>
+          <div class="mt-3">
+            <app-sentier-check-errors [error]="sentierCheckError()!" />
+          </div>
         }
-        <button role="button" title="Valider ce sentier" type="button">Publier ce sentier</button>
-        <button class="bg-red-800 hover:bg-red-600 text-white" role="button" title="Refuser ce sentier" type="button">Refuser ce sentier</button>
-        <hr class="mt-4"/>
       </section>
-
     }
 
-    <app-map #mapComponent [singleSentier]="sentier" />
+    <!-- EXPORT PDF + QR -->
+    <section class="mx-4 mt-4 p-4 rounded-xl bg-white/60 border border-background-200 flex flex-wrap items-center justify-between gap-4">
+      <app-pdf-export
+        type="sentier"
+        [isLoading]="taxonSearchService.loading()"
+        [mapImageUrl]="mapImageUrl()"
+        [sentier]="sentier!"
+        [taxons]="taxonSearchService.taxons()"
+        (beforeExport)="captureMap()"
+      />
+      <img
+        alt="QR code du sentier"
+        class="rounded-lg"
+        height="80"
+        priority
+        width="80"
+        [ngSrc]="trailQrCode()"
+      />
+    </section>
 
-    <img
-      alt="QR code du sentier"
-      height="100"
-      priority
-      width="100"
-      [ngSrc]="trailQrCode()"
-    />
+    <!-- CARTE (élément mis en avant) -->
+    <section class="mx-4 mt-4 rounded-xl overflow-hidden shadow-lg border border-background-200">
+      <app-map #mapComponent [singleSentier]="sentier" />
+    </section>
 
-    <ul>
-      @if (sentier!.image) {
-        <div class="w-40 h-40 relative">
-          <img alt="Image du sentier {{ sentier!.display_name }}" class="" fill ngSrc="{{ sentier!.image.url }}" priority />
-        </div>
-      } @else {
-        <li>Aucune image disponible</li>
-      }
+    <!-- STATS RAPIDES + IMAGE + QR -->
+    <section class="mx-4 mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div class="col-span-2 sm:col-span-2 p-4 rounded-xl bg-white/60 border border-background-200 flex flex-col gap-3">
+        @if (sentier!.image) {
+          <div class="w-full aspect-video relative rounded-lg overflow-hidden">
+            <img
+              class="object-cover"
+              fill
+              priority
+              [alt]="'Image du sentier ' + sentier!.display_name"
+              [ngSrc]="sentier!.image.url!"
+            />
+          </div>
+        } @else {
+          <div class="w-full aspect-video rounded-lg bg-background-200 flex items-center justify-center text-text-400 text-sm">
+            Aucune image
+          </div>
+        }
+      </div>
 
-      <hr />
-      <li>Accessibilité PMR: {{ pdfExportService.getPmrText(sentier!.prm) }}</li>
-      @if (sentier!.best_season) {
-        <div id="best_seasons" class="flex flex-wrap gap-8">
-          Meilleures saisons:
+      <!-- Stats -->
+      <div class="p-4 rounded-xl bg-white/60 border border-background-200 flex flex-col items-center justify-center text-center gap-1">
+        <span class="text-2xl font-bold text-primary">{{ sentier!.path_length }}</span>
+        <span class="text-xs text-text-500">mètres</span>
+      </div>
+
+      <div class="p-4 rounded-xl bg-white/60 border border-background-200 flex flex-col items-center justify-center text-center gap-1">
+        <span class="text-2xl font-bold text-secondary">{{ sentier!.occurrences_count }}</span>
+        <span class="text-xs text-text-500">observations</span>
+      </div>
+
+      <div class="p-4 rounded-xl bg-white/60 border border-background-200 flex flex-col items-center justify-center text-center gap-1">
+        <span class="text-2xl font-bold text-accent">{{ sentier!.nb_taxons }}</span>
+        <span class="text-xs text-text-500">taxons</span>
+      </div>
+
+      <!-- PMR -->
+      <div class="p-4 rounded-xl bg-white/60 border border-background-200 flex flex-col items-center justify-center text-center gap-1">
+        <span class="text-lg">♿</span>
+        <span class="text-xs text-text-500 font-medium">{{ pdfExportService.getPmrText(sentier!.prm) }}</span>
+      </div>
+    </section>
+
+    <!-- SAISONS -->
+    @if (sentier!.best_season) {
+      <section class="mx-4 mt-4 p-4 rounded-xl bg-white/60 border border-background-200">
+        <h4 class="m-0 p-0 text-sm font-semibold text-text-600 mb-3">🌿 Meilleures saisons</h4>
+        <div class="flex flex-wrap gap-4">
           @for (season of sentier!.best_season; track $index) {
             @if (season) {
-              <img
-                ngSrc="/assets/images/{{ seasonImages[$index] }}"
-                title="{{ seasonLabels[$index] }}"
-                width="64"
-                height="64"
-                [alt]="seasonLabels[$index]"
-              />
+              <div class="flex flex-col items-center gap-1">
+                <img
+                  class="rounded-lg"
+                  height="48"
+                  width="48"
+                  [alt]="seasonLabels[$index]"
+                  [ngSrc]="'/assets/images/' + seasonImages[$index]"
+                  [title]="seasonLabels[$index]"
+                />
+                <span class="text-xs text-text-500">{{ seasonLabels[$index] }}</span>
+              </div>
             }
           }
         </div>
-      }
+      </section>
+    }
 
-      <hr />
-      @if (!sentier!.position || !sentier!.position.start) {
-        <li>Aucune position de départ/arrivée définie</li>
-      }
+    <!-- ALERTES CHEMIN/POSITION -->
+    @if (!sentier!.position || !sentier!.position.start || !sentier!.path || sentier!.path.coordinates.length === 0) {
+      <section class="mx-4 mt-4 p-3 rounded-xl bg-primary-50 border border-primary-200 text-xs text-secondary flex flex-col gap-1">
+        @if (!sentier!.position || !sentier!.position.start) {
+          <span>⚠️ Aucune position de départ/arrivée définie</span>
+        }
+        @if (!sentier!.path || sentier!.path.coordinates.length === 0) {
+          <span>⚠️ Aucun chemin défini</span>
+        }
+      </section>
+    }
 
-      @if (!sentier!.path || sentier!.path.coordinates.length === 0) {
-        <li>Aucun chemin défini</li>
-      }
-      <li>Longueur: {{ sentier!.path_length }} m</li>
+    <!-- TAXONS -->
+    <section class="mx-4 mt-4 mb-8">
+      <h3 class="ml-0 text-base font-bold text-text mb-3">🌱 Taxons du sentier</h3>
+      <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        @for (occurrence of occurencesUniques(); track occurrence.id) {
+          <app-occurrence-card
+            [occurrence]="occurrence"
+            (openOccurrence)="openOccurrence($event)"
+          />
+        }
+      </ul>
+    </section>
 
-      <hr />
-      <li>Nombre d'observations: {{ sentier!.occurrences_count }}</li>
-      <li>Nombre de taxons: {{ sentier!.nb_taxons }}</li>
-
-      <div class="mt-2">
-        <h3>Taxons du sentier</h3>
-        <ul class="grid grid-cols-1 gap-4 mt-2 sm:grid-cols-2 lg:grid-cols-3">
-          @for (occurrence of occurencesUniques(); track occurrence.id) {
-            <app-occurrence-card
-              [occurrence]="occurrence"
-              (openOccurrence)="openOccurrence($event)"
-            />
-          }
-        </ul>
-      </div>
-    </ul>
-    <hr />
   }
 </div>
 
+<!-- MODALS -->
 @if (showTrailModal) {
   <app-sentier-form
     [sentier]="sentierToUpdate"
@@ -166,7 +242,7 @@
 
 <dialog
   #occurrenceListDialog
-  class="border-0 rounded-xl p-0 shadow-2xl top-50 left-1/2 translate-y--50 -translate-x-1/2 w-full max-w-2xl"
+  class="border-0 rounded-xl p-0 shadow-2xl top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-full max-w-2xl"
   (close)="closeOccurrence()"
 >
   <app-occurrence-modal-detail
