@@ -15,9 +15,10 @@
     }
     <p>auteur: <span class="font-bold">{{ sentier!.author }}</span></p>
 
-    <!--      TODO: A n'afficher que pour les admins-->
-    <p>auteur_id: <span class="font-bold">>{{ sentier!.author_id }}</span>
-       / <span class="font-bold">email: {{ sentier!.author_email }}</span></p>
+    @if (userService.isUserAdmin()) {
+      <p>auteur_id: <span class="font-bold">{{ sentier!.author_id }}</span>
+         / <span class="font-bold">email: {{ sentier!.author_email }}</span></p>
+    }
 
     @if (sentier!.status !== 'Validé') {
       <p>État: <span class="font-bold">{{ sentier!.status ?? 'brouillon' }}</span></p>
@@ -26,12 +27,14 @@
         <button class="" type="button" (click)="openTrailModal(sentier!)">Modifier ce sentier</button>
         <button
           class="bg-red-800 hover:bg-red-600 text-white"
+          role="button"
+          title="Supprimer ce sentier"
           type="button"
           (click)="openDeleteConfirmModal(sentier!)"
         >supprimer ce sentier</button>
 
         @if (sentier!.status !== 'Validé' && sentier!.status !== 'En attente') {
-          <button class="" type="button" (click)="checkSentier(sentier!)">Vérifier ce sentier</button>
+          <button class="" role="button" title="vérifier si ce sentier peut être publier" type="button" (click)="checkSentier(sentier!)">Vérifier ce sentier</button>
         }
 
         @if (sentierCheck().status && sentier!.status !== 'En attente') {
@@ -44,10 +47,8 @@
         }
 
         @if (sentierCheck().status && !sentierCheckError() && sentier!.status !== 'En attente') {
-          <button class="" type="button" (click)="sendTrailToReview(sentier!)">Publier</button>
+          <button class="" role="button" title="Envoyer ce sentier en validation" type="button" (click)="sendTrailToReview(sentier!)">Envoyer en validation</button>
         }
-
-        <!--        TODO: ajouter bouton pour admin pour pouvoir valider le sentier-->
 
       } @else {
         <p>Connectez-vous pour modifier ce sentier</p>
@@ -62,6 +63,24 @@
       [taxons]="taxonSearchService.taxons()"
       (beforeExport)="captureMap()"
     />
+
+    @if (userService.isUserAdmin() && sentier!.status === 'En attente') {
+      <section class="mt-4">
+        <hr />
+        <h2>Options admins</h2>
+        <button role="button" title="vérifier si ce sentier peut être publier" type="button" (click)="checkSentier(sentier!)">Vérifier ce sentier</button>
+        <app-sentier-check-errors [check]="sentierCheck()!" />
+        @if (sentierCheckError()) {
+          <h3>Erreurs détectées:</h3>
+          <app-sentier-check-errors [error]="sentierCheckError()!" />
+          <h5 class="border border-2 p-2 border-primary">Merci de résoudre les erreurs ci-dessus afin de pouvoir envoyer votre sentier aux administrateurs pour vérification et publication.</h5>
+        }
+        <button role="button" title="Valider ce sentier" type="button">Publier ce sentier</button>
+        <button class="bg-red-800 hover:bg-red-600 text-white" role="button" title="Refuser ce sentier" type="button">Refuser ce sentier</button>
+        <hr class="mt-4"/>
+      </section>
+
+    }
 
     <app-map #mapComponent [singleSentier]="sentier" />
 

@@ -72,6 +72,7 @@ export class SingleTrail implements OnInit {
   readonly occurrenceDialog = viewChild<ElementRef<HTMLDialogElement>>('occurrenceListDialog');
   readonly selectedOccurrence = signal<Occurrence | null>(null);
 
+
   readonly mapComponent = viewChild<Map>('mapComponent');
 
   readonly seasonImages = ['arbre.png', 'sunny.png', 'maple-leaf.png', 'flocon-de-neige.png'];
@@ -85,16 +86,16 @@ export class SingleTrail implements OnInit {
   pdfExportService = inject(PdfExportService);
 
   baseUrl = this.sharedService.url().origin
+  isAdmin = signal<boolean | null | undefined>(false)
 
   constructor() {
-    this.isLoggedIn.set(this.userService.isLoggedIn());
-    this.user = this.userService.user();
-
-    effect(()=>{
+    effect(() => {
       this.isLoggedIn.set(this.userService.isLoggedIn());
       this.user = this.userService.user();
-      this.sentier = this.sentierService.sentier();
+    });
 
+    effect(()=>{
+      this.sentier = this.sentierService.sentier();
       this.fillUniqueOccurrences();
 
       this.trailQrCode.set(

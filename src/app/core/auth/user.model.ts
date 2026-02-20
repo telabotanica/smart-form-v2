@@ -6,7 +6,7 @@ export class User {
   email: string;
   avatar: string;
   token: string;
-  admin: number;
+  admin: boolean;
   trails: Sentier[];
 
 
@@ -16,7 +16,7 @@ export class User {
     email: string,
     avatar: string,
     token: string,
-    admin: number,
+    admin: boolean,
     trails: Sentier[]
   ) {
     this.id = id;

@@ -56,7 +56,7 @@ export class UserService {
 
   setUserData(token: string): void {
     const userData = this.customCookiesService.userInfos(token);
-    const user = new User(userData.id, userData.intitule, userData.sub, userData.avatar, token, 0, []);
+    const user = new User(userData.id, userData.intitule, userData.sub, userData.avatar, token, false, []);
     this.setUserId(userData.id)
     this.setLoggedIn(true);
     this.addAdminRole(user);
@@ -69,7 +69,7 @@ export class UserService {
       .subscribe({
         next: (data) => {
           if (user instanceof User) {
-            user.admin = data ? 1 : 0;
+            user.admin = data ? true : false;
             this.isUserAdmin.set(data)
           }
         },
