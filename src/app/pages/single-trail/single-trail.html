@@ -6,8 +6,21 @@
   } @else {
     <h2>{{ sentier!.display_name }}</h2>
 
+    <p>Créée le : <span class="font-bold">{{ sentier!.date_creation | date:"d MMMM y" }}</span></p>
+    @if (sentier!.date_modification) {
+      <p>modifié le : <span class="font-bold">{{ sentier!.date_modification | date:"d MMMM y" }}</span></p>
+    }
+    @if (sentier!.date_publication) {
+      <p>publié le : <span class="font-bold">{{ sentier!.date_publication | date:"d MMMM y" }}</span></p>
+    }
+    <p>auteur: <span class="font-bold">{{ sentier!.author }}</span></p>
+
+    <!--      TODO: A n'afficher que pour les admins-->
+    <p>auteur_id: <span class="font-bold">>{{ sentier!.author_id }}</span>
+       / <span class="font-bold">email: {{ sentier!.author_email }}</span></p>
+
     @if (sentier!.status !== 'Validé') {
-      <p>État: {{ sentier!.status ?? 'brouillon' }}</p>
+      <p>État: <span class="font-bold">{{ sentier!.status ?? 'brouillon' }}</span></p>
 
       @if (isLoggedIn() && user && user.id === sentier!.author_id) {
         <button class="" type="button" (click)="openTrailModal(sentier!)">Modifier ce sentier</button>
@@ -68,29 +81,24 @@
       } @else {
         <li>Aucune image disponible</li>
       }
-<!--      TODO: A n'afficher que pour les admins-->
-      <li>auteur_id: {{ sentier!.author_id }}</li>
-
-      <li>auteur: {{ sentier!.author }}</li>
-
-<!--TODO: A n'afficher que pour les admins-->
-      <li>email: {{ sentier!.author_email }}</li>
-
-      <li>Créée le : {{ sentier!.date_creation | date:"d MMMM y" }}</li>
-      @if (sentier!.date_modification) {
-        <li>modifié le : {{ sentier!.date_modification | date:"d MMMM y" }}</li>
-      }
-      @if (sentier!.date_publication) {
-        <li>publié le : {{ sentier!.date_publication | date:"d MMMM y" }}</li>
-      }
 
       <hr />
-      <li>Accessibilité PMR: {{ sentier!.prm }}</li>
+      <li>Accessibilité PMR: {{ pdfExportService.getPmrText(sentier!.prm) }}</li>
       @if (sentier!.best_season) {
-        Meilleures saisons:
-        @for (season of sentier!.best_season; track $index) {
-          <span class="inline-block bg-gray-200 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{{ season }}</span>
-        }
+        <div id="best_seasons" class="flex flex-wrap gap-8">
+          Meilleures saisons:
+          @for (season of sentier!.best_season; track $index) {
+            @if (season) {
+              <img
+                ngSrc="/assets/images/{{ seasonImages[$index] }}"
+                title="{{ seasonLabels[$index] }}"
+                width="64"
+                height="64"
+                [alt]="seasonLabels[$index]"
+              />
+            }
+          }
+        </div>
       }
 
       <hr />
@@ -104,7 +112,7 @@
       <li>Longueur: {{ sentier!.path_length }} m</li>
 
       <hr />
-      <li>Nombre d'occurrences: {{ sentier!.occurrences_count }}</li>
+      <li>Nombre d'observations: {{ sentier!.occurrences_count }}</li>
       <li>Nombre de taxons: {{ sentier!.nb_taxons }}</li>
 
       <div class="mt-2">

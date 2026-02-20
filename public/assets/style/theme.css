@@ -121,23 +121,23 @@
   }
 
   h2 {
-    @apply text-2xl py-4;
+    @apply text-2xl py-4 ml-2;
   }
 
   h3 {
-    @apply text-xl py-3;
+    @apply text-xl py-3 ml-2;
   }
 
   h4 {
-    @apply text-lg py-2;
+    @apply text-lg py-2 ml-2;
   }
 
   h5 {
-    @apply text-base py-2;
+    @apply text-base py-2 ml-2;
   }
 
   h6 {
-    @apply text-sm py-2;
+    @apply text-sm py-2 ml-2;
   }
 
   p {

@@ -33,6 +33,7 @@ import {
   OccurrenceModalDetail
 } from '../../features/occurrence/components/occurrence-modal-detail/occurrence-modal-detail';
 import {OccurrenceCard} from '../../features/occurrence/components/occurrence-card/occurrence-card';
+import {PdfExportService} from '../../shared/components/pdf-export/pdf-export.service';
 
 @Component({
   selector: 'app-single-trail',
@@ -73,11 +74,15 @@ export class SingleTrail implements OnInit {
 
   readonly mapComponent = viewChild<Map>('mapComponent');
 
+  readonly seasonImages = ['arbre.png', 'sunny.png', 'maple-leaf.png', 'flocon-de-neige.png'];
+  readonly seasonLabels = ['Printemps', 'Été', 'Automne', 'Hiver'];
+
   sentierService= inject(SingleSentierService)
   userService = inject(UserService);
   sharedService = inject(SharedService);
   ficheService = inject(FicheService);
   taxonSearchService = inject(TaxonSearchService);
+  pdfExportService = inject(PdfExportService);
 
   baseUrl = this.sharedService.url().origin
 
