@@ -2,10 +2,10 @@
 <li class="flex flex-col gap-2 p-4 bg-accent-50 rounded-xl shadow border border-background-200">
 
   @if (occ.taxon!.vernacular_names?.length) {
-    <p class="font-bold text-text font-title">{{ occ.taxon!.vernacular_names!.join(', ') }}</p>
+    <p class="font-bold text-text font-title text-lg">{{ occ.taxon!.vernacular_names!.join(', ') }}</p>
     <p class="text-sm italic text-text-500">{{ occ.taxon!.scientific_name }}</p>
   } @else {
-    <p class="font-bold italic text-text font-title">{{ occ.taxon!.scientific_name }}</p>
+    <p class="font-bold italic text-text font-title text-lg">{{ occ.taxon!.scientific_name }}</p>
   }
 
   @if (taxonSearchService.loading()) {
