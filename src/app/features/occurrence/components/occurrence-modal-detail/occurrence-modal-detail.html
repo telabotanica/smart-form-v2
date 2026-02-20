@@ -1,90 +1,151 @@
 @if (occurrence(); as o) {
-  <article class="p-4 min-w-[280px] max-w-[90vw]" [class.blur-2xl]="sharedService.blurBackground()">
-    <header class="flex items-center justify-between gap-4 mb-2">
-      <h3 class="m-0 text-lg">Occurrence #{{ o.id }}</h3>
+  <article
+    class="flex flex-col w-full bg-background-50 rounded-xl overflow-hidden"
+    [class.blur-2xl]="sharedService.blurBackground()"
+  >
+
+    <!-- Header -->
+    <header class="relative px-8 pt-8 pb-5">
+      <p class="text-[.68rem] tracking-[.18em] uppercase text-text-500 mb-2">Observation</p>
+      <h3 class="!m-0 !p-0 text-2xl font-semibold tracking-tight text-text">
+        @if (o.taxon?.scientific_name) {
+          <span class="italic">{{ o.taxon!.scientific_name }}</span>
+        } @else {
+          Occurrence #{{ o.id }}
+        }
+      </h3>
       <button
         aria-label="Fermer"
-        class="bg-transparent border-0 text-xl"
+        class="absolute top-4 right-4 !mt-0 !mx-0 !shadow-none !bg-transparent !border-0 !p-1
+               grid place-items-center w-9 h-9 rounded-full text-text-400 hover:text-text hover:bg-background-200"
         type="button"
         (click)="onClose()()"
       >
-        ×
+        <span class="material-symbols-outlined">close</span>
       </button>
     </header>
 
-    <section class="space-y-1">
-      @if (o.taxon?.scientific_name) {
-        <p>Nom scientifique: {{ o.taxon!.scientific_name }}</p>
-      }
-      @if (o.taxon?.taxon_repository) {
-        <p>Référentiel: {{ o.taxon!.taxon_repository }}</p>
-      }
-      @if (o.taxon?.vernacular_names?.length) {
-        <p>Noms vernaculaires: {{ o.taxon!.vernacular_names!.join(', ') }}</p>
-      }
+    <!-- Barre colorée -->
+    <div class="h-[3px] bg-gradient-to-r from-primary to-primary-300 shrink-0"></div>
 
-      <div class="w-40 h-40 relative">
+    <!-- Corps scrollable -->
+    <section class="flex flex-col gap-5 px-8 py-7 overflow-y-auto max-h-[70dvh]">
+
+      <!-- Infos taxon -->
+      <div class="p-4 rounded-lg bg-accent-50 border border-accent-200 flex flex-col gap-1">
+        @if (o.taxon?.scientific_name) {
+          <p class="!m-0 text-sm font-semibold italic text-accent">{{ o.taxon!.scientific_name }}</p>
+        }
+        @if (o.taxon?.taxon_repository) {
+          <p class="!m-0 text-xs text-text-500">Référentiel : {{ o.taxon!.taxon_repository }}</p>
+        }
+        @if (o.taxon?.vernacular_names?.length) {
+          <p class="!m-0 text-xs text-text-500">{{ o.taxon!.vernacular_names!.join(', ') }}</p>
+        }
+      </div>
+
+      <!-- Image -->
+      <div class="w-full aspect-video relative rounded-lg overflow-hidden bg-background-200">
         <img
           fill
           priority
+          class="object-cover"
           [alt]="imageAlt()"
           [ngSrc]="imageSrc()"
           [title]="imageTitle()"
         />
       </div>
 
+      <!-- Anecdote -->
       @if (o.anecdotes) {
-        <p>{{ o.anecdotes }}</p>
+        <div class="px-4 py-3 rounded-lg bg-background-100 border border-background-200">
+          <p class="!m-0 text-xs text-text-500 uppercase tracking-widest mb-1">Anecdote</p>
+          <p class="!m-0 text-sm text-text italic">{{ o.anecdotes }}</p>
+        </div>
       }
 
-      @if (sharedService.canEditTrail(
-        userService.user(),
-        sentier(),
-        userService.isUserAdmin()
-      )) {
-        <div>
-          <button class="" role="button" title="modifier l'individu" type="button" (click)="openOccurrenceForm()">
+      <!-- Actions édition -->
+      @if (sharedService.canEditTrail(userService.user(), sentier(), userService.isUserAdmin())) {
+        <div class="flex gap-2 flex-wrap">
+          <button
+            class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
+                   hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+                   text-text text-[.7rem] tracking-[.06em]"
+            type="button"
+            (click)="openOccurrenceForm()"
+          >
+            <span class="material-symbols-outlined text-[.9rem]">edit</span>
             Modifier
           </button>
-          <button class="bg-red-800 hover:bg-red-600 text-white" role="button" title="supprimer l'individu" type="button" (click)="openDeleteConfirmation()">
+          <button
+            class="!mt-0 !mx-0 !bg-red-700 hover:!bg-red-600 border-red-700 text-white text-[.7rem] tracking-[.06em]"
+            type="button"
+            (click)="openDeleteConfirmation()"
+          >
+            <span class="material-symbols-outlined text-[.9rem]">delete</span>
             Supprimer
           </button>
         </div>
       }
 
-      <hr class="mt-3 mb-0"/>
-      <h3 class="mb-0 pb-0">Fiche</h3>
-      @if (o.card_tag){
-        <div class="flex gap-2">
-          @if (userService.isLoggedIn()){
-            <button class="bg-background ml-0" role="button" title="Éditer la fiche" type="button" (click)="editFicheModal()">
-              <span class="material-symbols-outlined ">edit_document</span> <span>Éditer la fiche</span>
-            </button>
-          }
-        </div>
-        <div class="flex gap-2">
-          <button class="bg-background ml-0" role="button" title="Voir la fiche" type="button">
-            <a class="mt-2" target="_blank" [routerLink]="['/fiche', o.taxon!.taxon_repository, o.taxon!.taxonomic_id, o.taxon!.name_id]">
-              <span class="material-symbols-outlined">article</span>
+      <!-- Section fiche -->
+      <div class="flex flex-col gap-3 pt-4 border-t border-background-200">
+        <p class="flex items-center gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent font-semibold">
+          <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">Fiche</span>
+        </p>
+
+        @if (o.card_tag) {
+          <div class="flex flex-wrap gap-2">
+            @if (userService.isLoggedIn()) {
+              <button
+                class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
+                       hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+                       text-text text-[.7rem] tracking-[.06em]"
+                type="button"
+                (click)="editFicheModal()"
+              >
+                <span class="material-symbols-outlined text-[.9rem]">edit_document</span>
+                Éditer la fiche
+              </button>
+            }
+
+
+            <a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-background-300
+            bg-transparent text-text text-[.7rem] tracking-[.06em] hover:bg-background-100
+            hover:border-background-400 transition-colors no-underline"
+            target="_blank"
+            [routerLink]="['/fiche', o.taxon!.taxon_repository, o.taxon!.taxonomic_id, o.taxon!.name_id]"
+            >
+            <span class="material-symbols-outlined text-[.9rem]">article</span>
+            Voir la fiche
             </a>
-          </button>
 
-          <app-qr-code-button [taxon]="o.taxon!"/>
+            <app-qr-code-button [taxon]="o.taxon!" />
 
-          <app-pdf-export
-            [fiche]="fiche()"
-            [imageUrl]="getFirstImageUrl()"
-            [taxon]="o.taxon!"
-          />
-        </div>
-      } @else {
-        <p>Pas de fiche</p>
-        @if (userService.isLoggedIn()){
-          <button class="bg-background" role="button" title="Créer la fiche" type="button" (click)="createFicheModal()">
-            <span class="material-symbols-outlined ">note_add</span>
-          </button>
+            <app-pdf-export
+              [fiche]="fiche()"
+              [imageUrl]="getFirstImageUrl()"
+              [taxon]="o.taxon!"
+            />
+          </div>
+        } @else {
+          <div class="flex items-center gap-3 p-3 rounded-lg bg-background-100 border border-background-200">
+            <span class="text-text-400 text-sm">Aucune fiche disponible</span>
+            @if (userService.isLoggedIn()) {
+              <button
+                class="!mt-0 !mx-0 !ml-auto !shadow-none !bg-primary hover:!bg-primary-400
+                       text-white text-[.7rem] tracking-[.06em]"
+                type="button"
+                (click)="createFicheModal()"
+              >
+                <span class="material-symbols-outlined text-[.9rem]">note_add</span>
+                Créer la fiche
+              </button>
+            }
+          </div>
         }
-      }
+      </div>
+
     </section>
   </article>
 

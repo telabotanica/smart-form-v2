@@ -1,32 +1,96 @@
-<form (submit)="$event.preventDefault(); submit()">
-  <label>
-    Nom :
-    <input placeholder="Nom du sentier" type="text" [value]="nom()" (input)="nom.set($any($event.target).value); onInputChange()" />
-  </label>
+<form
+  id="sentier-public-filter"
+  class="p-4 rounded-xl bg-background-50 border border-background-200 flex flex-col gap-3"
+  (submit)="$event.preventDefault(); submit()"
+>
+  <p class="!m-0 text-[.68rem] tracking-[.1em] uppercase text-accent font-semibold">
+    Filtres
+  </p>
 
-  <label>
-    Auteur :
-    <input placeholder="Auteur" type="text" [value]="auteur()" (input)="auteur.set($any($event.target).value); onInputChange()" />
-  </label>
+  <div class="flex flex-wrap gap-3">
 
-  <label>
-    PMR :
-    <select [value]="pmr()" (change)="onPmrChange($event)">
-      <option [value]="null">Tous</option>
-      <option [value]="-1">Ne sait pas</option>
-      <option [value]="0">Non accessible</option>
-      <option [value]="1">Accessible</option>
-    </select>
-  </label>
+    <!-- Nom -->
+    <div class="flex flex-col gap-1 flex-1 min-w-36">
+      <label class="text-[.68rem] tracking-[.06em] uppercase text-text-500" for="filter-nom">
+        Nom
+      </label>
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[1rem] text-text-300 pointer-events-none">
+          search
+        </span>
+        <input
+          class="w-full !bg-white pl-9 pr-4 py-2.5 text-sm text-text border-[1.5px] border-background-200
+                 rounded-lg placeholder:text-text-300 placeholder:italic transition
+                 focus:outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/15"
+          id="filter-nom"
+          placeholder="Nom du sentier…"
+          type="text"
+          [value]="nom()"
+          (input)="nom.set($any($event.target).value); onInputChange()"
+        />
+      </div>
+    </div>
 
-<!--  <label>-->
-<!--    Ordre :-->
-<!--    <select [value]="ordre()" (change)="ordre.set($any($event.target).value); emitSearch()">-->
-<!--      <option value="ASC">Ascendant</option>-->
-<!--      <option value="DESC">Descendant</option>-->
-<!--    </select>-->
-<!--  </label>-->
+    <!-- Auteur -->
+    <div class="flex flex-col gap-1 flex-1 min-w-36">
+      <label class="text-[.68rem] tracking-[.06em] uppercase text-text-500" for="filter-auteur">
+        Auteur
+      </label>
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[1rem] text-text-300 pointer-events-none">
+          person
+        </span>
+        <input
+          class="w-full !bg-white pl-9 pr-4 py-2.5 text-sm text-text border-[1.5px] border-background-200
+                 rounded-lg placeholder:text-text-300 placeholder:italic transition
+                 focus:outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/15"
+          id="filter-auteur"
+          placeholder="Auteur…"
+          type="text"
+          [value]="auteur()"
+          (input)="auteur.set($any($event.target).value); onInputChange()"
+        />
+      </div>
+    </div>
 
-<!--  <button type="submit">Rechercher</button>-->
-  <button type="button" (click)="reset()">Réinitialiser</button>
+    <!-- PMR -->
+    <div class="flex flex-col gap-1 min-w-36">
+      <label class="text-[.68rem] tracking-[.06em] uppercase text-text-500" for="filter-pmr">
+        Accessibilité PMR ♿
+      </label>
+      <div class="relative">
+        <select
+          class="w-full !bg-white px-4 py-2.5 pr-9 text-sm text-text border-[1.5px] border-background-200
+                 rounded-lg appearance-none transition focus:outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/15"
+          id="filter-pmr"
+          [value]="pmr()"
+          (change)="onPmrChange($event)"
+        >
+          <option [value]="null">Tous</option>
+          <option [value]="-1">Ne sait pas</option>
+          <option [value]="0">Non accessible</option>
+          <option [value]="1">Accessible</option>
+        </select>
+        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[1rem] text-text-300 pointer-events-none">
+          expand_more
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Reset -->
+  <div class="flex justify-end pt-1">
+    <button
+      class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
+             hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+             text-text text-[.7rem] tracking-[.06em]"
+      type="button"
+      (click)="reset()"
+    >
+      <span class="material-symbols-outlined text-[.9rem]">restart_alt</span>
+      Réinitialiser
+    </button>
+  </div>
+
 </form>

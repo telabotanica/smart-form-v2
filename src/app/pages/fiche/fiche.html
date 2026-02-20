@@ -1,44 +1,86 @@
-@if (taxonSearchService.loading()) {
-  <app-loader />
-}
+<article class="px-4 pt-6 pb-8 flex flex-col gap-6">
 
-@if (taxonSearchService.error()) {
-  <app-error [errorMessage]="taxonSearchService.error() ?? ''" />
-}
+  @if (taxonSearchService.loading()) {
+    <app-loader />
+  }
+  @if (taxonSearchService.error()) {
+    <app-error [errorMessage]="taxonSearchService.error() ?? ''" />
+  }
 
-@if (taxonSearchService.taxon().vernacular_names?.length) {
-  <h2>{{ taxonSearchService.taxon().vernacular_names![0] }}</h2>
-}
+  <!-- Header taxon -->
+  <section class="flex flex-col gap-1">
+    @if (taxonSearchService.taxon().vernacular_names?.length) {
+      <h2 class="!m-0 !p-0 text-3xl font-bold text-text">
+        {{ taxonSearchService.taxon().vernacular_names![0] }}
+      </h2>
+    }
+    <h3 class="!m-0 !p-0 text-base font-normal text-text-500">
+      <span class="italic">{{ taxonSearchService.taxon().scientific_name }}</span>
+      · Famille des
+      <span class="font-medium text-text">{{ taxonSearchService.taxon().family }}</span>
+    </h3>
+    <div
+      class="mt-1 text-xs text-text-400 whitespace-pre-line"
+      [innerHTML]="taxonSearchService.taxon().html_full_scientific_name | markdown"
+    ></div>
+  </section>
 
-<h3>
-  <span class="italic">{{ taxonSearchService.taxon().scientific_name }}</span>
-  Famille des
-  <span>{{ taxonSearchService.taxon().family }}</span>
-</h3>
+  <!-- Carousel -->
+  <section class="max-w-6xl mx-auto w-full w-full aspect-video rounded-xl bg-background-200 border border-background-300
+              flex items-center justify-center text-text-400 text-sm gap-2">
+    <span class="material-symbols-outlined">photo_library</span>
+    Carousel d'images
+  </section>
 
-<div class="whitespace-pre-line" [innerHTML]="taxonSearchService.taxon().html_full_scientific_name | markdown"></div>
-<div class="h-40 border">
-  Carousel d'images
-</div>
+  <!-- Sections / onglets -->
+  <section class="flex flex-col gap-5">
+    @for (tab of taxonSearchService.taxon()!.tabs!; track $index) {
+      @for (section of tab.sections; track $index) {
+        <div class="flex flex-col gap-2">
+          <h4 class="!m-0 !p-0 text-[.68rem] tracking-[.1em] uppercase text-accent font-semibold
+                     flex items-center gap-2">
+            <span class="block w-4 h-[2px] bg-primary rounded-full"></span>
+            {{ section.title }}
+          </h4>
+          @if (section.text) {
+            <p
+              class="!m-0 text-sm text-text leading-relaxed whitespace-pre-line
+                     px-4 py-3 rounded-lg bg-background-50 border border-background-200"
+              [innerHTML]="section.text | wikiToHtml"
+            ></p>
+          } @else {
+            <p class="!m-0 text-sm text-text-400 italic px-4 py-3 rounded-lg bg-background-100 border border-background-200">
+              Aucun texte disponible pour cette section.
+            </p>
+          }
+        </div>
+      }
+    }
+  </section>
 
-<div class="mt-4">
-  @for(tab of taxonSearchService.taxon()!.tabs!; track $index){
-      @for(section of tab.sections; track $index){
-        <h4 class="uppercase">{{ section.title }}</h4>
-        @if (section.text) {
-          <p class="whitespace-pre-line" [innerHTML]="section.text | wikiToHtml"></p>
-        } @else {
-          <p>Aucun texte disponible pour cette section.</p>
+  <!-- En savoir plus -->
+  <section class="flex flex-col gap-3 pt-4 border-t border-background-200">
+    <p class="!m-0 text-[.68rem] tracking-[.1em] uppercase text-accent font-semibold
+              flex items-center gap-2">
+      <span class="block w-4 h-[2px] bg-primary rounded-full"></span>
+      En savoir plus
+    </p>
+    <div class="flex flex-wrap gap-2">
+      @for (tab of taxonSearchService.taxon()!.tabs!; track $index) {
+        @if (tab.url) {
+          <a
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-background-300
+            bg-background-50 text-text text-[.7rem] tracking-[.06em] hover:bg-background-100
+            hover:border-accent hover:text-accent transition-colors no-underline !h-auto !shadow-none"
+            [href]="tab.url"
+            target="_blank"
+            >
+          <span class="material-symbols-outlined text-[.9rem]">open_in_new</span>
+          {{ tab.title }}
+          </a>
         }
       }
-  }
-</div>
+    </div>
+  </section>
 
-<div class="mt-4">
-  <h4>En savoir plus</h4>
-  @for(tab of taxonSearchService.taxon()!.tabs!; track $index){
-    @if (tab.url) {
-      <p class="mt-4"><a href="{{tab.url}}" target="_blank">{{ tab.title }}</a></p>
-    }
-  }
-</div>
+</article>

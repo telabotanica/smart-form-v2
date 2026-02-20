@@ -1,63 +1,84 @@
-<div><h2>Rechercher une fiche</h2>
-  <form class="flex justify-start items-start gap-2 mb-2" [formGroup]="form()">
-    <div class="">
-      <label class="sr-only" for="referentiel">Référentiel</label>
-      <select
-        formControlName="referentiel"
-        id="referentiel">
-        <option value="bdtfx">BDTFX (France métropolitaine)</option>
-        <option value="bdtxa">BDTXA (Antilles Françaises)</option>
-        <option value="isfan">ISFAN (Afrique du nord)</option>
-        <option value="apd">APD (Afrique du centre et de l'ouest)</option>
-        <option value="taxref">TAXREF (Autre)</option>
-        <option value="taxreflich">TAXREF LICH (Lichens)</option>
-      </select>
-    </div>
+<section id="taxon-search">
+  <form class="flex flex-col gap-3" [formGroup]="form()">
 
-    <div class="p-2">
-      <label>
+    <!-- Ligne 1 : référentiel + toggle nom -->
+    <div class="flex flex-wrap gap-2">
+      <div class="relative flex-1 min-w-40">
+        <select
+          class="w-full !bg-white px-3 py-2 pr-8 text-xs text-text border-[1.5px] border-background-200
+                 rounded-lg appearance-none transition focus:outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/15"
+          formControlName="referentiel"
+          id="referentiel"
+        >
+          <option value="bdtfx">BDTFX – France métropolitaine</option>
+          <option value="bdtxa">BDTXA – Antilles Françaises</option>
+          <option value="isfan">ISFAN – Afrique du nord</option>
+          <option value="apd">APD – Afrique centre/ouest</option>
+          <option value="taxref">TAXREF – Autre</option>
+          <option value="taxreflich">TAXREF LICH – Lichens</option>
+        </select>
+        <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-[1rem] text-text-300 pointer-events-none">
+          expand_more
+        </span>
+      </div>
+
+      <label
+        class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-background-200
+               bg-white text-xs text-text cursor-pointer hover:border-accent hover:bg-accent-50 transition
+               has-[:checked]:border-accent has-[:checked]:bg-accent-50 select-none"
+      >
         <input
+          class="!bg-transparent !border-0 !p-0 !rounded-none accent-accent w-4 h-4"
           formControlName="nom_verna"
-          type="checkbox">
+          type="checkbox"
+        />
         {{ form().get('nom_verna')?.value ? 'Nom vernaculaire' : 'Nom scientifique' }}
       </label>
     </div>
 
+    <!-- Ligne 2 : champ de recherche -->
     <div class="relative">
-            <label class="sr-only " for="recherche">Recherche</label>
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[1rem] text-text-300 pointer-events-none">
+        search
+      </span>
       <input
+        class="w-full !bg-white pl-9 pr-4 py-2.5 text-sm text-text border-[1.5px] border-background-200
+               rounded-lg placeholder:text-text-300 placeholder:italic transition
+               focus:outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/15"
         formControlName="recherche"
         id="recherche"
-        placeholder="Rechercher un taxon..."
+        placeholder="Rechercher un taxon…"
         type="text"
         [value]="quickSearchValue()"
         (input)="quickSearchValue.set($any($event.target).value); onInputChange()"
-      >
-      <!--      @if (!form().get('recherche')?.valid && form().get('recherche')?.touched) {-->
-      <!--        <app-error errorMessage="Un individu est obligatoire." />-->
-      <!--      }-->
+      />
 
+      <!-- Résultats dropdown -->
       @if (taxonSearchService.taxonsQuickSearchResults().pagination > 0 && showQuickSearchResults()) {
-        <ul class="absolute top-full left-0 bg-primary p-2 rounded z-40 overflow-y-auto max-h-60 w-54">
+        <ul class="absolute top-[calc(100%+4px)] left-0 right-0 bg-white border border-background-200
+                   rounded-lg shadow-xl z-50 overflow-y-auto max-h-56 divide-y divide-background-100">
           @for (result of taxonSearchService.taxonsQuickSearchResults().resultats; track result) {
             <li
-              class="cursor-pointer border-b-2"
+              class="px-4 py-2.5 text-sm text-text cursor-pointer hover:bg-accent-50 hover:text-accent
+                     transition-colors first:rounded-t-lg last:rounded-b-lg"
               role="button"
               tabindex="0"
               (click)="selectTaxonName(result)"
               (keydown)="handleSelectName($event, result)"
-            >{{ result }}
+            >
+              {{ result }}
             </li>
           }
         </ul>
       }
     </div>
+
     @if (taxonSearchService.loading()) {
       <app-loader />
     }
-
     @if (taxonSearchService.error()) {
       <app-error [errorMessage]="taxonSearchService.error() ?? ''" />
     }
+
   </form>
-</div>
+</section>

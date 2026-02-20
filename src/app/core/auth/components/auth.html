@@ -1,83 +1,179 @@
 <div id="login">
-  @if(!userService.isLoggedIn()){
-    <h2 class="w-full cursor-pointer" role="button" tabindex="0" title="Se connecter"
-  (click)="openLoginPopup()" (keydown.enter)="openLoginPopup()" (keydown.space)="openLoginPopup()">Connexion</h2>
+  @if (!userService.isLoggedIn()) {
+    <button
+      class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
+             hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+             text-text text-[.72rem] tracking-[.08em] uppercase"
+      role="button"
+      tabindex="0"
+      title="Se connecter"
+      type="button"
+      (click)="openLoginPopup()"
+      (keydown.enter)="openLoginPopup()"
+      (keydown.space)="openLoginPopup()"
+    >
+      <span class="material-symbols-outlined text-[.9rem]">login</span>
+      <span class="hidden xs:inline">Connexion</span>
+    </button>
   } @else {
-    <div class="flex w-full justify-between items-center no-wrap">
-       <p>Bienvenue {{userService.user()?.name}}</p>
-       <div><button class="" tabindex="0" type="button" (click)="logout()"
-    (keydown.enter)="logout()" (keydown.space)="logout()"><span>Se déconnecter</span></button></div>
+    <div class="flex items-center gap-2">
+      <span class="hidden sm:inline text-xs text-text-500">
+        {{ userService.user()?.name }}
+      </span>
+      <button
+        class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
+               hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+               text-text text-[.72rem] tracking-[.08em] uppercase"
+        role="button"
+        tabindex="0"
+        type="button"
+        (click)="logout()"
+        (keydown.enter)="logout()"
+        (keydown.space)="logout()"
+      >
+        <span class="material-symbols-outlined text-[.9rem]">logout</span>
+        <span class="hidden xs:inline">Déconnecter</span>
+      </button>
     </div>
   }
 
-  @if(loginPopup()){
-  <div class="blur-background">
-    <div class="popup !h-1/2 sm:!w-6/10 !w-full !left-0 !top-2/10 sm:!left-2/10 bg-background relative " id="loginPopup">
-      <div class="absolute top-2 right-2 cursor-pointer p-2 z-50" role="button" tabindex="0" (click)="closeLoginPopup()" (keydown)="handleKey($event)">
-        <span class="material-symbols-outlined text-primary !text-4xl" title="Fermer le formulaire">cancel</span>
+  <!-- Login modal -->
+  @if (loginPopup()) {
+    <div class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+
+      <!-- Decorative lines -->
+      <div aria-hidden="true" class="fixed inset-0 pointer-events-none flex justify-evenly">
+        <span class="w-px h-full bg-gradient-to-b from-transparent via-primary/20 to-transparent"></span>
+        <span class="w-px h-full bg-gradient-to-b from-transparent via-primary/20 to-transparent"></span>
+        <span class="w-px h-full bg-gradient-to-b from-transparent via-primary/20 to-transparent"></span>
       </div>
 
-      <form #f="ngForm"
-            class="w-full flex flex-col justify-start items-center gap-4 relative"
-            [formGroup]="loginForm"
-            (ngSubmit)="f.form.valid && onSubmit()">
-        <h4 class="mb-1">Connectez vous !</h4>
+      <!-- Panel -->
+      <div class="relative z-10 w-full max-w-sm bg-background-50 rounded-xl shadow-2xl overflow-hidden">
 
-        <div class="w-8/12 xs:w-full mt-4 relative">
-          <input class="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                 formControlName="username"
-                 name="username"
-                 placeholder="email ou nom d'utilisateur"
-                 [class.input-empty]="!loginForm.get('username')?.value"
-                 [class.input-filled]="loginForm.get('username')?.value" />
-                  <span class="material-symbols-outlined cursor-pointer-none absolute left-3 top-1/2 -translate-y-1/2 peer-focus:text-gray-900">alternate_email</span>
-        </div>
-        @if(!loginForm.get('username')?.valid && f.submitted){
-          @let usernameError = "Le nom d'utilisateur ou l'email est obligatoire !";
-          <app-error [errorMessage]="usernameError" />
-        }
-
-        <div class="w-8/12 xs:w-full mt-4 relative">
-          <input class="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                 formControlName="password"
-                 placeholder="Mot de passe"
-                 [class.input-empty]="!loginForm.get('password')?.value"
-                 [class.input-filled]="loginForm.get('password')?.value"
-                 [type]="passwordFieldType">
-                 <span class="material-symbols-outlined cursor-pointer-none absolute left-3 top-1/2 -translate-y-1/2 peer-focus:text-gray-900">key</span>
-        <span class="material-symbols-outlined cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 peer-focus:text-gray-900"
-          role="button"
-          tabindex="0"
-          title="Afficher/Masquer le mot de passe"
-          (click)="togglePasswordVisibility()"
-          (keydown.enter)="togglePasswordVisibility()"
-          (keydown.space)="togglePasswordVisibility()"
+        <!-- Header -->
+        <header class="relative px-8 pt-8 pb-5">
+          <p class="text-[.68rem] tracking-[.18em] uppercase text-text-500 mb-2">Bienvenue</p>
+          <h3 class="!m-0 !p-0 text-2xl font-semibold tracking-tight text-text">Connexion</h3>
+          <button
+            class="absolute top-4 right-4 !mt-0 !mx-0 !shadow-none !bg-transparent !border-0 !p-1
+                   grid place-items-center w-9 h-9 rounded-full text-text-400 hover:text-text hover:bg-background-200"
+            role="button"
+            tabindex="0"
+            title="Fermer"
+            type="button"
+            (click)="closeLoginPopup()"
+            (keydown)="handleKey($event)"
           >
-          {{passwordFieldIcon}}
-        </span>
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </header>
 
-        </div>
-        @if(!loginForm.get('password')?.valid && f.submitted){
-          @let pwdError = "Un mot de passe est obligatoire !";
-          <app-error [errorMessage]="pwdError" />
-        }
+        <!-- Barre colorée -->
+        <div class="h-[3px] bg-gradient-to-r from-primary to-primary-300"></div>
 
-        <div class="w-full flex justify-center items-center mb-2">
-          <button class="" title="Se connecter" type="submit"><span>Se connecter</span></button>
-          @if(error()){
-            <app-error [errorMessage]="error()" />
-          }
-        </div>
-      </form>
+        <!-- Form -->
+        <form
+          #f="ngForm"
+          class="flex flex-col gap-4 px-8 py-7"
+          [formGroup]="loginForm"
+          (ngSubmit)="f.form.valid && onSubmit()"
+        >
 
-      <hr class="mt-2">
-      <div class="w-full flex flex-col justify-start items-center gap-4 mt-4">
-        <h4 class="m-0">Pas encore de compte ?</h4>
-        <div>
-          <button class="m-0" title="S'inscrire'" type="button"><a href="{{inscriptionUrl}}" target="_blank">S'inscrire</a></button>
+          <!-- Username -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[.68rem] tracking-[.06em] uppercase text-text-500" for="username">
+              Email ou nom d'utilisateur
+            </label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[1rem] text-text-300 pointer-events-none">
+                alternate_email
+              </span>
+              <input
+                class="w-full !bg-white pl-9 pr-4 py-2.5 text-sm text-text border-[1.5px] border-background-200
+                       rounded-lg placeholder:text-text-300 placeholder:italic transition
+                       focus:outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/15"
+                formControlName="username"
+                id="username"
+                name="username"
+                placeholder="email ou nom d'utilisateur"
+                type="text"
+              />
+            </div>
+            @if (!loginForm.get('username')?.valid && f.submitted) {
+              <app-error errorMessage="Le nom d'utilisateur ou l'email est obligatoire !" />
+            }
+          </div>
+
+          <!-- Password -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[.68rem] tracking-[.06em] uppercase text-text-500" for="password">
+              Mot de passe
+            </label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[1rem] text-text-300 pointer-events-none">
+                key
+              </span>
+              <input
+                class="w-full !bg-white pl-9 pr-10 py-2.5 text-sm text-text border-[1.5px] border-background-200
+                       rounded-lg placeholder:text-text-300 placeholder:italic transition
+                       focus:outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/15"
+                formControlName="password"
+                id="password"
+                placeholder="Mot de passe"
+                [type]="passwordFieldType"
+              />
+              <span
+                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[1rem] text-text-400 cursor-pointer hover:text-text transition"
+                role="button"
+                tabindex="0"
+                title="Afficher/Masquer le mot de passe"
+                (click)="togglePasswordVisibility()"
+                (keydown.enter)="togglePasswordVisibility()"
+                (keydown.space)="togglePasswordVisibility()"
+              >
+                {{ passwordFieldIcon }}
+              </span>
+            </div>
+            @if (!loginForm.get('password')?.valid && f.submitted) {
+              <app-error errorMessage="Un mot de passe est obligatoire !" />
+            }
+          </div>
+
+          <!-- Submit -->
+          <div class="flex flex-col gap-2 pt-2 border-t border-background-200">
+            <button
+              class="!mt-0 !mx-0 w-full !bg-primary hover:!bg-primary-400 text-white text-[.72rem] tracking-[.08em] uppercase"
+              role="button"
+              title="Se connecter"
+              type="submit"
+            >
+              <span class="material-symbols-outlined text-[.9rem]">login</span>
+              Se connecter
+            </button>
+            @if (error()) {
+              <app-error [errorMessage]="error()" />
+            }
+          </div>
+
+        </form>
+
+        <!-- Inscription -->
+        <div class="flex items-center justify-between gap-3 px-8 pb-7 pt-0 border-t border-background-200 pt-5">
+          <span class="text-xs text-text-500">Pas encore de compte ?</span>
+          <a
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-background-300
+          bg-transparent text-text text-[.7rem] tracking-[.06em] hover:bg-background-100
+          hover:border-accent hover:text-accent transition-colors no-underline !h-auto !shadow-none"
+          [href]="inscriptionUrl"
+          target="_blank"
+          >
+          <span class="material-symbols-outlined text-[.9rem]">person_add</span>
+          S'inscrire
+          </a>
         </div>
+
       </div>
     </div>
-  </div>
   }
 </div>

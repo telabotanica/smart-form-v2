@@ -1,42 +1,113 @@
-<div [class.blur-2xl]="sharedService.blurBackground()">
-  <h1>Mes sentiers</h1>
+<article
+  id="mes-sentiers"
+  class="px-4 pt-6 pb-8 flex flex-col gap-4"
+  [class.blur-2xl]="sharedService.blurBackground()"
+>
+  <h2 class="!m-0 !p-0 text-2xl font-bold text-text">Mes sentiers</h2>
+
   @if (mesSentiersService.loading()) {
     <app-loader />
   } @else if (mesSentiersService.error()) {
     <app-error [errorMessage]="mesSentiersService.error() ?? 'Erreur inconnue'" />
+  } @else if (user!.trails!.length === 0) {
+    <div class="p-6 rounded-xl bg-background-50 border border-background-200 text-center">
+      <span class="material-symbols-outlined text-4xl text-text-300">hiking</span>
+      <p class="!m-0 mt-2 text-sm text-text-500">Vous n'avez pas encore créé de sentier.</p>
+    </div>
   } @else {
-    @if (user!.trails!.length === 0) {
-      <p>Vous n'avez pas encore créé de sentier.</p>
-    } @else {
-      @for (sentier of user!.trails; track sentier.id) {
-        <hr class="mt-2"/>
-        <div>
-          <p>id: {{ sentier.id }} - name: {{ sentier.display_name }} - status: {{ sentier.status ?? 'brouillon'}} </p>
-          <div>
-            <button type="button"><a [routerLink]="['/trail', sentier.id]">Ouvrir</a></button>
+    <p class="!m-0 text-xs text-text-500">
+      <span class="font-semibold text-text">{{ user!.trails!.length }}</span>
+      sentier{{ user!.trails!.length > 1 ? 's' : '' }}
+    </p>
 
-            @if (sentier.status === null) {
+    <div class="flex flex-col gap-3">
+      @for (sentier of user!.trails; track sentier.id) {
+        <div class="p-5 rounded-xl bg-background-50 border border-background-200 flex flex-col gap-3">
+
+          <!-- En-tête de la card -->
+          <div class="flex items-start justify-between gap-3 flex-wrap">
+            <div class="flex flex-col gap-0.5">
+              <span class="text-base font-semibold text-text">{{ sentier.display_name }}</span>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
+                  [class]="sentier.status === 'Validé'
+                ? 'bg-accent-100 text-accent border border-accent-200'
+                : sentier.status === 'En attente'
+                  ? 'bg-primary-100 text-secondary border border-primary-200'
+                  : 'bg-background-200 text-text-500 border border-background-300'"
+            >
+              {{ sentier.status ?? 'Brouillon' }}
+            </span>
+          </div>
+
+          <!-- Actions -->
+          @if (sentier.status === null) {
+            <div class="flex flex-wrap gap-2 pt-2 border-t border-background-200">
+
+              <a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-background-300
+              bg-transparent text-text text-[.7rem] tracking-[.06em] hover:bg-background-100
+              hover:border-background-400 transition-colors no-underline"
+              [routerLink]="['/trail', sentier.id]"
+              >
+              <span class="material-symbols-outlined text-[.9rem]">open_in_new</span>
+              Ouvrir
+              </a>
               <button
-                class="bg-red-800 hover:bg-red-600 text-white"
+                class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
+                       hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+                       text-text text-[.7rem] tracking-[.06em]"
+                type="button"
+                (click)="openTrailModal(sentier!)"
+              >
+                <span class="material-symbols-outlined text-[.9rem]">edit</span>
+                Modifier
+              </button>
+              <button
+                class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
+                       hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+                       text-text text-[.7rem] tracking-[.06em]"
+                type="button"
+                (click)="checkSentier(sentier)"
+              >
+                <span class="material-symbols-outlined text-[.9rem]">rule</span>
+                Vérifier
+              </button>
+              <button
+                class="!mt-0 !mx-0 !bg-red-700 hover:!bg-red-600 border-red-700 text-white text-[.7rem] tracking-[.06em]"
                 type="button"
                 (click)="openDeleteConfirmModal(sentier)"
-              >supprimer ce sentier</button>
-              <button class="" type="button" (click)="openTrailModal(sentier!)">Modifier ce sentier</button>
-              <button class="" type="button" (click)="checkSentier(sentier)">Vérifier ce sentier</button>
-            }
+              >
+                <span class="material-symbols-outlined text-[.9rem]">delete</span>
+                Supprimer
+              </button>
+            </div>
+          } @else {
+            <div class="flex flex-wrap gap-2 pt-2 border-t border-background-200">
 
-          </div>
-          @if (sentierChecks()[sentier.id] && sentierChecks()[sentier.id].status) {
+              <a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-background-300
+              bg-transparent text-text text-[.7rem] tracking-[.06em] hover:bg-background-100
+              hover:border-background-400 transition-colors no-underline"
+              [routerLink]="['/trail', sentier.id]"
+              >
+              <span class="material-symbols-outlined text-[.9rem]">open_in_new</span>
+              Ouvrir
+              </a>
+            </div>
+          }
+
+          <!-- Résultats de vérification -->
+          @if (sentierChecks()[sentier.id]?.status) {
             <app-sentier-check-errors [check]="sentierChecks()[sentier.id]" />
           }
           @if (sentierCheckErrors()[sentier.id]) {
             <app-sentier-check-errors [error]="sentierCheckErrors()[sentier.id]!" />
           }
+
         </div>
       }
-    }
+    </div>
   }
-</div>
+</article>
 
 @if (showTrailModal) {
   <app-sentier-form

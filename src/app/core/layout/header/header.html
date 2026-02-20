@@ -1,18 +1,30 @@
-<h1 class="">
-  Smart'Flore
-</h1>
+<header class="w-full flex items-center justify-between gap-4 px-6 py-3
+               bg-background-50 border-b border-background-200 shadow-sm">
 
-<button
-  class=""
-  title="Créer un nouveau sentier"
-  type="button"
-  (click)="openTrailModal()"
->Créer un sentier</button>
+  <!-- Logo -->
+  <h1 class="!m-0 !p-0 text-xl font-bold tracking-tight text-text">
+    Smart<span class="text-primary">'</span>Flore
+  </h1>
 
-<app-auth />
+  <!-- Actions -->
+  <div class="flex items-center gap-2">
+
+    <button
+      class="!mt-0 !mx-0 !bg-primary hover:!bg-primary-400 text-white text-[.72rem] tracking-[.08em] uppercase"
+      role="button"
+      title="Créer un nouveau sentier"
+      type="button"
+      (click)="openTrailModal()"
+    >
+      <span class="material-symbols-outlined text-[.9rem]">add</span>
+      <span class="hidden xs:inline">Créer un sentier</span>
+    </button>
+
+    <app-auth />
+
+  </div>
+</header>
 
 @if (showTrailModal) {
-  <app-sentier-form
-    (modalClosed)="closeTrailModal()"
-  />
+  <app-sentier-form (modalClosed)="closeTrailModal()" />
 }

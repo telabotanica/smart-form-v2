@@ -1,9 +1,21 @@
-<h2>Liste des sentiers publics</h2>
-<app-sentier-public-filter (searchFilters)="onSearch($event)" />
-@if (sentierService.loading()) {
-  <app-loader />
-} @else if (sentierService.error()) {
-  <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
-} @else {
-  <app-map [sentiers]="sentierService.sentiers()"/>
-}
+<div class="px-4 pt-6 pb-8 flex flex-col gap-4">
+  <div class="flex items-baseline justify-between flex-wrap gap-2">
+    <h2 class="!m-0 !p-0 text-2xl font-bold text-text">Sentiers publics</h2>
+  </div>
+
+  <app-sentier-public-filter (searchFilters)="onSearch($event)" />
+
+  @if (sentierService.loading()) {
+    <app-loader />
+  } @else if (sentierService.error()) {
+    <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
+  } @else {
+    <p class="!m-0 text-xs text-text-500">
+      <span class="font-semibold text-text">{{ sentierService.sentiers().length }}</span> sentier{{ sentierService.sentiers().length > 1 ? 's' : '' }} trouvé{{ sentierService.sentiers().length > 1 ? 's' : '' }}
+    </p>
+    <div class="rounded-xl overflow-hidden shadow-lg border border-background-200">
+      <app-map [sentiers]="sentierService.sentiers()" />
+    </div>
+  }
+
+</div>

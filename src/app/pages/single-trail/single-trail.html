@@ -1,4 +1,4 @@
-<div [class.blur-2xl]="sharedService.blurBackground()">
+<section [class.blur-2xl]="sharedService.blurBackground()">
   @if (sentierService.loading()) {
     <app-loader />
   } @else if (sentierService.error()) {
@@ -223,7 +223,7 @@
     </section>
 
   }
-</div>
+</section>
 
 <!-- MODALS -->
 @if (showTrailModal) {

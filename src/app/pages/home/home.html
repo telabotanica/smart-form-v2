@@ -1,10 +1,7 @@
-<div>
-  <app-taxon-search (emitClear)="resetTaxonDetail()" (emitTaxon)="showTaxon($event)"/>
-  @if (taxon()) {
-    <app-taxon-details [taxon]="taxon()!"/>
-  }
-  <hr />
+<h2>Rechercher un taxon</h2>
+<app-taxon-search (emitClear)="resetTaxonDetail()" (emitTaxon)="showTaxon($event)"/>
+@if (taxon()) {
+  <app-taxon-details [taxon]="taxon()!"/>
+}
 
-  <app-public-trail-list class=""/>
-</div>
-
+<app-public-trail-list class=""/>

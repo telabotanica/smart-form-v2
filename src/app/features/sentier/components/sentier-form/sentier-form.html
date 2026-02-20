@@ -1,54 +1,151 @@
-<div class="popup !h-1/2 sm:!w-6/10 !w-full !left-0 !top-2/10 sm:!left-2/10 bg-background relative "
-     id="loginPopup"
-     xmlns="http://www.w3.org/1999/html">
-  <div class="absolute top-2 right-2 cursor-pointer p-2 z-50" role="button" tabindex="0" (click)="closeModal()" (keydown)="handleKey($event)">
-    <span class="material-symbols-outlined text-primary !text-4xl" title="Fermer le formulaire">cancel</span>
+<section
+  id="sentier-form"
+  class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
+>
+  <!-- Decorative lines -->
+  <div aria-hidden="true" class="fixed inset-0 pointer-events-none flex justify-evenly">
+    <span class="w-px h-full bg-gradient-to-b from-transparent via-primary/20 to-transparent"></span>
+    <span class="w-px h-full bg-gradient-to-b from-transparent via-primary/20 to-transparent"></span>
+    <span class="w-px h-full bg-gradient-to-b from-transparent via-primary/20 to-transparent"></span>
   </div>
 
-  <form [formGroup]="form()" (ngSubmit)="submit()">
-    <label for="display_name">Nom</label>
-    <input formControlName="display_name" id="display_name" type="text" />
+  <!-- Panel : max-w-sm pour rester compact -->
+  <div class="relative z-10 w-full max-w-sm bg-background-50 rounded-xl shadow-2xl overflow-hidden">
 
-    <label for="best_season">Saisons idéales</label>
-    <div formArrayName="best_season" id="best_season">
-      <label for="printemps">
-        <input formControlName="0" id="printemps" type="checkbox" /> Printemps
-      </label>
-      <label for="ete">
-        <input formControlName="1" id="ete" type="checkbox" /> Été
-      </label>
-      <label for="automne">
-        <input formControlName="2" id="automne" type="checkbox" /> Automne
-      </label>
-      <label for="hiver">
-        <input formControlName="3" id="hiver" type="checkbox" /> Hiver
-      </label>
-    </div>
+    <!-- Header -->
+    <header class="relative px-8 pt-8 pb-5">
+      <p class="text-[.68rem] tracking-[.18em] uppercase text-text-500 mb-2">Sentier</p>
+      <h3 class="!m-0 !p-0 text-2xl font-semibold tracking-tight text-text">
+        {{ sentier() ? "Modifier le sentier" : "Nouveau sentier" }}
+      </h3>
+      <button
+        class="absolute top-4 right-4 !mt-0 !mx-0 !shadow-none !bg-transparent !border-0 !p-1
+               grid place-items-center w-9 h-9 rounded-full text-text-400 hover:text-text hover:bg-background-200"
+        title="Fermer le formulaire"
+        type="button"
+        (click)="closeModal()"
+        (keydown)="handleKey($event)"
+      >
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </header>
 
-    <label for="prm">PRM</label>
-    <select formControlName="prm">
-      <option [ngValue]="-1">Je ne sais pas</option>
-      <option [ngValue]="0">non accessible PMR</option>
-      <option [ngValue]="1">accessible PMR</option>
-    </select>
+    <!-- Barre colorée -->
+    <div class="h-[3px] bg-gradient-to-r from-primary to-primary-300"></div>
 
-    <div class="modal-actions mb-2">
-      <button type="submit">Valider</button>
-      <button type="button" (click)="closeModal()">Annuler</button>
-    </div>
+    <!-- Form body -->
+    <form class="flex flex-col gap-5 px-8 py-7" [formGroup]="form()" (ngSubmit)="submit()">
 
-    @if ((form().dirty && !form().valid) || nameError) {
-      <app-error errorMessage="Le sentier doit avoir un nom."/>
-    }
-
-    @if (!this.userService.isLoggedIn()) {
-      <hr class="my-4">
-      <div>
-        <app-error errorMessage="Vous devez être connecté pour créer un sentier." />
-        <app-auth />
+      <!-- Nom -->
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="flex items-baseline gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent"
+          for="display_name"
+        >
+          <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">01</span>
+          Nom du sentier
+          <span class="text-primary text-sm leading-none">*</span>
+        </label>
+        <div class="relative">
+          <input
+            class="w-full bg-white px-4 pr-9 py-3 text-sm text-text border-[1.5px] border-background-200
+                   rounded-lg placeholder:text-text-300 placeholder:italic transition
+                   focus:outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/15"
+            formControlName="display_name"
+            id="display_name"
+            placeholder="Nom du sentier…"
+            type="text"
+          />
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[1rem] text-text-300 pointer-events-none">
+            route
+          </span>
+        </div>
       </div>
-    }
 
-  </form>
+      <!-- Saisons -->
+      <div class="flex flex-col gap-2">
+        <p class="flex items-baseline gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent">
+          <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">02</span>
+          Saisons idéales
+        </p>
+        <div formArrayName="best_season" class="grid grid-cols-2 gap-2">
+          @for (season of [['0','printemps','🌸'],['1','été','☀️'],['2','automne','🍂'],['3','hiver','❄️']]; track season[0]) {
+            <label
+              class="flex items-center gap-2 px-3 py-2 rounded-lg border border-background-200
+                     bg-white cursor-pointer hover:border-accent hover:bg-accent-50 transition
+                     has-[:checked]:border-accent has-[:checked]:bg-accent-50 select-none"
+              [for]="season[1]"
+            >
+              <input
+                class="bg-transparent border-0 p-0 rounded-none accent-accent w-4 h-4"
+                [formControlName]="season[0]"
+                [id]="season[1]"
+                type="checkbox"
+              />
+              <span class="text-sm text-text">{{ season[2] }} {{ season[1] }}</span>
+            </label>
+          }
+        </div>
+      </div>
 
-</div>
+      <!-- PMR -->
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="flex items-baseline gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent"
+          for="prm"
+        >
+          <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">03</span>
+          Accessibilité PMR ♿
+        </label>
+        <div class="relative">
+          <select
+            class="w-full !bg-white px-4 py-3 pr-9 text-sm text-text border-[1.5px] border-background-200
+                   rounded-lg appearance-none transition focus:outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/15"
+            formControlName="prm"
+            id="prm"
+          >
+            <option [ngValue]="-1">Je ne sais pas</option>
+            <option [ngValue]="0">Non accessible PMR</option>
+            <option [ngValue]="1">Accessible PMR</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[1rem] text-text-300 pointer-events-none">
+            expand_more
+          </span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-between gap-3 pt-4 border-t border-background-200">
+        <button
+          class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
+                 hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+                 text-text text-[.7rem] tracking-[.06em]"
+          type="button"
+          (click)="closeModal()"
+        >
+          <span class="material-symbols-outlined text-[.9rem]">arrow_back</span>
+          Annuler
+        </button>
+        <button
+          class="!mt-0 !mx-0 !bg-primary hover:!bg-primary-400 text-white text-[.72rem] tracking-[.08em] uppercase"
+          type="submit"
+        >
+          {{ sentier() ? "Mettre à jour" : "Créer" }}
+          <span class="material-symbols-outlined text-[.9rem]">check</span>
+        </button>
+      </div>
+
+      @if ((form().dirty && !form().valid) || nameError) {
+        <app-error errorMessage="Le sentier doit avoir un nom." />
+      }
+
+      @if (!userService.isLoggedIn()) {
+        <div class="pt-2 border-t border-background-200 flex flex-col gap-2">
+          <app-error errorMessage="Vous devez être connecté pour créer un sentier." />
+          <app-auth />
+        </div>
+      }
+
+    </form>
+  </div>
+</section>

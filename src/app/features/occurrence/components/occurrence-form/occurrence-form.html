@@ -1,46 +1,142 @@
-<div class="popup bg-background! z-40">
-  <div class="absolute top-2 right-2 cursor-pointer p-2 z-50" role="button" tabindex="0" (click)="close()" (keydown)="handleKey($event)">
-    <span class="material-symbols-outlined text-primary !text-4xl" title="Fermer le formulaire">cancel</span>
+<section
+  id="occurrence-form"
+  class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
+>
+  <!-- Decorative lines -->
+  <div aria-hidden="true" class="fixed inset-0 pointer-events-none flex justify-evenly">
+    <span class="w-px h-full bg-gradient-to-b from-transparent via-primary/20 to-transparent"></span>
+    <span class="w-px h-full bg-gradient-to-b from-transparent via-primary/20 to-transparent"></span>
+    <span class="w-px h-full bg-gradient-to-b from-transparent via-primary/20 to-transparent"></span>
   </div>
-  <h3>{{ occurrence() ? "Modifier l'individu" : "Ajouter un individu" }}</h3>
-  <form [formGroup]="form()" (ngSubmit)="submit()">
-    <h4>Informations de taxon</h4>
 
-    @if (!occurrence()) {
-      <app-taxon-search (emitClear)="resetSelection()" (emitTaxon)="fillOccurrence($event)"/>
-    } @else {
-      @if (occurrence()!.taxon?.scientific_name) {
-        <p>Nom scientifique: {{ occurrence()!.taxon!.scientific_name }}</p>
-      }
-      @if (occurrence()!.taxon?.taxon_repository) {
-        <p>Référentiel: {{ occurrence()!.taxon!.taxon_repository }}</p>
-      }
-      @if (occurrence()!.taxon?.vernacular_names?.length) {
-        <p>Noms vernaculaires: {{ occurrence()!.taxon!.vernacular_names!.join(', ') }}</p>
-      }
-    }
+  <!-- Panel -->
+  <div class="relative z-10 w-full max-w-xl bg-background-50 rounded-xl shadow-2xl overflow-hidden">
 
-    <h4>Divers</h4>
-    <div>
-      <label for="anecdotes">Anecdotes à propos de l'individu</label>
-      <input formControlName="anecdotes" id="anecdotes" placeholder="Ajouter une anecdote" type="text">
-    </div>
+    <!-- Header -->
+    <header class="relative px-8 pt-8 pb-5">
+      <p class="text-[.68rem] tracking-[.18em] uppercase text-text-500 mb-2">Observation</p>
+      <h3 class="!m-0 !p-0 text-2xl font-semibold tracking-tight text-text">
+        {{ occurrence() ? "Modifier l'individu" : "Ajouter un individu" }}
+      </h3>
+      <button
+        class="absolute top-4 right-4 !mt-0 !mx-0 !shadow-none !bg-transparent !border-0 !p-1
+               grid place-items-center w-9 h-9 rounded-full text-text-400 hover:text-text hover:bg-background-200"
+        title="Fermer le formulaire"
+        type="button"
+        (click)="close()"
+        (keydown)="handleKey($event)"
+      >
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </header>
 
-    <div class="flex justify-between items-center">
-      <button class="bg-red-200" title="Fermer le formulaire" type="button" (click)="close()">Annuler</button>
+    <!-- Barre colorée -->
+    <div class="h-[3px] bg-gradient-to-r from-primary to-primary-300"></div>
 
-      @if (selectedTaxonName() !== '' && !taxonSearchService.loading() && form().valid) {
-        <button title="Enregistrer l'individu" type="submit">Enregistrer</button>
-      }
+    <!-- Form body -->
+    <form
+      class="flex flex-col gap-5 px-8 py-7 max-h-[70dvh] overflow-y-auto"
+      [formGroup]="form()"
+      (ngSubmit)="submit()"
+    >
+
+      <!-- Section taxon -->
+      <div class="flex flex-col gap-2">
+        <p class="flex items-center gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent font-semibold">
+          <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">01</span>
+          Taxon observé
+          <span class="text-primary text-sm leading-none">*</span>
+        </p>
+
+        @if (!occurrence()) {
+          <!-- Recherche active -->
+          <div class="p-3 rounded-lg bg-background-100 border border-background-200">
+            <app-taxon-search (emitClear)="resetSelection()" (emitTaxon)="fillOccurrence($event)" />
+          </div>
+        } @else {
+          <!-- Taxon déjà sélectionné -->
+          <div class="p-4 rounded-lg bg-accent-50 border border-accent-200 flex flex-col gap-1">
+            @if (occurrence()!.taxon?.scientific_name) {
+              <p class="!m-0 text-sm font-semibold italic text-accent">
+                {{ occurrence()!.taxon!.scientific_name }}
+              </p>
+            }
+            @if (occurrence()!.taxon?.taxon_repository) {
+              <p class="!m-0 text-xs text-text-500">
+                Référentiel : {{ occurrence()!.taxon!.taxon_repository }}
+              </p>
+            }
+            @if (occurrence()!.taxon?.vernacular_names?.length) {
+              <p class="!m-0 text-xs text-text-500">
+                {{ occurrence()!.taxon!.vernacular_names!.join(', ') }}
+              </p>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Anecdotes -->
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-baseline justify-between">
+          <label
+            class="flex items-baseline gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent cursor-pointer"
+            for="anecdotes"
+          >
+            <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">02</span>
+            Anecdotes
+          </label>
+          <span class="text-[.62rem] text-text-400">
+            {{ form().get('anecdotes')?.value?.length ?? 0 }}
+          </span>
+        </div>
+        <div class="relative">
+          <input
+            class="w-full !bg-white px-4 pr-9 py-3 text-sm text-text border-[1.5px] border-background-200
+                   rounded-lg placeholder:text-text-300 placeholder:italic transition
+                   focus:outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/15"
+            formControlName="anecdotes"
+            id="anecdotes"
+            placeholder="Une anecdote à propos de cet individu…"
+            type="text"
+          />
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[1rem] text-text-300 pointer-events-none">
+            auto_stories
+          </span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-between gap-3 pt-4 border-t border-background-200">
+        <button
+          class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
+                 hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+                 text-text text-[.7rem] tracking-[.06em]"
+          type="button"
+          (click)="close()"
+        >
+          <span class="material-symbols-outlined text-[.9rem]">arrow_back</span>
+          Annuler
+        </button>
+
+        @if (selectedTaxonName() !== '' && !taxonSearchService.loading() && form().valid) {
+          <button
+            class="!mt-0 !mx-0 !bg-primary hover:!bg-primary-400 text-white text-[.72rem] tracking-[.08em] uppercase"
+            title="Enregistrer l'individu"
+            type="submit"
+          >
+            Enregistrer
+            <span class="material-symbols-outlined text-[.9rem]">check</span>
+          </button>
+        }
+      </div>
 
       @if (form().dirty && !form().valid) {
         <app-error errorMessage="Vous devez sélectionner un individu." />
       }
-    </div>
+      @if (occurrenceService.error()) {
+        <app-error [errorMessage]="occurrenceService.error() ?? ''" />
+      }
 
-    @if(occurrenceService.error()){
-      <app-error [errorMessage]="occurrenceService.error() ?? ''" />
-    }
-
-  </form>
-</div>
+    </form>
+  </div>
+</section>
