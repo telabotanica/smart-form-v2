@@ -1,6 +1,6 @@
 <section
-  id="sentier-form"
   class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
+  id="sentier-form"
 >
   <!-- Decorative lines -->
   <div aria-hidden="true" class="fixed inset-0 pointer-events-none flex justify-evenly">
@@ -68,7 +68,7 @@
           <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">02</span>
           Saisons idéales
         </p>
-        <div formArrayName="best_season" class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-2" formArrayName="best_season">
           @for (season of [['0','printemps','🌸'],['1','été','☀️'],['2','automne','🍂'],['3','hiver','❄️']]; track season[0]) {
             <label
               class="flex items-center gap-2 px-3 py-2 rounded-lg border border-background-200
@@ -78,9 +78,9 @@
             >
               <input
                 class="bg-transparent border-0 p-0 rounded-none accent-accent w-4 h-4"
+                type="checkbox"
                 [formControlName]="season[0]"
                 [id]="season[1]"
-                type="checkbox"
               />
               <span class="text-sm text-text">{{ season[2] }} {{ season[1] }}</span>
             </label>

@@ -1,4 +1,4 @@
-<article class="px-4 pt-6 pb-8 flex flex-col gap-6">
+<article class="px-4 pt-6 pb-8 flex flex-col gap-6" id="fiche-page" [class.blur-2xl]="sharedService.blurBackground()">
 
   @if (taxonSearchService.loading()) {
     <app-loader />
@@ -72,8 +72,8 @@
           class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-background-300
             bg-background-50 text-text text-[.7rem] tracking-[.06em] hover:bg-background-100
             hover:border-accent hover:text-accent transition-colors no-underline !h-auto !shadow-none"
-            [href]="tab.url"
             target="_blank"
+            [href]="tab.url"
             >
           <span class="material-symbols-outlined text-[.9rem]">open_in_new</span>
           {{ tab.title }}
@@ -81,6 +81,30 @@
         }
       }
     </div>
-  </section>
 
+    @if (userService.isLoggedIn() && userService.user()) {
+      <div class="flex flex-wrap gap-2">
+        <button
+          class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
+                       hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+                       text-text text-[.7rem] tracking-[.06em]"
+          type="button"
+          (click)="editFicheModal()"
+        >
+          <span class="material-symbols-outlined text-[.9rem]">edit_document</span>
+          Éditer la fiche
+        </button>
+      </div>
+    }
+
+  </section>
 </article>
+
+@if (showFicheModal()) {
+  <app-fiche-form
+    [fiche]="fiche() ?? null"
+    [referentiel]="referentiel()"
+    [taxonomic_id]="num_nom()"
+    (modalClosed)="closeFicheModal()"
+  />
+}

@@ -1,6 +1,7 @@
 @if (occurrence(); as o) {
   <article
     class="flex flex-col w-full bg-background-50 rounded-xl overflow-hidden"
+    id="occurrence-detail-modal"
     [class.blur-2xl]="sharedService.blurBackground()"
   >
 
@@ -8,7 +9,10 @@
     <header class="relative px-8 pt-8 pb-5">
       <p class="text-[.68rem] tracking-[.18em] uppercase text-text-500 mb-2">Observation</p>
       <h3 class="!m-0 !p-0 text-2xl font-semibold tracking-tight text-text">
-        @if (o.taxon?.scientific_name) {
+        @if (o.taxon?.vernacular_names) {
+          <span>{{ o.taxon!.vernacular_names![0] }}</span><br/>
+          <span class="italic text-lg font-normal">{{ o.taxon!.scientific_name }}</span>
+        } @else if (o.taxon?.scientific_name) {
           <span class="italic">{{ o.taxon!.scientific_name }}</span>
         } @else {
           Occurrence #{{ o.id }}
@@ -47,9 +51,9 @@
       <!-- Image -->
       <div class="w-full aspect-video relative rounded-lg overflow-hidden bg-background-200">
         <img
+          class="object-cover"
           fill
           priority
-          class="object-cover"
           [alt]="imageAlt()"
           [ngSrc]="imageSrc()"
           [title]="imageTitle()"
