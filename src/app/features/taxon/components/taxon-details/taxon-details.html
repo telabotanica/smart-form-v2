@@ -1,52 +1,68 @@
-<div class="flex justify-start items-center gap-4 mb-4">
-  <div>
-    {{ taxon().scientific_name }}
-  </div>
+<section class="m-4 p-4 rounded-lg bg-accent-50 border border-accent-200 flex flex-wrap items-center justify-between gap-3">
 
-  <div>
+  <!-- Noms -->
+  <div class="flex flex-col gap-0.5">
+    <p class="!m-0 text-sm font-semibold italic text-accent">{{ taxon().scientific_name }}</p>
     @if (taxon().vernacular_names?.length) {
-      {{ taxon().vernacular_names!.join(', ') }}
+      <p class="!m-0 text-xs text-text-500">{{ taxon().vernacular_names!.join(', ') }}</p>
     }
   </div>
 
-  <div>
+  <!-- Actions -->
+  <div class="flex flex-wrap gap-2">
     @if (ficheExiste()) {
-      <button title="Ouvrir la fiche" type="button">
-        <a
-          target="_blank"
-          [routerLink]="['/fiche', taxon().taxon_repository, taxon().taxonomic_id, taxon().name_id]"
+      <a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-accent-200
+         bg-transparent text-accent text-[.7rem] tracking-[.06em] hover:bg-accent-100
+         transition-colors no-underline !h-auto !shadow-none" target="_blank" [routerLink]="['/fiche', taxon().taxon_repository, taxon().taxonomic_id, taxon().name_id]">
+        <span class="material-symbols-outlined text-[.9rem]">article</span>Voir la fiche
+      </a>
+
+      <app-qr-code-button [taxon]="taxon()" />
+
+      @if (!taxonSearchService.loading()) {
+        <app-pdf-export
+          [fiche]="fiche()"
+          [imageUrl]="getFirstImageUrl()"
+          [taxon]="taxon()"
+        />
+      }
+
+      @if (userService.isLoggedIn()) {
+        <button
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-accent-200
+            bg-transparent text-accent text-[.7rem] tracking-[.06em] hover:bg-accent-100
+            transition-colors no-underline !h-auto !shadow-none"
+          role="button"
+          title="Modifier la fiche"
+          type="button"
+          (click)="openFicheModal()"
         >
-          Voir la fiche
-        </a>
-      </button>
-
-      <app-qr-code-button [taxon]="taxon()"/>
-
-      @if (userService.isLoggedIn()){
-        <button title="Créer la fiche" type="button" (click)="openFicheModal()">
-          Modifier la fiche
+          <span class="material-symbols-outlined text-[.9rem]">edit_document</span>
+          Modifier
         </button>
       }
+
     } @else {
-      @if (userService.isLoggedIn()){
-        <button title="Créer la fiche" type="button" (click)="openFicheModal()">
+      @if (userService.isLoggedIn()) {
+        <button
+          class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-accent-200
+                 hover:!bg-accent-100 hover:!border-accent-300 hover:!no-underline
+                 text-accent text-[.7rem] tracking-[.06em]"
+          role="button"
+          type="button"
+          (click)="openFicheModal()"
+        >
+          <span class="material-symbols-outlined text-[.9rem]">note_add</span>
           Créer la fiche
         </button>
+      } @else {
+          <span class="text-xs text-accent-300 italic">Aucune fiche</span>
+          <p class="mx-4 mt-3 text-text-400 text-xs italic">Connectez-vous pour créer cette fiche.</p>
       }
     }
-
   </div>
 
-  <div>
-    @if (ficheExiste() && !taxonSearchService.loading()) {
-      <app-pdf-export
-        [fiche]="fiche()"
-        [imageUrl]="getFirstImageUrl()"
-        [taxon]="taxon()"
-      />
-    }
-  </div>
-</div>
+</section>
 
 @if (showFicheModal) {
   <app-fiche-form

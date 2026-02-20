@@ -1,9 +1,5 @@
-<div class="w-full">
-  <div class="flex items-center gap-3 my-2">
-    <button class="px-3 py-1.5 border border-gray-200 rounded-md bg-white"
-            type="button"
-            (click)="locateMe()">Ma position</button>
-  </div>
+<div class="w-full relative">
+
 
   <div class="relative w-full h-[420px]">
     @if (currentSentier(); as s) {
@@ -23,9 +19,14 @@
     }
   </div>
 
-     <app-error [errorMessage]="occurrenceService.error() ?? ''" />
-     <app-error [errorMessage]="singleSentierService.errorUpdate() ?? ''" />
+  <div class="flex items-center gap-3 my-2 absolute bottom-0 left-20 transform -translate-x-1/2 z-20">
+    <button class="px-3 mt-0 border border-gray-200 rounded-md bg-white"
+            type="button"
+            (click)="locateMe()">Ma position</button>
+  </div>
 
+  <app-error [errorMessage]="occurrenceService.error() ?? ''" />
+  <app-error [errorMessage]="singleSentierService.errorUpdate() ?? ''" />
 </div>
 
 <dialog

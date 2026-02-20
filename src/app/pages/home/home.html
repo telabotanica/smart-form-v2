@@ -1,4 +1,4 @@
-<h2>Rechercher un taxon</h2>
+<h2 class="ml-4">Rechercher un taxon</h2>
 <app-taxon-search (emitClear)="resetTaxonDetail()" (emitTaxon)="showTaxon($event)"/>
 @if (taxon()) {
   <app-taxon-details [taxon]="taxon()!"/>
