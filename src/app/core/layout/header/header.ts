@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component, effect, inject, signal} from '@angular/core';
+import {NgOptimizedImage} from '@angular/common';
 import AuthComponent from '../../auth/components/auth';
 import {SentierForm} from '../../../features/sentier/components/sentier-form/sentier-form';
 import {UserService} from '../../auth/services/user.service';
@@ -8,6 +9,7 @@ import {User} from '../../auth/user.model';
 @Component({
   selector: 'app-header',
   imports: [
+    NgOptimizedImage,
     AuthComponent,
     SentierForm
   ],

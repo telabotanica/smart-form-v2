@@ -2,15 +2,24 @@
                bg-background-50 border-b border-background-200 shadow-sm">
 
   <!-- Logo -->
-  <h1 class="!m-0 !p-0 text-xl font-bold tracking-tight text-text">
-    Smart<span class="text-primary">'</span>Flore
-  </h1>
+  <div class="flex justify-start items-center gap-2">
+    <img
+      class="rounded-lg"
+      height="32"
+      width="32"
+      [alt]="'Logo Smart\'Flore'"
+      [ngSrc]="'/assets/images/logo_smartflore.webp'"
+      [title]="'Smart\'Flore'"
+    />
+    <h1 class="m-0 p-0 text-xl font-bold tracking-tight text-text">
+      Smart<span class="text-primary">'</span>Flore
+    </h1>
+  </div>
 
   <!-- Actions -->
   <div class="flex items-center gap-2">
-
     <button
-      class="!mt-0 !mx-0 !bg-primary hover:!bg-primary-400 text-white text-[.72rem] tracking-[.08em] uppercase"
+      class="mt-0 mx-0 bg-primary hover:bg-primary-400 text-white text-[.72rem] tracking-[.08em] uppercase"
       role="button"
       title="Créer un nouveau sentier"
       type="button"
