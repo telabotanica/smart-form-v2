@@ -50,7 +50,7 @@ export class OccurrenceModalDetail{
     const o = this.occurrence();
     return o?.images?.length
       ? (o.images[0].url ?? "")
-      : '/assets/images/pasdephoto.webP';
+      : 'assets/images/pasdephoto.webP';
   });
 
   readonly imageAlt = computed((): string => {
