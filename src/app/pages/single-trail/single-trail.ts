@@ -196,12 +196,12 @@ export class SingleTrail implements OnInit {
   openOccurrence(o: Occurrence): void {
     this.selectedOccurrence.set(o);
     this.occurrenceDialog()?.nativeElement?.showModal();
-    this.sharedService.blurBackground.set(true)
+    // this.sharedService.blurBackground.set(true)
   }
 
   closeOccurrence = (): void => {
     this.occurrenceDialog()?.nativeElement?.close();
     this.selectedOccurrence.set(null);
-    this.sharedService.blurBackground.set(false)
+    // this.sharedService.blurBackground.set(false)
   };
 }

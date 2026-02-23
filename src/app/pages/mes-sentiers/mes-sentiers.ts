@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, effect, inject, OnInit, signal} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
+import {DatePipe} from '@angular/common';
 import {UserService} from '../../core/auth/services/user.service';
 import {MesSentiersService} from '../../features/sentier/services/mes-sentiers-service';
 import {ErrorComponent} from '../../shared/components/error/error';
@@ -17,6 +18,7 @@ import {Loader} from '../../shared/components/loader/loader';
 @Component({
   selector: 'app-mes-sentiers',
   imports: [
+    DatePipe,
     ErrorComponent,
     RouterLink,
     SentierCheckErrors,
