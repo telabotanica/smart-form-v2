@@ -147,9 +147,11 @@ export class Map implements AfterViewInit {
     this.leafletMap = L.map(container, {
       center: [43.611, 3.876],
       zoom: 7,
-      zoomControl: true,
+      zoomControl: false,
       maxZoom: 19
     });
+
+    L.control.zoom({ position: 'topright' }).addTo(this.leafletMap);
 
     this.osmTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
