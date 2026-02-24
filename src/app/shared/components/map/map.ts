@@ -477,9 +477,16 @@ export class Map implements AfterViewInit {
   }
 
   private buildMapContextMenu(latlng: L.LatLng, s: Sentier): void {
+    const coordsCount = s.path?.coordinates?.length ?? 0;
+
+    const waypointLabel =
+      coordsCount === 0 ? 'Ajouter un point de départ' :
+        coordsCount === 1 ? 'Ajouter un point d\'arrivée' :
+          'Ajouter une étape ici';
+
     const container = this.mapUtils.createPopupMenu([
       {
-        label: 'Ajouter une étape ici',
+        label: waypointLabel,
         onClick: async (): Promise<void> => {
           const current = this.currentSentier();
           if (!current) { return; }
