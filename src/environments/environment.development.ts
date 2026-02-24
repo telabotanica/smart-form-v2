@@ -9,5 +9,5 @@ export const environment = {
   inscriptionUrl: "https://www.tela-botanica.org/inscription/",
   qrCodeUrl: "https://qr.tela-botanica.org/smartflore/",
   // cookieName: 'tb_auth_beta_test'
-  cookieName: 'tb_auth'
+  cookieName: 'tb_auth_beta_test'
 };

@@ -12,6 +12,7 @@ export class UserService {
   readonly user = signal<User | null>(null);
   readonly isLoggedIn = signal(false);
   readonly isUserAdmin = signal(false);
+  readonly isReady = signal(false);
 
   authApiService = inject(AuthApiService);
   destroyRef = inject(DestroyRef);
@@ -72,8 +73,10 @@ export class UserService {
             user.admin = data ? true : false;
             this.isUserAdmin.set(data)
           }
+          this.isReady.set(true);
         },
         error: (err) => {
+          this.isReady.set(true);
           console.error(err)
         }
       });

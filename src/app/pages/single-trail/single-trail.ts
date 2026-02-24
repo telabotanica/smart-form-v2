@@ -88,6 +88,12 @@ export class SingleTrail implements OnInit {
 
   baseUrl = this.sharedService.url().origin
 
+  // private readonly accessGuard = computed(() => ({
+  //   sentier: this.sentierService.sentier(),
+  //   user: this.userService.user(),
+  //   isReady: this.userService.isReady(),
+  // }));
+
   constructor() {
     effect(() => {
       this.isLoggedIn.set(this.userService.isLoggedIn());
@@ -98,9 +104,10 @@ export class SingleTrail implements OnInit {
       this.sentier = this.sentierService.sentier();
 
       // --- Vérification d'accès ---
-      if (this.sentier) {
-        this.checkAccess(this.sentier);
-      }
+      // if (this.sentier) {
+      //TODO
+      //   this.checkAccess(this.sentier);
+      // }
       // ----------------------------
 
       this.fillUniqueOccurrences();
@@ -109,6 +116,26 @@ export class SingleTrail implements OnInit {
         `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl}/trail/${this.id()}.png`
       );
     })
+    // effect(() => {
+    //   const { sentier, user, isReady } = this.accessGuard();
+    //
+    //   this.sentier = sentier;
+    //   this.fillUniqueOccurrences();
+    //
+    //   if (sentier?.display_name) {
+    //     this.trailQrCode.set(
+    //       `${this.sharedService.env().qrCodeUrl}${sentier.display_name}/${this.baseUrl}/trail/${this.id()}.png`
+    //     );
+    //   }
+    //
+    //   // ⏳ On attend que le UserService ait fini de résoudre le rôle admin
+    //   if (!isReady) { return; }
+    //
+    //   if (sentier) {
+    //     //TODO
+    //     // this.checkAccess(sentier);
+    //   }
+    // });
 
     effect(()=>{
       this.taxons.set(this.taxonSearchService.taxons());
@@ -123,10 +150,13 @@ export class SingleTrail implements OnInit {
   }
 
   private checkAccess(sentier: Sentier): void {
-    if (sentier.status === 'Validé') { return }; // accès libre
+    if (sentier.status === 'Validé') { return } // accès libre
 
-    const isAdmin = this.userService.isUserAdmin();
+    // const isAdmin = this.userService.isUserAdmin();
+    const isAdmin = this.user?.admin
+
     const isAuthor = this.user?.id === sentier.author_id;
+    console.log(isAdmin, isAuthor)
 
     if (!isAdmin && !isAuthor) {
       this.router.navigate(['/unauthorized']);
