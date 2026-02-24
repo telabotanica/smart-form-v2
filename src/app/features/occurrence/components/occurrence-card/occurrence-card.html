@@ -11,11 +11,12 @@
   @if (taxonSearchService.loading()) {
     <app-loader />
   } @else {
-    @if (fullTaxon && hasFiche) {
+    @if (fullTaxon() && hasFiche()) {
       <div class="flex flex-wrap gap-2 text-sm">
-        <span class="text-green-600">✓ Fiche disponible</span>
-        @if (!isFicheComplete) {
+        @if (!isFicheComplete()) {
           <span class="text-destructive">✗ Fiche Incomplète</span>
+        } @else {
+          <span class="text-green-600">✓ Fiche disponible</span>
         }
       </div>
 

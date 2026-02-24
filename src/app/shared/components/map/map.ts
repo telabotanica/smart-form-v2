@@ -29,6 +29,7 @@ import {User} from '../../../core/auth/user.model';
 import {SentierPublicListService} from '../../../features/sentier/services/sentier-public-list-service';
 import {Loader} from '../loader/loader';
 import {QrCodeButton} from '../qr-code-button/qr-code-button';
+import {TaxonSearchService} from '../../../features/taxon/services/taxon-search-service';
 
 type LatLngTuple = [number, number];
 
@@ -69,6 +70,7 @@ export class Map implements AfterViewInit {
   sentierService = inject(SentierPublicListService);
   mapUtils = inject(MapUtilsService);
   userService = inject(UserService);
+  taxonSearchService = inject(TaxonSearchService);
 
   private readonly sentierIcon = L.icon({
     iconUrl: 'assets/images/marker-icon-orange.svg',
@@ -558,6 +560,9 @@ export class Map implements AfterViewInit {
   }
 
   occurrenceModalSuccessed(): void {
-    this.singleSentierService.fetchSentier(this.singleSentier()!.id);
+    const id = this.singleSentier()?.id;
+    if (!id) { return; }
+    this.singleSentierService.fetchSentier(id);
+    this.taxonSearchService.getUniqueTaxonsBelongingToTrail(id); // ← refetch les taxons
   }
 }
