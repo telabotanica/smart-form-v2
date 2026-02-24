@@ -34,6 +34,7 @@ import {
 } from '../../features/occurrence/components/occurrence-modal-detail/occurrence-modal-detail';
 import {OccurrenceCard} from '../../features/occurrence/components/occurrence-card/occurrence-card';
 import {PdfExportService} from '../../shared/components/pdf-export/pdf-export.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-single-trail',
@@ -83,6 +84,7 @@ export class SingleTrail implements OnInit {
   ficheService = inject(FicheService);
   taxonSearchService = inject(TaxonSearchService);
   pdfExportService = inject(PdfExportService);
+  private router = inject(Router);
 
   baseUrl = this.sharedService.url().origin
 
@@ -94,6 +96,13 @@ export class SingleTrail implements OnInit {
 
     effect(()=>{
       this.sentier = this.sentierService.sentier();
+
+      // --- Vérification d'accès ---
+      if (this.sentier) {
+        this.checkAccess(this.sentier);
+      }
+      // ----------------------------
+
       this.fillUniqueOccurrences();
 
       this.trailQrCode.set(
@@ -111,6 +120,17 @@ export class SingleTrail implements OnInit {
     this.sentierService.fetchSentier(this.id());
     this.taxonSearchService.getUniqueTaxonsBelongingToTrail(this.id())
     this.sharedService.blurBackground.set(false)
+  }
+
+  private checkAccess(sentier: Sentier): void {
+    if (sentier.status === 'Validé') { return }; // accès libre
+
+    const isAdmin = this.userService.isUserAdmin();
+    const isAuthor = this.user?.id === sentier.author_id;
+
+    if (!isAdmin && !isAuthor) {
+      this.router.navigate(['/unauthorized']);
+    }
   }
 
   fillUniqueOccurrences(): void{

@@ -30,7 +30,7 @@ import {Loader} from '../../shared/components/loader/loader';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MesSentiers implements OnInit{
-  private userService = inject(UserService);
+  userService = inject(UserService);
   mesSentiersService = inject(MesSentiersService);
   sentierService= inject(SingleSentierService)
   sharedService = inject(SharedService);

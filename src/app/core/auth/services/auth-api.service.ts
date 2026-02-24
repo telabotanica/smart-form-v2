@@ -20,7 +20,7 @@ export class AuthApiService {
   cookie = this.cookieService.get(this.cookieName)
 
   login(username: string, password: string): Observable<string> {
-    return this.http.post<any>(this.smartfloreService + 'login', {"login": username, "password": password})
+    return this.http.post<string>(this.smartfloreService + 'login', {"login": username, "password": password})
   }
 
   // login(username: any, password: any) {
