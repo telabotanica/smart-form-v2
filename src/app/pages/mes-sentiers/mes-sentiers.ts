@@ -59,6 +59,16 @@ export class MesSentiers implements OnInit{
     });
 
     effect(() => {
+      const user = this.userService.user();
+
+      if (!user) { return };
+
+      this.mesSentiersService.fetchMe().then(() => {
+        this.user = this.mesSentiersService.userMe();
+      });
+    });
+
+    effect(() => {
       const checks: Record<string, SentierValidationCheck> = {};
       const checkErrors: Record<string, SentierValidationError | null> = {};
 
@@ -73,7 +83,9 @@ export class MesSentiers implements OnInit{
   }
 
   ngOnInit(): void {
-    this.mesSentiersService.fetchMe();
+    if (this.user) {
+      this.mesSentiersService.fetchMe();
+    }
   }
 
   // --- Deletion methods ---

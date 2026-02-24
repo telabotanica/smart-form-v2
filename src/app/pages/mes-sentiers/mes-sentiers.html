@@ -9,7 +9,7 @@
     <app-loader />
   } @else if (mesSentiersService.error()) {
     <app-error [errorMessage]="mesSentiersService.error() ?? 'Erreur inconnue'" />
-  } @else if (user!.trails!.length === 0) {
+  } @else if (!user?.trails || user?.trails!.length === 0) {
     <div class="p-6 rounded-xl bg-background-50 border border-background-200 text-center">
       <span class="material-symbols-outlined text-4xl text-text-300">hiking</span>
       <p class="!m-0 mt-2 text-sm text-text-500">Vous n'avez pas encore créé de sentier.</p>

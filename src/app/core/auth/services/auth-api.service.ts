@@ -19,8 +19,12 @@ export class AuthApiService {
   cookieName = environment.cookieName;
   cookie = this.cookieService.get(this.cookieName)
 
-  login(username: string, password: string): Observable<string> {
-    return this.http.post<string>(this.smartfloreService + 'login', {"login": username, "password": password})
+  login(username: string, password: string): Observable<any> {
+    return this.http.post<any>(
+      this.smartfloreService + 'login',
+      { login: username, password: password },
+      { withCredentials: true }
+    );
   }
 
   // login(username: any, password: any) {
@@ -28,11 +32,15 @@ export class AuthApiService {
   // }
 
   logout(): Observable<any> {
-    return this.http.get<any>(this.authUrl + 'deconnexion')
+    return this.http.get<any>(this.smartfloreService + 'logout', { withCredentials: true })
+  }
+
+  refreshToken(): Observable<any> {
+    return this.http.get<any>(this.smartfloreService + 'login/refreshv2?cookie=true', { withCredentials: true })
   }
 
   identite(): Observable<any> {
-    return this.http.get<any>(this.authUrl + 'identite')
+    return this.http.get<any>(this.authUrl + 'identite', { withCredentials: true })
   }
 
   isAdmin(token: string): Observable<boolean>{

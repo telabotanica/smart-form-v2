@@ -10,6 +10,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
+  if (req.url.includes('/logout')) {
+    return next(req);
+  }
+
   if (user?.token) {
     const cloned = req.clone({
       setHeaders: {

@@ -60,7 +60,7 @@ export default class AuthComponent implements OnInit {
     const cookie = this.cookieService.get(this.cookieName)
     if (cookie){
       this.userService.setLoggedIn(true);
-      this.authApiService.identite().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      this.authApiService.refreshToken().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (data) => {
           const token = data.token ?? '';
           this.userService.setUserData(token);
@@ -87,16 +87,6 @@ export default class AuthComponent implements OnInit {
             this.userService.addAdminRole(this.userService.user());
             this.error.set('');
             this.loginPopup.set(false);
-            //TODO: create cookie
-            // this.cookieService.set(
-            //   this.cookieName,
-            //   data,
-            //   31563000,
-            //   '/',
-            //   'localhost:4200',
-            //   true,
-            //   undefined
-            // );
           },
           error: (err) => {
             console.error(err)
@@ -117,7 +107,7 @@ export default class AuthComponent implements OnInit {
           this.userService.setUser(null)
           this.userService.setLoggedIn(false)
           this.userService.isUserAdmin.set(false)
-          this.cookieService.deleteAll('/');
+          // this.cookieService.deleteAll('/');
         },
         error: (err) => {
           console.error(err)

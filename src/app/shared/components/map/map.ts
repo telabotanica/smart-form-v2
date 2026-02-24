@@ -469,7 +469,7 @@ export class Map implements AfterViewInit {
         const current = this.currentSentier();
         if (!current) { return; }
         const freshCoords = (current.path?.coordinates ?? [])
-          .filter((c): c is Position => typeof c?.lat === 'number' && typeof c?.lng === 'number');
+          .filter((coord): coord is Position => typeof coord?.lat === 'number' && typeof coord?.lng === 'number');
         const ll = marker.getLatLng();
         const newCoords = freshCoords.map((p, idx) => idx === i ? { lat: ll.lat, lng: ll.lng } : p);
         await this.persistPath(current, newCoords);
