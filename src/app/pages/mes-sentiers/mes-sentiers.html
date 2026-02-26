@@ -20,7 +20,6 @@
       sentier{{ user!.trails!.length > 1 ? 's' : '' }}
     </p>
 
-
     <section class="flex w-full gap-3 flex-wrap ">
       @for (sentier of user!.trails; track sentier.id) {
         <div class="p-5 rounded-xl bg-background-50 border border-background-200 flex flex-col gap-3 w-full lg:w-9/20">
@@ -41,7 +40,7 @@
               </div>
             </div>
             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
-                  [class]="sentier.status === 'Validé'
+                  [class]="sentier.status?.toLowerCase() === 'Validé'.toLowerCase()
                 ? 'bg-accent-100 text-accent border border-accent-200'
                 : sentier.status === 'En attente'
                   ? 'bg-primary-100 text-secondary border border-primary-200'
@@ -128,7 +127,7 @@
 }
 
 @if (showDeleteConfirmModal) {
-  <app-modal-delete-trail-confirmation
+  <app-modal-confirmation
     [sentierToDelete]="sentierToDelete"
     (modalClosed)="closeDeleteConfirmModal()"
   />

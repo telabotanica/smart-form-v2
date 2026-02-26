@@ -18,7 +18,7 @@ import {Sentier} from '../../features/sentier/models/sentier.model';
 import {SentierValidationCheck} from '../../features/sentier/models/sentier-validation-check.model';
 import {SentierValidationError} from '../../shared/models/sentier-validation-error.model';
 import {SentierCheckErrors} from '../../shared/components/sentier-check-errors/sentier-check-errors';
-import {ModalDeleteConfirmation} from '../../shared/components/modal-delete-confirmation/modal-delete-confirmation';
+import {ModalConfirmation} from '../../shared/components/modal-confirmation/modal-confirmation';
 import {SharedService} from '../../shared/services/shared.service';
 import {SentierForm} from '../../features/sentier/components/sentier-form/sentier-form';
 import {Map} from '../../shared/components/map/map';
@@ -35,6 +35,7 @@ import {
 import {OccurrenceCard} from '../../features/occurrence/components/occurrence-card/occurrence-card';
 import {PdfExportService} from '../../shared/components/pdf-export/pdf-export.service';
 import {Router} from '@angular/router';
+import {AdminService} from '../../features/admin/services/admin-service';
 
 @Component({
   selector: 'app-single-trail',
@@ -42,7 +43,7 @@ import {Router} from '@angular/router';
     ErrorComponent,
     NgOptimizedImage,
     SentierCheckErrors,
-    ModalDeleteConfirmation,
+    ModalConfirmation,
     DatePipe,
     SentierForm,
     Map,
@@ -58,9 +59,13 @@ export class SingleTrail implements OnInit {
   user: User | null = null;
   sentierToDelete: Sentier | null = null;
   sentierToUpdate: Sentier | null = null;
-  showDeleteConfirmModal = false;
   sentier: Sentier | null = null;
+
+  showDeleteConfirmModal = false;
   showTrailModal = false;
+  showPublishConfirmModal = false;
+  showRejectConfirmModal = false;
+  showUnpublishConfirmModal = false;
 
   readonly id = input.required<number>()
   readonly isLoggedIn = signal(false);
@@ -84,6 +89,7 @@ export class SingleTrail implements OnInit {
   ficheService = inject(FicheService);
   taxonSearchService = inject(TaxonSearchService);
   pdfExportService = inject(PdfExportService);
+  adminService = inject(AdminService);
   private router = inject(Router);
 
   baseUrl = this.sharedService.url().origin
@@ -150,7 +156,7 @@ export class SingleTrail implements OnInit {
   }
 
   private checkAccess(sentier: Sentier): void {
-    if (sentier.status === 'Validé') { return } // accès libre
+    if (sentier.status?.toLowerCase() === 'Validé'.toLowerCase()) { return } // accès libre
 
     // const isAdmin = this.userService.isUserAdmin();
     const isAdmin = this.user?.admin
@@ -254,4 +260,57 @@ export class SingleTrail implements OnInit {
     this.selectedOccurrence.set(null);
     // this.sharedService.blurBackground.set(false)
   };
+
+  /*********************** ADMIN *********************/
+  openPublishConfirmModal(): void {
+    this.sharedService.blurBackground.set(true)
+    this.showPublishConfirmModal = true;
+  }
+
+  closePublishConfirmModal(): void {
+    this.sharedService.blurBackground.set(false)
+    this.showPublishConfirmModal = false;
+  }
+
+  openRejectConfirmModal(): void {
+    this.sharedService.blurBackground.set(true)
+    this.showRejectConfirmModal = true;
+  }
+
+  closeRejectConfirmModal(): void {
+    this.sharedService.blurBackground.set(false)
+    this.showRejectConfirmModal = false;
+  }
+
+  openUnpublishConfirmModal(): void {
+    this.sharedService.blurBackground.set(true)
+    this.showUnpublishConfirmModal = true;
+  }
+
+  closeUnpublishConfirmModal(): void {
+    this.sharedService.blurBackground.set(false)
+    this.showUnpublishConfirmModal = false;
+  }
+
+  async adminPublishTrail(): Promise<void> {
+    await this.adminService.publishSentier(this.sentier!)
+    this.closePublishConfirmModal();
+    this.sentierService.fetchSentier(this.id());
+  }
+
+  async adminRejectTrail(): Promise<void> {
+    await this.adminService.rejectSentier(this.sentier!)
+    this.closeRejectConfirmModal();
+    this.sentierService.fetchSentier(this.id());
+  }
+
+  async adminUnpublishTrail(): Promise<void> {
+    console.log("adminUnpublishTrail")
+    await this.adminService.unpublishSentier(this.sentier!)
+    this.closeUnpublishConfirmModal();
+    this.sentierService.fetchSentier(this.id());
+  }
+
+  /*****************************************/
+
 }

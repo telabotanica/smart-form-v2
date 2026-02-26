@@ -1,0 +1,42 @@
+<div class="fixed top-1/3 left-0 mx-5 md:left-1/3 bg-background-200 flex justify-center items-center z-10 rounded-xl p-4 w-11/12 md:w-2/5 md:min-w-[40%] md:max-w-[40%] shadow-sm">
+  <div class="p-1 rounded-xl w-full">
+
+    <h4 class="font-bold text-base text-text mb-1">
+      {{ config().icon }} {{ config().title }}
+    </h4>
+
+    <p class="text-sm text-text-600 mb-1">
+      @if (type() === 'sentier') {
+        Voulez-vous vraiment supprimer le sentier <span class="font-bold underline">"{{ sentierToDelete()!.display_name }}"</span> ?
+      } @else if (type() === 'occurrence') {
+        Voulez-vous vraiment supprimer l'individu <span class="font-bold underline">"{{ occurrenceToDelete()!.taxon?.scientific_name }}"</span> ?
+      } @else if (type() === 'publish') {
+        Voulez-vous vraiment publier le sentier <span class="font-bold underline">"{{ sentierToDelete()?.display_name }}"</span> ?
+      } @else if (type() === 'reject') {
+        Voulez-vous vraiment refuser le sentier <span class="font-bold underline">"{{ sentierToDelete()?.display_name }}"</span> ?
+      }
+    </p>
+
+    <p class="text-xs text-text-400 mb-4">{{ config().message }}</p>
+
+    <div class="flex flex-wrap gap-3 justify-between items-center">
+      <button
+        [class]="config().confirmClass + ' mt-0 mx-0'"
+        title="Confirmer"
+        type="button"
+        (click)="confirm()"
+      >
+        {{ config().confirmLabel }}
+      </button>
+
+      <button
+        class="mt-0 mx-0"
+        title="Annuler"
+        type="button"
+        (click)="closeModal()"
+      >
+        Annuler
+      </button>
+    </div>
+  </div>
+</div>

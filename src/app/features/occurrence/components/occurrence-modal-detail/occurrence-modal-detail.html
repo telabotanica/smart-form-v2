@@ -164,7 +164,7 @@
   }
 
   @if (showDeleteConfirmModal) {
-    <app-modal-delete-trail-confirmation
+    <app-modal-confirmation
       [occurrenceToDelete]="occurrence()"
       [type]="'occurrence'"
       (modalClosed)="closeDeleteConfirmModal()"

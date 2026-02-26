@@ -12,7 +12,7 @@
         </h2>
 
 
-        @if (sentier!.status !== 'Validé') {
+        @if (sentier!.status?.toLowerCase() !== 'Validé'.toLowerCase()) {
           <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
             bg-primary-100 text-secondary border border-primary-200">
             {{ sentier!.status ?? 'Brouillon' }}
@@ -42,13 +42,13 @@
     </section>
 
     <!-- ACTIONS (owner ou admin) -->
-    @if (sentier!.status !== 'Validé' && isLoggedIn() && user && user.id === sentier!.author_id) {
+    @if (sentier!.status?.toLowerCase() !== 'Validé'.toLowerCase() && isLoggedIn() && user && user.id === sentier!.author_id) {
       <section class="mx-4 mt-4 p-4 rounded-xl bg-background-50 border border-background-200 flex flex-wrap gap-2">
         <button class="mt-0 mx-0" role="button" title="Modifier le sentier" type="button" (click)="openTrailModal(sentier!)">
           ✏️ Modifier
         </button>
 
-        @if (sentier!.status !== 'Validé' && sentier!.status !== 'En attente') {
+        @if (sentier!.status?.toLowerCase() !== 'Validé'.toLowerCase() && sentier!.status !== 'En attente') {
           <button class="mt-0 mx-0 bg-accent hover:bg-accent-600 text-white" role="button" title="Vérifier le sentier" type="button" (click)="checkSentier(sentier!)">
             🔍 Vérifier
           </button>
@@ -72,7 +72,7 @@
       </section>
     }
 
-    @if (sentier!.status !== 'Validé' && !(isLoggedIn() && user && user.id === sentier!.author_id)) {
+    @if (sentier!.status?.toLowerCase() !== 'Validé'.toLowerCase() && !(isLoggedIn() && user && user.id === sentier!.author_id)) {
       <p class="mx-4 mt-3 text-text-400 text-xs italic">Connectez-vous pour modifier ce sentier.</p>
     }
 
@@ -96,14 +96,43 @@
         <h3 class="m-0 p-0 ml-0 text-base font-bold text-accent mb-3">🔐 Options administrateur</h3>
         <div class="flex flex-wrap gap-2 mt-2">
           <button class="mt-0 mx-0" role="button" title="Vérifier le sentier" type="button" (click)="checkSentier(sentier!)">Vérifier</button>
-          <button class="mt-0 mx-0 bg-accent hover:bg-accent-700 text-white" role="button" title="Publier le sentier" type="button">✅ Publier</button>
-          <button class="mt-0 mx-0 bg-red-700 hover:bg-red-600 text-white border-red-700" role="button" title="Refuser le sentier" type="button">❌ Refuser</button>
+          <button class="mt-0 mx-0 bg-accent hover:bg-accent-700 text-white" role="button" title="Publier le sentier" type="button" (click)="openPublishConfirmModal()">✅ Publier</button>
+          <button class="mt-0 mx-0 bg-red-700 hover:bg-red-600 text-white border-red-700" role="button" title="Refuser le sentier" type="button" (click)="openRejectConfirmModal()">❌ Refuser</button>
         </div>
         <app-sentier-check-errors [check]="sentierCheck()!" />
         @if (sentierCheckError()) {
           <div class="mt-3">
             <app-sentier-check-errors [error]="sentierCheckError()!" />
           </div>
+        }
+        @if (adminService.loading()){
+          <app-loader />
+        }
+
+        @if (adminService.error()) {
+          <app-error [errorMessage]="adminService.error() ?? 'Erreur inconnue'" />
+        }
+      </section>
+    }
+
+    @if (userService.isUserAdmin() && sentier!.status?.toLowerCase() === 'Validé'.toLowerCase()) {
+      <section class="mx-4 mt-4 p-4 rounded-xl bg-accent-50 border border-accent-200">
+        <h3 class="m-0 p-0 ml-0 text-base font-bold text-accent mb-3">🔐 Options administrateur</h3>
+        <div class="flex flex-wrap gap-2 mt-2">
+          <button class="mt-0 mx-0 bg-red-700 hover:bg-red-600 text-white border-red-700" role="button" title="Dépublier le sentier" type="button" (click)="openUnpublishConfirmModal()">❌ Dépublier</button>
+        </div>
+        <app-sentier-check-errors [check]="sentierCheck()!" />
+        @if (sentierCheckError()) {
+          <div class="mt-3">
+            <app-sentier-check-errors [error]="sentierCheckError()!" />
+          </div>
+        }
+        @if (adminService.loading()){
+          <app-loader />
+        }
+
+        @if (adminService.error()) {
+          <app-error [errorMessage]="adminService.error() ?? 'Erreur inconnue'" />
         }
       </section>
     }
@@ -237,9 +266,37 @@
 }
 
 @if (showDeleteConfirmModal) {
-  <app-modal-delete-trail-confirmation
+  <app-modal-confirmation
     [sentierToDelete]="sentierToDelete"
     (modalClosed)="closeDeleteConfirmModal()"
+  />
+}
+
+<!-- En bas, dans la section MODALS -->
+@if (showPublishConfirmModal) {
+  <app-modal-confirmation
+    type="publish"
+    [sentierToDelete]="sentier"
+    (modalClosed)="closePublishConfirmModal()"
+    (modalSucceed)="adminPublishTrail()"
+  />
+}
+
+@if (showRejectConfirmModal) {
+  <app-modal-confirmation
+    type="reject"
+    [sentierToDelete]="sentier"
+    (modalClosed)="closeRejectConfirmModal()"
+    (modalSucceed)="adminRejectTrail()"
+  />
+}
+
+@if (showUnpublishConfirmModal) {
+  <app-modal-confirmation
+    type="unpublish"
+    [sentierToDelete]="sentier"
+    (modalClosed)="closeUnpublishConfirmModal()"
+    (modalSucceed)="adminUnpublishTrail()"
   />
 }
 

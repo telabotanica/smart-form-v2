@@ -8,8 +8,8 @@ import {Sentier} from '../../../sentier/models/sentier.model';
 import {SingleSentierService} from '../../../sentier/services/single-sentier-service';
 import {OccurrenceService} from '../../services/occurrence-service';
 import {
-  ModalDeleteConfirmation
-} from '../../../../shared/components/modal-delete-confirmation/modal-delete-confirmation';
+  ModalConfirmation
+} from '../../../../shared/components/modal-confirmation/modal-confirmation';
 import {RouterLink} from '@angular/router';
 import {Fiche} from '../../../fiche/models/fiche.model';
 import {FicheForm} from '../../../fiche/components/fiche-form/fiche-form';
@@ -22,7 +22,7 @@ import {Taxon} from '../../../taxon/models/taxon.model';
 
 @Component({
   selector: 'app-occurrence-modal-detail',
-  imports: [NgOptimizedImage, OccurrenceForm, ModalDeleteConfirmation, RouterLink, FicheForm, QrCodeButton, PdfExport],
+  imports: [NgOptimizedImage, OccurrenceForm, ModalConfirmation, RouterLink, FicheForm, QrCodeButton, PdfExport],
   templateUrl: './occurrence-modal-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
