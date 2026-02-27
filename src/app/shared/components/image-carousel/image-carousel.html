@@ -1,0 +1,140 @@
+@if (loading()) {
+  <!-- Skeleton -->
+  <div class="flex flex-col gap-2">
+    <div class="w-full aspect-video rounded-lg bg-background-200 animate-pulse"></div>
+    <div class="flex gap-2">
+      @for (_ of [1, 2, 3]; track $index) {
+        <div class="flex-shrink-0 w-16 h-16 rounded-lg bg-background-200 animate-pulse"></div>
+      }
+    </div>
+  </div>
+} @else if (total() === 0) {
+  <!-- Fallback -->
+  <div class="w-full aspect-video rounded-lg bg-background-100 border border-background-200 flex items-center justify-center">
+    <div class="flex flex-col items-center gap-2 text-text-300">
+      <span class="material-symbols-outlined text-4xl">hide_image</span>
+      <span class="text-xs">Aucune photo disponible</span>
+    </div>
+  </div>
+} @else {
+  <div class="flex flex-col gap-2">
+
+    <!-- Grande image active -->
+    <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-background-200">
+      <img
+        class="w-full h-full object-cover transition-opacity duration-200"
+        height="400"
+        width="800"
+        [alt]="activeItem()!.alt ?? 'image de l\'occurrence'"
+        [ngSrc]="activeItem()!.url"
+      />
+
+      <!-- Overlay sélection (mode formulaire) -->
+      @if (selectable() && isCelPhotoSelected(activeItem()!.id)) {
+        <div class="absolute inset-0 bg-primary/15 flex items-center justify-center pointer-events-none">
+          <span class="material-symbols-outlined text-white text-4xl drop-shadow-lg">check_circle</span>
+        </div>
+      }
+
+      <!-- Compteur -->
+      @if (hasMultiple()) {
+        <span class="absolute bottom-2 right-2 bg-black/50 text-white text-[.65rem] px-2 py-0.5 rounded-full backdrop-blur-sm select-none">
+          {{ activeIndex() + 1 }} / {{ total() }}
+        </span>
+      }
+
+      <!-- Flèches overlay (image principale) -->
+      @if (hasMultiple()) {
+        <button
+          aria-label="Photo précédente"
+          class="absolute left-2 top-1/2 -translate-y-1/2 !mt-0 !mx-0 !p-0 !shadow-none !border-0
+                 !bg-black/40 hover:!bg-black/65 backdrop-blur-sm
+                 grid place-items-center w-8 h-8 rounded-full text-white transition-colors"
+          type="button"
+          (click)="prev()"
+        >
+          <span class="material-symbols-outlined text-[1.1rem]">chevron_left</span>
+        </button>
+        <button
+          aria-label="Photo suivante"
+          class="absolute right-2 top-1/2 -translate-y-1/2 !mt-0 !mx-0 !p-0 !shadow-none !border-0
+                 !bg-black/40 hover:!bg-black/65 backdrop-blur-sm
+                 grid place-items-center w-8 h-8 rounded-full text-white transition-colors"
+          type="button"
+          (click)="next()"
+        >
+          <span class="material-symbols-outlined text-[1.1rem]">chevron_right</span>
+        </button>
+      }
+    </div>
+
+    <!-- Bande de miniatures -->
+    @if (hasMultiple()) {
+      <div class="flex items-center gap-2">
+
+        <!-- Flèche gauche miniatures -->
+        <button
+          aria-label="Défiler à gauche"
+          class="flex-shrink-0 !mt-0 !mx-0 !p-0 !shadow-none !bg-background-100
+                 hover:!bg-background-200 !border !border-background-300
+                 grid place-items-center w-7 h-7 rounded-full text-text-500 transition-colors"
+          type="button"
+          (click)="prev()"
+        >
+          <span class="material-symbols-outlined text-[1rem]">chevron_left</span>
+        </button>
+
+        <!-- Strip -->
+        <div
+          aria-label="Miniatures"
+          class="flex gap-1.5 overflow-x-auto flex-1 py-0.5 scroll-smooth"
+          data-carousel-strip
+          role="group"
+          style="scrollbar-width: none;"
+        >
+          @for (item of items(); track item.id; let i = $index) {
+            <button
+              type="button"
+              [attr.aria-label]="'Voir photo ' + (i + 1)"
+              [class]="i === activeIndex()
+                ? 'relative flex-shrink-0 w-14 h-14 rounded-md overflow-hidden ring-2 ring-primary ring-offset-1 ring-offset-background-50 transition-all duration-150 focus:outline-none'
+                : 'relative flex-shrink-0 w-14 h-14 rounded-md overflow-hidden ring-2 ring-transparent opacity-55 hover:opacity-90 transition-all duration-150 focus:outline-none'"
+              (click)="onThumbnailClick(i, selectable() ? celPhotos()[i] : undefined)"
+            >
+              <img
+                class="w-full h-full object-cover"
+                height="56"
+                loading="lazy"
+                width="56"
+                [alt]="item.alt ?? ''"
+                [ngSrc]="item.url"
+              />
+              @if (selectable() && isCelPhotoSelected(item.id)) {
+                <span
+                  aria-hidden="true"
+                  class="absolute inset-0 bg-primary/20 flex items-center justify-center"
+                >
+                  <span class="material-symbols-outlined text-white text-sm drop-shadow">check</span>
+                </span>
+              }
+            </button>
+          }
+        </div>
+
+        <!-- Flèche droite miniatures -->
+        <button
+          aria-label="Défiler à droite"
+          class="flex-shrink-0 !mt-0 !mx-0 !p-0 !shadow-none !bg-background-100
+                 hover:!bg-background-200 !border !border-background-300
+                 grid place-items-center w-7 h-7 rounded-full text-text-500 transition-colors"
+          type="button"
+          (click)="next()"
+        >
+          <span class="material-symbols-outlined text-[1rem]">chevron_right</span>
+        </button>
+
+      </div>
+    }
+
+  </div>
+}

@@ -305,7 +305,6 @@ export class SingleTrail implements OnInit {
   }
 
   async adminUnpublishTrail(): Promise<void> {
-    console.log("adminUnpublishTrail")
     await this.adminService.unpublishSentier(this.sentier!)
     this.closeUnpublishConfirmModal();
     this.sentierService.fetchSentier(this.id());

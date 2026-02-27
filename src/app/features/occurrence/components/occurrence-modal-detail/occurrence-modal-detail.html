@@ -48,17 +48,8 @@
         }
       </div>
 
-      <!-- Image -->
-      <div class="w-full aspect-video relative rounded-lg overflow-hidden bg-background-200">
-        <img
-          class="object-cover"
-          fill
-          priority
-          [alt]="imageAlt()"
-          [ngSrc]="imageSrc()"
-          [title]="imageTitle()"
-        />
-      </div>
+      <!-- Carousel photos -->
+      <app-image-carousel [images]="images()" />
 
       <!-- Anecdote -->
       @if (o.anecdotes) {
@@ -113,15 +104,14 @@
               </button>
             }
 
-
             <a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-background-300
             bg-transparent text-text text-[.7rem] tracking-[.06em] hover:bg-background-100
             hover:border-background-400 transition-colors no-underline"
-            target="_blank"
-            [routerLink]="['/fiche', o.taxon!.taxon_repository, o.taxon!.taxonomic_id, o.taxon!.name_id]"
+               target="_blank"
+               [routerLink]="['/fiche', o.taxon!.taxon_repository, o.taxon!.taxonomic_id, o.taxon!.name_id]"
             >
-            <span class="material-symbols-outlined text-[.9rem]">article</span>
-            Voir la fiche
+              <span class="material-symbols-outlined text-[.9rem]">article</span>
+              Voir la fiche
             </a>
 
             <app-qr-code-button [taxon]="o.taxon!" />

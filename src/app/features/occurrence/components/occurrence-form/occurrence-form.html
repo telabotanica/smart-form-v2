@@ -40,7 +40,7 @@
       (ngSubmit)="submit()"
     >
 
-      <!-- Section taxon -->
+      <!-- Section taxon — 01 -->
       <div class="flex flex-col gap-2">
         <p class="flex items-center gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent font-semibold">
           <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">01</span>
@@ -49,12 +49,10 @@
         </p>
 
         @if (!occurrence()) {
-          <!-- Recherche active -->
           <div class="p-3 rounded-lg bg-background-100 border border-background-200">
             <app-taxon-search (emitClear)="resetSelection()" (emitTaxon)="fillOccurrence($event)" />
           </div>
         } @else {
-          <!-- Taxon déjà sélectionné -->
           <div class="p-4 rounded-lg bg-accent-50 border border-accent-200 flex flex-col gap-1">
             @if (occurrence()!.taxon?.scientific_name) {
               <p class="!m-0 text-sm font-semibold italic text-accent">
@@ -75,14 +73,42 @@
         }
       </div>
 
-      <!-- Anecdotes -->
+      <!-- Section photos CEL — 02 (visible dès qu'un taxon est sélectionné) -->
+      @if (selectedTaxonName() !== '') {
+        <div class="flex flex-col gap-2">
+          <p class="flex items-center gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent font-semibold">
+            <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">02</span>
+            Ajouter une ou plusieurs photos de cet individu à partir du CEL
+          </p>
+
+          <app-image-carousel
+            [celPhotos]="photos()"
+            [loading]="imageService.loading()"
+            [selectable]="true"
+            [selectedPhotoIds]="selectedPhotoIds()"
+            (photoToggled)="togglePhoto($event)"
+          />
+
+          @if (selectedPhotoIds().size > 0) {
+            <p class="text-[.68rem] text-accent font-semibold tracking-wide">
+              <span class="material-symbols-outlined text-[.9rem] align-middle">photo_library</span>
+              {{ selectedPhotoIds().size }} photo{{ selectedPhotoIds().size > 1 ? 's' : '' }}
+                                            sélectionnée{{ selectedPhotoIds().size > 1 ? 's' : '' }}
+            </p>
+          }
+        </div>
+      }
+
+      <!-- Anecdotes — 02 ou 03 selon contexte -->
       <div class="flex flex-col gap-1.5">
         <div class="flex items-baseline justify-between">
           <label
             class="flex items-baseline gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent cursor-pointer"
             for="anecdotes"
           >
-            <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">02</span>
+            <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">
+              {{ selectedTaxonName() !== '' ? '03' : '02' }}
+            </span>
             Anecdotes
           </label>
           <span class="text-[.62rem] text-text-400">
