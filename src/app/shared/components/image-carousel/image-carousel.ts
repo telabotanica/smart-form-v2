@@ -12,6 +12,7 @@ import {CelPhoto} from '../../../features/image/models/cel-photo.modal';
 
 export type CarouselImage = {
   id: number;
+  cel_image_id?: number;
   url: string;
   alt?: string;
 };
@@ -48,6 +49,7 @@ export class ImageCarousel {
     if (imgs.length) {
       return imgs.map((img) => ({
         id: img.id,
+        cel_image_id: img.cel_image_id,
         url: img.url ?? '',
         alt: img.url ? `Photo ${img.id}` : 'Pas de photo',
       }));

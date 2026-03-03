@@ -21,13 +21,15 @@
 
     <!-- Grande image active -->
     <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-background-200">
-      <img
+      <a [href]="activeItem()!.url" [target]="'_blank'" [title]="'Voir l\'image dans une nouvelle fenêtre'">
+        <img
         class="w-full h-full object-cover transition-opacity duration-200"
         height="400"
         width="800"
         [alt]="activeItem()!.alt ?? 'image de l\'occurrence'"
         [ngSrc]="activeItem()!.url"
       />
+      </a>
 
       <!-- Overlay sélection (mode formulaire) -->
       @if (selectable() && isCelPhotoSelected(activeItem()!.id)) {
