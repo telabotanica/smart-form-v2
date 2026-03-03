@@ -51,7 +51,7 @@ export class FichePage implements OnInit {
     this.fiche.set(null);
     await this.ficheService.fetchFiche(
       this.referentiel(),
-      this.num_nom()
+      this.num_taxonomic()
     )
     this.fiche.set(this.ficheService.fiche());
     this.showFicheModal.set(true);
