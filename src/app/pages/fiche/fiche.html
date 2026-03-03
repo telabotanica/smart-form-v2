@@ -19,18 +19,16 @@
       · Famille des
       <span class="font-medium text-text">{{ taxonSearchService.taxon().family }}</span>
     </h3>
-    <div
-      class="mt-1 text-xs text-text-400 whitespace-pre-line"
-      [innerHTML]="taxonSearchService.taxon().html_full_scientific_name | markdown"
-    ></div>
+<!--    <div-->
+<!--      class="mt-1 text-xs text-text-400 whitespace-pre-line"-->
+<!--      [innerHTML]="taxonSearchService.taxon().html_full_scientific_name | markdown"-->
+<!--    ></div>-->
   </section>
 
   <!-- Carousel -->
-  <section class="max-w-6xl mx-auto w-full w-full aspect-video rounded-xl bg-background-200 border border-background-300
-              flex items-center justify-center text-text-400 text-sm gap-2">
-    <span class="material-symbols-outlined">photo_library</span>
-    Carousel d'images
-  </section>
+  @if (images().length > 0) {
+      <app-image-carousel [images]="images()" />
+  }
 
   <!-- Sections / onglets -->
   <section class="flex flex-col gap-5">

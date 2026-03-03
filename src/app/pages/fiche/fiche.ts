@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, input, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, OnInit, signal} from '@angular/core';
 import {TaxonSearchService} from '../../features/taxon/services/taxon-search-service';
 import {Loader} from '../../shared/components/loader/loader';
 import {WikiToHtmlPipe} from '../../features/fiche/pipes/WikiToHtmlPipe';
@@ -7,8 +7,10 @@ import {ErrorComponent} from '../../shared/components/error/error';
 import {SharedService} from '../../shared/services/shared.service';
 import {FicheService} from '../../features/fiche/services/fiche-service';
 import {Fiche} from '../../features/fiche/models/fiche.model';
+import {Image} from '../../features/image/models/image.model';
 import {FicheForm} from '../../features/fiche/components/fiche-form/fiche-form';
 import {UserService} from '../../core/auth/services/user.service';
+import {ImageCarousel} from '../../shared/components/image-carousel/image-carousel';
 
 @Component({
   selector: 'app-fiche',
@@ -17,7 +19,8 @@ import {UserService} from '../../core/auth/services/user.service';
     WikiToHtmlPipe,
     MarkdownPipe,
     ErrorComponent,
-    FicheForm
+    FicheForm,
+    ImageCarousel
   ],
   templateUrl: './fiche.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -29,6 +32,11 @@ export class FichePage implements OnInit {
 
   readonly showFicheModal = signal(false);
   readonly fiche = signal<Fiche | null>(null);
+  // readonly images = signal<Image[]>([])
+  readonly images = computed<Image[]>(() => {
+    const tabs = this.taxonSearchService.taxon()?.tabs ?? [];
+    return tabs.find((tab) => tab.title === 'Galerie')?.images?.slice(0, 10) ?? [];
+  });
 
   taxonSearchService = inject(TaxonSearchService);
   sharedService = inject(SharedService);
