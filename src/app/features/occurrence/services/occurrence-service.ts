@@ -5,6 +5,7 @@ import {Occurrence} from '../models/occurrence.model';
 import {firstValueFrom} from 'rxjs';
 import {Sentier} from '../../sentier/models/sentier.model';
 import {ErrorApi} from '../../../core/models/error-api.model';
+import {CelPhoto} from '../../image/models/cel-photo.modal';
 
 @Injectable({
   providedIn: 'root'
@@ -75,6 +76,24 @@ export class OccurrenceService {
       const apiError = err as ErrorApi;
       this._error.set(
         apiError.error?.error ?? 'Erreur inconnue lors de la suppression de l\'occurrence'
+      );
+      console.error(err)
+    } finally {
+      this._loading.set(false);
+    }
+  }
+
+  async deletePhoto(id: number): Promise<void> {
+    try {
+      const data: any = await firstValueFrom(
+        this.http.delete<Occurrence>(`${this.smartfloreService}occurrence/image/${id}`)
+      );
+
+      this._occurrence.set(data ?? {} as Occurrence);
+    } catch (err: unknown) {
+      const apiError = err as ErrorApi;
+      this._error.set(
+        apiError.error?.error ?? 'Erreur inconnue lors de la suppression de la photo'
       );
       console.error(err)
     } finally {

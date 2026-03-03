@@ -31,8 +31,8 @@
 
       <!-- Overlay sélection (mode formulaire) -->
       @if (selectable() && isCelPhotoSelected(activeItem()!.id)) {
-        <div class="absolute inset-0 bg-primary/15 flex items-center justify-center pointer-events-none">
-          <span class="material-symbols-outlined text-white text-4xl drop-shadow-lg">check_circle</span>
+        <div class="absolute top-5 right-5  bg-primary/15 flex items-center justify-center pointer-events-none">
+          <span class="material-symbols-outlined text-black text-4xl drop-shadow-lg bg-white rounded-full">check_circle</span>
         </div>
       }
 
@@ -114,7 +114,7 @@
                   aria-hidden="true"
                   class="absolute inset-0 bg-primary/20 flex items-center justify-center"
                 >
-                  <span class="material-symbols-outlined text-white text-sm drop-shadow">check</span>
+                  <span class="material-symbols-outlined text-black text-sm drop-shadow bg-white rounded-full">check</span>
                 </span>
               }
             </button>

@@ -143,6 +143,24 @@ export class OccurrenceForm implements OnInit {
   }
 
   async submit(): Promise<void> {
+    const o = this.occurrence();
+
+    // 1. Identifier les images à supprimer (présentes en base mais déselect ionnées)
+    if (o?.images?.length) {
+      const selectedIds = this.selectedPhotoIds();
+
+      const imagesToDelete = o.images.filter(
+        (img) => img.cel_image_id !== null && !selectedIds.has(img.cel_image_id!)
+      );
+
+      // 2. Supprimer chaque image retirée avant de sauvegarder
+      for (const img of imagesToDelete) {
+        await this.occurrenceService.deletePhoto(img.id!);
+        if (this.occurrenceService.error()) { return; }
+      }
+    }
+
+    // 3. Construire les images sélectionnées depuis les photos CEL courantes
     const selectedImages = this.buildSelectedImages();
 
     this.newOccurrence.update((current) => ({
@@ -152,7 +170,7 @@ export class OccurrenceForm implements OnInit {
     }));
 
     try {
-      if (this.occurrence()) {
+      if (o) {
         await this.occurrenceService.updateOccurrence(this.newOccurrence());
       } else {
         if (!this.form().valid) { return; }
