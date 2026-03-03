@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   effect,
   inject,
   input,
@@ -58,8 +57,6 @@ export class OccurrenceForm implements OnInit {
       limite: this.fb.control(10, { validators: [Validators.required] }),
     }),
   );
-
-  readonly hasPhotos = computed(() => this.photos().length > 0);
 
   constructor() {
     effect(() => {
@@ -166,7 +163,7 @@ export class OccurrenceForm implements OnInit {
     this.newOccurrence.update((current) => ({
       ...current,
       anecdotes: this.form().get('anecdotes')?.value ?? '',
-      ...(selectedImages.length > 0 ? { images: selectedImages } : {}),
+      images: selectedImages.length > 0 ? selectedImages : []
     }));
 
     try {
