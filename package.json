@@ -31,6 +31,7 @@
     "@angular/router": "^20.2.0",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/leaflet": "^1.9.20",
+    "exif-js": "^2.3.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.1.0",
     "leaflet": "^1.9.4",

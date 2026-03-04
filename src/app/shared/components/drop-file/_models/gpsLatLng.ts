@@ -5,8 +5,8 @@ export type DMS = {
 }
 
 export type LatLngDMS = {
-  lat: DMS;
-  lng: DMS;
+  lat: DMS | null;
+  lng: DMS | null;
 }
 
 export type LatLngDMSAltitudePhotoName = {

@@ -10,7 +10,7 @@
   </div>
 
   <!-- Panel : max-w-sm pour rester compact -->
-  <div class="relative z-10 w-full max-w-sm bg-background-50 rounded-xl shadow-2xl overflow-hidden">
+  <div class="relative z-10 w-full max-w-md bg-background-50 rounded-xl shadow-2xl overflow-hidden">
 
     <!-- Header -->
     <header class="relative px-8 pt-8 pb-5">
@@ -120,16 +120,28 @@
           <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">04</span>
           Photos
         </p>
+        @if (sentier() && sentier()!.image ) {
+          <div class="w-full aspect-video relative rounded-lg overflow-hidden">
+            <img
+              class="object-cover"
+              fill
+              priority
+              [alt]="'Image du sentier ' + sentier()!.display_name"
+              [ngSrc]="sentier()!.image?.url!"
+            />
+          </div>
+        }
         <app-dropfile-box
           #dropBox
           [allowedFileTypes]="['jpeg', 'png']"
           [ignoreOversizedFiles]="false"
-          [label]="'Cliquez pour choisir les photos ou glissez-les ici'"
+          [label]="'Cliquez pour choisir la photo ou glissez-la ici'"
           [photoUploadBaseUrl]="baseCelApiUrl"
           [sendImages]="sendPhotoFlag()"
           [showTable]="true"
           [uploadTbPhotoFiles]="true"
           (acceptedFilesChange)="onPhotoAdded($event)"
+          (deletedFilesChange)="onPhotoDeleted($event)"
           (httpError)="onPostPhotoError($event)"
           (rejectedFilesChange)="onPhotoRejected($event)"
           (uploadedFilesChange)="onPhotoUploaded($event)"
@@ -143,10 +155,15 @@
             Envoi des photos en cours, veuillez patienter…
           </p>
         }
+
+        @if (pictureError) {
+          <app-error errorMessage={{pictureError}} />
+        }
+
       </div>
 
       <!-- Actions -->
-      <div class="flex items-center justify-between gap-3 pt-4 border-t border-background-200">
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-background-200">
         <button
           class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
                  hover:!bg-background-100 hover:!border-background-400 hover:!no-underline

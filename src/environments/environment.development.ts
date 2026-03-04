@@ -10,5 +10,6 @@ export const environment = {
   qrCodeUrl: "https://qr.tela-botanica.org/smartflore/",
   // cookieName: 'tb_auth_beta_test'
   cookieName: 'tb_auth_beta_test',
-  celImageUrl: "http://localhost:8001/api/photos?isPublic=true"
+  celImageUrl: "http://localhost:8001/api/photos?isPublic=true",
+  baseCelApiUrl: "http://localhost:8001/api",
 };

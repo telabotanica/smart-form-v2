@@ -13,7 +13,7 @@ import {Sentier} from '../../models/sentier.model';
 import {SharedService} from '../../../../shared/services/shared.service';
 import {SingleSentierService} from '../../services/single-sentier-service';
 import {FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {Router} from '@angular/router';
 import {UserService} from '../../../../core/auth/services/user.service';
 import {ErrorComponent} from '../../../../shared/components/error/error';
@@ -24,9 +24,8 @@ import {Image} from '../../../image/models/image.model';
 
 @Component({
   selector: 'app-sentier-form',
-  imports: [CommonModule, ReactiveFormsModule, ErrorComponent, AuthComponent, DropBoxComponent],
+  imports: [CommonModule, ReactiveFormsModule, ErrorComponent, AuthComponent, DropBoxComponent, NgOptimizedImage],
   templateUrl: './sentier-form.html',
-  styleUrl: './sentier-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SentierForm implements OnInit {
@@ -46,8 +45,10 @@ export class SentierForm implements OnInit {
 
   // ── State ────────────────────────────────────────────────────────────────
   nameError = false;
+  pictureError = "";
   readonly sendPhotoFlag = signal(false);
-  readonly baseCelApiUrl = environment.celImageUrl;
+  readonly baseCelApiUrl = environment.baseCelApiUrl;
+  trailPicture = signal<Image | null>(null);
 
   /** True while the dropbox is uploading — blocks form submission */
   protected get isUploading(): boolean {
@@ -106,7 +107,8 @@ export class SentierForm implements OnInit {
       name: formValue.display_name ?? '',
       display_name: formValue.display_name ?? '',
       best_season: bestSeasonTuple,
-      prm: formValue.prm as -1 | 0 | 1
+      prm: formValue.prm as -1 | 0 | 1,
+      image: this.trailPicture() ?? null
     };
 
     if (this.sentier()) {
@@ -130,15 +132,28 @@ export class SentierForm implements OnInit {
 
   onPhotoUploaded(image: unknown): void {
     const uploadedImage = image as Image;
+    this.trailPicture.set(uploadedImage);
+    this.pictureError = "";
     console.log('Photo uploaded:', uploadedImage);
   }
 
-  onPhotoRejected(rejected: unknown[]): void {
-    console.warn('Photos rejetées :', rejected);
+  onPhotoRejected(rejected: any): void {
+    this.trailPicture.set(null);
+    this.pictureError = rejected.error["hydra:description"];
+    console.warn('Photos rejetées :', rejected.error["hydra:description"]);
   }
 
-  onPostPhotoError(error: unknown): void {
-    console.error('Erreur upload photo :', error);
+  onPostPhotoError(error: any): void {
+    this.trailPicture.set(null);
+    this.pictureError = error.error["hydra:description"];
+    console.error('Erreur upload photo :', error.error["hydra:description"]);
+  }
+
+  onPhotoDeleted(error: any): void {
+    this.trailPicture.set(null);
+    this.pictureError = error.error["hydra:description"];
+    console.error('Erreur upload photo :', error.error["hydra:description"]);
+    //TODO appeler DEL baseCelApiUrl/photos/{id} pour supprimer la photo du CEL
   }
 
   // ── Modal ────────────────────────────────────────────────────────────────

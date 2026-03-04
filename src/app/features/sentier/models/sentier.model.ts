@@ -24,6 +24,6 @@ export type Sentier = {
   date_publication?: string;
   nb_taxons?: number;
   occurrences?: Occurrence[];
-  image?: Image;
+  image?: Image | null;
   ancien_id?: number;
 }

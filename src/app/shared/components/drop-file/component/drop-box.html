@@ -3,6 +3,7 @@
   <button
     #dropzoneEl
     appDroppable
+    class="p-20"
     type="button"
     [allowFullWindowDrop]="allowFullWindowDrop()"
     [allowedFileTypes]="allowedFileTypes()"
@@ -19,13 +20,13 @@
     (windowDrag)="onWindowDrag($event)"
   >
     @if (!sendingImages()) {
-      <div class="flex flex-col items-center gap-1 pointer-events-none select-none">
+      <div class="flex flex-col flew-wrap items-center gap-2 pointer-events-none select-none">
         <!-- Upload icon -->
-        <svg class="w-8 h-8 text-primary mb-1 opacity-70" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <svg class="w-8 h-8 text-primary opacity-70" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
           <path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" stroke-linecap="round"
                 stroke-linejoin="round" />
         </svg>
-        <span class="text-sm font-semibold text-primary">{{ currentLabel() }}</span>
+        <span class="text-sm font-semibold text-primary text-wrap">{{ currentLabel() }}</span>
         @if (labelHelp()) {
           <span class="text-xs italic text-gray-400 mt-0.5">{{ labelHelp() }}</span>
         }
@@ -51,7 +52,7 @@
   </div>
 
   <!-- File table -->
-  @if (fileList().length > 0 && showTable()) {
+  @if (fileList().length > 0 && showTable() && fileList()[0].uploaded !== 'error') {
     <div class="mt-4 rounded-lg border border-gray-200 overflow-hidden">
       <table class="w-full text-sm text-left">
         <thead class="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
@@ -126,7 +127,7 @@
                     <span class="text-white text-xs" title="Altitude">⛰️</span>
                   }
                 </div>
-                @if (item.uploaded === true) {
+                @if (item.uploaded === "true") {
                   <span class="text-green-400">
                       <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd" />

@@ -23,9 +23,7 @@ import {acceptRejectFiles} from '../_helpers/Acceptrejectfiles';
 import {Image} from '../../../../features/image/models/image.model';
 
 
-// GPS helpers (unchanged logic, assumed available)
-declare function getLatLngFromJpegArrayBuffer(buf: ArrayBuffer): { lat: unknown; lng: unknown };
-declare function getAltitudeFromJpegArrayBuffer(buf: ArrayBuffer): number | null;
+import { getAltitudeFromJpegArrayBuffer, getLatLngFromJpegArrayBuffer } from '../_helpers/gpsTools';
 
 @Component({
   selector: 'app-dropfile-box',
@@ -79,7 +77,7 @@ export class DropBoxComponent implements OnInit {
   readonly sendingImages = this.isUploading;
   private readonly isFullWindow = signal(false);
 
-  readonly nbImagesToSend = computed(() => this.fileList().filter((f) => f.uploaded === false).length);
+  readonly nbImagesToSend = computed(() => this.fileList().filter((f) => f.uploaded === "false").length);
 
   readonly currentLabel = computed(() =>
     this.isFullWindow() ? this.labelFullWindow() : this.label()
@@ -87,7 +85,7 @@ export class DropBoxComponent implements OnInit {
 
   readonly dropzoneClass = computed(() => {
     const base =
-      'relative flex flex-col items-center justify-center min-w-[300px] p-6 ' +
+      'relative w-full flex flex-col items-center justify-center min-w-[300px] p-6 ' +
       'border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 bg-transparent! ';
     if (!this.enabled()) {return base + 'border-gray-300 opacity-50 cursor-not-allowed';}
     if (this.isFullWindow())
@@ -187,10 +185,10 @@ export class DropBoxComponent implements OnInit {
           exifGPSLat: GPSLatLng.lat,
           exifGPSLng: GPSLatLng.lng,
           exifGPSAltitude: GPSAltitude,
-          uploaded: false,
+          uploaded: "false",
         };
 
-        this.fileList.update((list) => [...list, entry]);
+        this.fileList.update(() => [entry]);
 
         if (i === files.length - 1) {
           this.acceptedFilesChange.emit(this.fileList());
@@ -246,10 +244,10 @@ export class DropBoxComponent implements OnInit {
     this.isUploading.set(true);
 
     for (const F of this.fileList()) {
-      if (F.uploaded !== false) {continue;}
+      if (F.uploaded !== "false") {continue;}
 
       const formData = new FormData();
-      const jsonData = { originalName: F.file.name, latitude: '', longitude: '', dateShot: '' };
+      const jsonData = { originalName: F.file.name, latitude: '', longitude: '', dateShot: ''};
       const jsonBlob = new Blob([JSON.stringify(jsonData)], { type: 'text/plain' });
       formData.append('file', F.file, F.file.name);
       formData.append('json', new File([jsonBlob], 'data.json'));
@@ -257,7 +255,7 @@ export class DropBoxComponent implements OnInit {
       const headers = new HttpHeaders({});
       this.http.post<Image>(`${this.photoUploadBaseUrl()}/photos`, formData, { headers }).subscribe({
         next: (image) => {
-          this.fileList.update((l) => l.map((f) => (f === F ? { ...f, uploaded: true } : f)));
+          this.fileList.update((l) => l.map((f) => (f === F ? { ...f, uploaded: "true" } : f)));
           this.uploadedFilesChange.emit(image);
           this.fileList.update((l) => l.filter((f) => f !== F));
           if (this.nbImagesToSend() === 0) {this.isUploading.set(false);}
