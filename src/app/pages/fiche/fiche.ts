@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, Component, computed, inject, input, OnInit, sig
 import {TaxonSearchService} from '../../features/taxon/services/taxon-search-service';
 import {Loader} from '../../shared/components/loader/loader';
 import {WikiToHtmlPipe} from '../../features/fiche/pipes/WikiToHtmlPipe';
-import {MarkdownPipe} from '../../features/fiche/pipes/MarkdownPipe';
 import {ErrorComponent} from '../../shared/components/error/error';
 import {SharedService} from '../../shared/services/shared.service';
 import {FicheService} from '../../features/fiche/services/fiche-service';
@@ -17,7 +16,6 @@ import {ImageCarousel} from '../../shared/components/image-carousel/image-carous
   imports: [
     Loader,
     WikiToHtmlPipe,
-    MarkdownPipe,
     ErrorComponent,
     FicheForm,
     ImageCarousel

@@ -7,7 +7,6 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
 import { Occurrence } from '../../models/occurrence.model';
 import { SharedService } from '../../../../shared/services/shared.service';
 import { OccurrenceForm } from '../occurrence-form/occurrence-form';
@@ -30,7 +29,6 @@ import { ImageCarousel } from '../../../../shared/components/image-carousel/imag
 @Component({
   selector: 'app-occurrence-modal-detail',
   imports: [
-    NgOptimizedImage,
     OccurrenceForm,
     ModalConfirmation,
     RouterLink,

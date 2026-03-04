@@ -1,4 +1,14 @@
-import {ChangeDetectionStrategy, Component, HostListener, inject, input, OnInit, output, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  inject,
+  input,
+  OnInit,
+  output,
+  signal,
+  viewChild
+} from '@angular/core';
 import {Sentier} from '../../models/sentier.model';
 import {SharedService} from '../../../../shared/services/shared.service';
 import {SingleSentierService} from '../../services/single-sentier-service';
@@ -8,10 +18,13 @@ import {Router} from '@angular/router';
 import {UserService} from '../../../../core/auth/services/user.service';
 import {ErrorComponent} from '../../../../shared/components/error/error';
 import AuthComponent from '../../../../core/auth/components/auth';
+import {DropBoxComponent} from '../../../../shared/components/drop-file/component/drop-box';
+import {environment} from '../../../../../environments/environment';
+import {Image} from '../../../image/models/image.model';
 
 @Component({
   selector: 'app-sentier-form',
-  imports: [CommonModule, ReactiveFormsModule, ErrorComponent, AuthComponent],
+  imports: [CommonModule, ReactiveFormsModule, ErrorComponent, AuthComponent, DropBoxComponent],
   templateUrl: './sentier-form.html',
   styleUrl: './sentier-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -20,13 +33,26 @@ export class SentierForm implements OnInit {
   readonly sentier = input<Sentier | null>(null);
   readonly modalClosed = output<boolean>()
 
+  // ── Services ────────────────────────────────────────────────────────────
   sharedService = inject(SharedService);
   sentierService= inject(SingleSentierService)
   userService = inject(UserService);
   private fb = inject(FormBuilder);
   private readonly router = inject(Router);
 
+  // ── View children ────────────────────────────────────────────────────────
+  /** Reference to the dropbox child to read its isUploading state */
+  private readonly dropBoxRef = viewChild(DropBoxComponent);
+
+  // ── State ────────────────────────────────────────────────────────────────
   nameError = false;
+  readonly sendPhotoFlag = signal(false);
+  readonly baseCelApiUrl = environment.celImageUrl;
+
+  /** True while the dropbox is uploading — blocks form submission */
+  protected get isUploading(): boolean {
+    return this.dropBoxRef()?.isUploading() ?? false;
+  }
 
   readonly form = signal(this.fb.group({
     name: this.fb.control(''),
@@ -93,6 +119,29 @@ export class SentierForm implements OnInit {
     }
     this.closeModal()
   }
+
+  // ── Photo handlers ───────────────────────────────────────────────────────
+  onPhotoAdded(files: unknown[]): void {
+    // Trigger upload immediately when files are accepted
+    this.sendPhotoFlag.set(true);
+    // Reset flag after one tick so the effect can re-trigger next time
+    setTimeout(() => this.sendPhotoFlag.set(false), 0);
+  }
+
+  onPhotoUploaded(image: unknown): void {
+    const uploadedImage = image as Image;
+    console.log('Photo uploaded:', uploadedImage);
+  }
+
+  onPhotoRejected(rejected: unknown[]): void {
+    console.warn('Photos rejetées :', rejected);
+  }
+
+  onPostPhotoError(error: unknown): void {
+    console.error('Erreur upload photo :', error);
+  }
+
+  // ── Modal ────────────────────────────────────────────────────────────────
 
   closeModal(): void {
     this.modalClosed.emit(true);

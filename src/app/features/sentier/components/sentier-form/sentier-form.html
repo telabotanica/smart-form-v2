@@ -114,6 +114,37 @@
         </div>
       </div>
 
+      <!-- Photos -->
+      <div class="flex flex-col gap-1.5">
+        <p class="flex items-baseline gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent">
+          <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">04</span>
+          Photos
+        </p>
+        <app-dropfile-box
+          #dropBox
+          [allowedFileTypes]="['jpeg', 'png']"
+          [ignoreOversizedFiles]="false"
+          [label]="'Cliquez pour choisir les photos ou glissez-les ici'"
+          [photoUploadBaseUrl]="baseCelApiUrl"
+          [sendImages]="sendPhotoFlag()"
+          [showTable]="true"
+          [uploadTbPhotoFiles]="true"
+          (acceptedFilesChange)="onPhotoAdded($event)"
+          (httpError)="onPostPhotoError($event)"
+          (rejectedFilesChange)="onPhotoRejected($event)"
+          (uploadedFilesChange)="onPhotoUploaded($event)"
+        />
+        @if (isUploading) {
+          <p class="text-[.7rem] text-text-400 italic flex items-center gap-1.5">
+            <svg aria-hidden="true" class="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" d="M4 12a8 8 0 018-8v8z" fill="currentColor"/>
+            </svg>
+            Envoi des photos en cours, veuillez patienter…
+          </p>
+        }
+      </div>
+
       <!-- Actions -->
       <div class="flex items-center justify-between gap-3 pt-4 border-t border-background-200">
         <button
