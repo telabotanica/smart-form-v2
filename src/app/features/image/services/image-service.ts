@@ -10,6 +10,7 @@ import {firstValueFrom} from 'rxjs';
 export class ImageService {
   private http = inject(HttpClient);
   private celImageUrl = environment.celImageUrl;
+  private baseCelApiUrl = environment.baseCelApiUrl;
 
   // --- Signals ---
   private readonly _photos = signal<CelPhoto[]>([]);
@@ -43,6 +44,25 @@ export class ImageService {
     } catch (err: unknown) {
       this._error.set(
         err instanceof Error ? err.message : 'Erreur lors de la récupération des photos'
+      );
+    } finally {
+      this._loading.set(false);
+    }
+  }
+
+  async deletePhoto(imageId: number): Promise<void> {
+    this._loading.set(true);
+    this._error.set(null);
+
+    try {
+      await firstValueFrom(
+        this.http.delete<void>(`${this.baseCelApiUrl}/photos/${imageId}`)
+      );
+
+      // this._photos.set(data["hydra:member"] ?? []);
+    } catch (err: unknown) {
+      this._error.set(
+        err instanceof Error ? err.message : 'Erreur lors de la suppression de la photo'
       );
     } finally {
       this._loading.set(false);

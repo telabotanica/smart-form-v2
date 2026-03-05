@@ -141,7 +141,7 @@
           [showTable]="true"
           [uploadTbPhotoFiles]="true"
           (acceptedFilesChange)="onPhotoAdded($event)"
-          (deletedFilesChange)="onPhotoDeleted($event)"
+          (deletedFilesChange)="onUploadedPhotoDeleted($event)"
           (httpError)="onPostPhotoError($event)"
           (rejectedFilesChange)="onPhotoRejected($event)"
           (uploadedFilesChange)="onPhotoUploaded($event)"

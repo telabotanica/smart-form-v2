@@ -21,6 +21,7 @@ import AuthComponent from '../../../../core/auth/components/auth';
 import {DropBoxComponent} from '../../../../shared/components/drop-file/component/drop-box';
 import {environment} from '../../../../../environments/environment';
 import {Image} from '../../../image/models/image.model';
+import {ImageService} from '../../../image/services/image-service';
 
 @Component({
   selector: 'app-sentier-form',
@@ -33,6 +34,7 @@ export class SentierForm implements OnInit {
   readonly modalClosed = output<boolean>()
 
   // ── Services ────────────────────────────────────────────────────────────
+  imageService = inject(ImageService);
   sharedService = inject(SharedService);
   sentierService= inject(SingleSentierService)
   userService = inject(UserService);
@@ -149,11 +151,14 @@ export class SentierForm implements OnInit {
     console.error('Erreur upload photo :', error.error["hydra:description"]);
   }
 
-  onPhotoDeleted(error: any): void {
-    this.trailPicture.set(null);
-    this.pictureError = error.error["hydra:description"];
-    console.error('Erreur upload photo :', error.error["hydra:description"]);
-    //TODO appeler DEL baseCelApiUrl/photos/{id} pour supprimer la photo du CEL
+  onUploadedPhotoDeleted(image: unknown): void {
+    if (this.trailPicture()){
+      const deletedImage = this.trailPicture();
+      this.trailPicture.set(null);
+      this.pictureError = ""
+      console.log('Photo supprimée: ', deletedImage?.url);
+      this.imageService.deletePhoto(deletedImage!.id);
+    }
   }
 
   // ── Modal ────────────────────────────────────────────────────────────────
