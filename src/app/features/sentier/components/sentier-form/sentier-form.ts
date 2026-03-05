@@ -22,6 +22,7 @@ import {DropBoxComponent} from '../../../../shared/components/drop-file/componen
 import {environment} from '../../../../../environments/environment';
 import {Image} from '../../../image/models/image.model';
 import {ImageService} from '../../../image/services/image-service';
+import {CelPhoto} from '../../../image/models/cel-photo.model';
 
 @Component({
   selector: 'app-sentier-form',
@@ -50,7 +51,7 @@ export class SentierForm implements OnInit {
   pictureError = "";
   readonly sendPhotoFlag = signal(false);
   readonly baseCelApiUrl = environment.baseCelApiUrl;
-  trailPicture = signal<Image | null>(null);
+  readonly trailPicture = signal<CelPhoto | null>(null);
 
   /** True while the dropbox is uploading — blocks form submission */
   protected get isUploading(): boolean {
@@ -104,13 +105,19 @@ export class SentierForm implements OnInit {
       formValue.best_season?.[3] ?? false
     ];
 
+    let picture: Image | null = null;
+    if (this.trailPicture()) {
+      picture = this.trailPicture();
+      picture!.author = this.trailPicture()!.userPseudo;
+    }
+
     const sentierPayload: Sentier = {
       id: this.sentier()?.id ?? 0,
       name: formValue.display_name ?? '',
       display_name: formValue.display_name ?? '',
       best_season: bestSeasonTuple,
       prm: formValue.prm as -1 | 0 | 1,
-      image: this.trailPicture() ?? null
+      image: picture ?? null
     };
 
     if (this.sentier()) {
@@ -133,7 +140,7 @@ export class SentierForm implements OnInit {
   }
 
   onPhotoUploaded(image: unknown): void {
-    const uploadedImage = image as Image;
+    const uploadedImage = image as CelPhoto;
     if (this.trailPicture()){
       const deletedImage = this.trailPicture();
       this.imageService.deletePhoto(deletedImage!.id);

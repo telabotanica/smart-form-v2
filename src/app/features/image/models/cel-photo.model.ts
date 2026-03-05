@@ -18,5 +18,6 @@ export type CelPhoto = {
   size?: number;
   mimeType?: string;
   url: string;
+  userPseudo?: string;
   occurrence?: CelPhotoOccurrence;
 };
