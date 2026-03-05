@@ -134,6 +134,10 @@ export class SentierForm implements OnInit {
 
   onPhotoUploaded(image: unknown): void {
     const uploadedImage = image as Image;
+    if (this.trailPicture()){
+      const deletedImage = this.trailPicture();
+      this.imageService.deletePhoto(deletedImage!.id);
+    }
     this.trailPicture.set(uploadedImage);
     this.pictureError = "";
     console.log('Photo uploaded:', uploadedImage);
