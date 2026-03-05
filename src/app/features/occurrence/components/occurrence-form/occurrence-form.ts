@@ -18,7 +18,7 @@ import { Taxon } from '../../../taxon/models/taxon.model';
 import { ErrorComponent } from '../../../../shared/components/error/error';
 import { TaxonSearch } from '../../../../shared/components/taxon-search/taxon-search';
 import { ImageService } from '../../../image/services/image-service';
-import { CelPhoto } from '../../../image/models/cel-photo.modal';
+import { CelPhoto } from '../../../image/models/cel-photo.model';
 import { Image } from '../../../image/models/image.model';
 import { ImageCarousel } from '../../../../shared/components/image-carousel/image-carousel';
 

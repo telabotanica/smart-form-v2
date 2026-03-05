@@ -1,7 +1,7 @@
 import {computed, inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
-import {CelPhoto} from '../models/cel-photo.modal';
+import {CelPhoto} from '../models/cel-photo.model';
 import {firstValueFrom} from 'rxjs';
 
 @Injectable({

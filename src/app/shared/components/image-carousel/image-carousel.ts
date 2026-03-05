@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { Image } from '../../../features/image/models/image.model';
-import {CelPhoto} from '../../../features/image/models/cel-photo.modal';
+import {CelPhoto} from '../../../features/image/models/cel-photo.model';
 
 export type CarouselImage = {
   id: number;
