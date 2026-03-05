@@ -7,22 +7,22 @@ import { DMS, LatLngDMS } from '../_models/gpsLatLng';
 export function getLatLngFromJpegArrayBuffer(arrayBuffer: ArrayBuffer): LatLngDMS {
   const exifData = Exif.readFromBinaryFile(arrayBuffer) as Record<string, unknown>;
 
-  const _GPSLat = exifData['GPSLatitude'] as Array<{ numerator: number; denominator: number }> | undefined;
-  const _GPSLng = exifData['GPSLongitude'] as Array<{ numerator: number; denominator: number }> | undefined;
+  const gpsLat = exifData['GPSLatitude'] as { numerator: number; denominator: number }[] | undefined;
+  const gpsLng = exifData['GPSLongitude'] as { numerator: number; denominator: number }[] | undefined;
 
-  if (!_GPSLat || !_GPSLng) {
+  if (!gpsLat || !gpsLng) {
     return { lat: null, lng: null };
   }
 
   const GPSLat: DMS = {
-    deg: _GPSLat[0].numerator / _GPSLat[0].denominator,
-    min: _GPSLat[1].numerator / _GPSLat[1].denominator,
-    sec: _GPSLat[2].numerator / _GPSLat[2].denominator,
+    deg: gpsLat[0].numerator / gpsLat[0].denominator,
+    min: gpsLat[1].numerator / gpsLat[1].denominator,
+    sec: gpsLat[2].numerator / gpsLat[2].denominator,
   };
   const GPSLng: DMS = {
-    deg: _GPSLng[0].numerator / _GPSLng[0].denominator,
-    min: _GPSLng[1].numerator / _GPSLng[1].denominator,
-    sec: _GPSLng[2].numerator / _GPSLng[2].denominator,
+    deg: gpsLng[0].numerator / gpsLng[0].denominator,
+    min: gpsLng[1].numerator / gpsLng[1].denominator,
+    sec: gpsLng[2].numerator / gpsLng[2].denominator,
   };
 
   return { lat: GPSLat, lng: GPSLng };

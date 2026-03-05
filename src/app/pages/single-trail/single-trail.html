@@ -44,13 +44,13 @@
     <!-- ACTIONS (owner ou admin) -->
     @if (sentier!.status?.toLowerCase() !== 'Validé'.toLowerCase() && isLoggedIn() && user && user.id === sentier!.author_id) {
       <section class="mx-4 mt-4 p-4 rounded-xl bg-background-50 border border-background-200 flex flex-wrap gap-2">
-        <button class="mt-0 mx-0" role="button" title="Modifier le sentier" type="button" (click)="openTrailModal(sentier!)">
-          ✏️ Modifier
+        <button class="mt-0 mx-0" role="button" title="Modifier le sentier (nom, meilleures saisons, accès PMR et image)" type="button" (click)="openTrailModal(sentier!)">
+          ✏️ Modifier les informations
         </button>
 
         @if (sentier!.status?.toLowerCase() !== 'Validé'.toLowerCase() && sentier!.status !== 'En attente') {
           <button class="mt-0 mx-0 bg-accent hover:bg-accent-600 text-white" role="button" title="Vérifier le sentier" type="button" (click)="checkSentier(sentier!)">
-            🔍 Vérifier
+            🔍 Vérifier le sentier
           </button>
         }
 
@@ -67,7 +67,7 @@
           type="button"
           (click)="openDeleteConfirmModal(sentier!)"
         >
-          🗑️ Supprimer
+          🗑️ Supprimer le sentier
         </button>
       </section>
     }

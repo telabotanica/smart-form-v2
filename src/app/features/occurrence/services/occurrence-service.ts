@@ -5,7 +5,6 @@ import {Occurrence} from '../models/occurrence.model';
 import {firstValueFrom} from 'rxjs';
 import {Sentier} from '../../sentier/models/sentier.model';
 import {ErrorApi} from '../../../core/models/error-api.model';
-import {CelPhoto} from '../../image/models/cel-photo.model';
 
 @Injectable({
   providedIn: 'root'

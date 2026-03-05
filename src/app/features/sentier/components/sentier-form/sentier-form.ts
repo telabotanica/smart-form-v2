@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  HostListener,
   inject,
   input,
   OnInit,
@@ -119,17 +118,7 @@ export class SentierForm implements OnInit {
       formValue.best_season?.[3] ?? false
     ];
 
-    let picture: Image | null = this.sentier()?.image ?? null;
-    if (this.pictureDeleted()) {
-      picture = null;
-      await this.sentierService.deleteSentierImage(this.sentier()!)
-      this.imageService.deletePhoto(this.sentier()!.image!.cel_image_id!); //Suppression du cel
-    }
-
-    if (this.trailPicture()) {
-      picture = this.trailPicture();
-      picture!.author = this.trailPicture()!.userPseudo;
-    }
+    const picture = await this.definePicture();
 
     const sentierPayload: Sentier = {
       id: this.sentier()?.id ?? 0,
@@ -149,6 +138,22 @@ export class SentierForm implements OnInit {
       }
     }
     this.closeModal()
+  }
+
+  async definePicture(): Promise<Image | null> {
+    let picture: Image | null = this.sentier()?.image ?? null;
+    if (this.pictureDeleted()) {
+      picture = null;
+      await this.sentierService.deleteSentierImage(this.sentier()!)
+      await this.imageService.deletePhoto(this.sentier()!.image!.cel_image_id!); //Suppression du cel
+    }
+
+    if (this.trailPicture()) {
+      picture = this.trailPicture();
+      picture!.author = this.trailPicture()!.userPseudo;
+    }
+
+    return picture;
   }
 
   // ── Photo handlers ───────────────────────────────────────────────────────

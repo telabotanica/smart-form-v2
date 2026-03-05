@@ -168,7 +168,7 @@ export class DropBoxComponent implements OnInit {
       let dataUrlLoaded = false;
       let arrayBufferLoaded = false;
 
-      const tryPush = () => {
+      const tryPush = (): void => {
         if (!dataUrlLoaded || !arrayBufferLoaded) {return;}
 
         const GPSLatLng = arrayBuffer
@@ -198,14 +198,14 @@ export class DropBoxComponent implements OnInit {
       };
 
       const r1 = new FileReader();
-      r1.onload = () => {
+      r1.onload = (): void => {
         dataUrlLoaded = true;
         dataUrl = r1.result as string;
         tryPush();
       };
 
       const r2 = new FileReader();
-      r2.onload = () => {
+      r2.onload = (): void => {
         arrayBufferLoaded = true;
         arrayBuffer = r2.result as ArrayBuffer;
         tryPush();
