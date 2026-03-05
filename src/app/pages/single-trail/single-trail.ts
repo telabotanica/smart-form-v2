@@ -36,6 +36,8 @@ import {OccurrenceCard} from '../../features/occurrence/components/occurrence-ca
 import {PdfExportService} from '../../shared/components/pdf-export/pdf-export.service';
 import {Router} from '@angular/router';
 import {AdminService} from '../../features/admin/services/admin-service';
+import {PingService} from '../../features/ping/services/ping.service';
+import {Ping} from '../../features/ping/models/ping.model';
 
 @Component({
   selector: 'app-single-trail',
@@ -77,6 +79,8 @@ export class SingleTrail implements OnInit {
   readonly occurencesUniques = signal<Occurrence[]>([]);
   readonly occurrenceDialog = viewChild<ElementRef<HTMLDialogElement>>('occurrenceListDialog');
   readonly selectedOccurrence = signal<Occurrence | null>(null);
+  private readonly _pingReady = signal(false);
+  readonly pings = signal(0);
 
   readonly mapComponent = viewChild<Map>('mapComponent');
 
@@ -90,6 +94,7 @@ export class SingleTrail implements OnInit {
   taxonSearchService = inject(TaxonSearchService);
   pdfExportService = inject(PdfExportService);
   adminService = inject(AdminService);
+  pingService = inject(PingService);
   private router = inject(Router);
 
   baseUrl = this.sharedService.url().origin
@@ -104,11 +109,22 @@ export class SingleTrail implements OnInit {
     effect(() => {
       this.isLoggedIn.set(this.userService.isLoggedIn());
       this.user = this.userService.user();
+      if (this.userService.isReady()) {
+        this._pingReady.set(true);
+      }
     });
 
     effect(()=>{
       this.sentier = this.sentierService.sentier();
+      const pingReady = this._pingReady();
 
+      if (this.sentier) {
+        this.pingService.fetchPings(this.sentier);
+
+        if (pingReady) {
+          this.trySendPing(this.sentier);
+        }
+      }
       // --- Vérification d'accès ---
       // if (this.sentier) {
       //TODO
@@ -122,6 +138,11 @@ export class SingleTrail implements OnInit {
         `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl}/trail/${this.id()}.png`
       );
     })
+
+    effect(() => {
+      const pingList = this.pingService.pings();
+      this.pings.set(pingList.length)
+    });
     // effect(() => {
     //   const { sentier, user, isReady } = this.accessGuard();
     //
@@ -311,5 +332,22 @@ export class SingleTrail implements OnInit {
   }
 
   /*****************************************/
+
+  private trySendPing(sentier: Sentier): void {
+    const isValidated = sentier.status?.toLowerCase() === 'validé';
+    if (!isValidated) { return; }
+
+    const isAuthor = this.user?.id === sentier.author_id;
+    if (isAuthor) { return; }
+
+    this.pingService.savePing({
+      is_logged: this.isLoggedIn(),
+      is_located: false,
+      is_online: true,
+      date: new Date().toISOString(),
+      trail: sentier.id,
+      from_website: true,
+    } as Ping);
+  }
 
 }

@@ -190,18 +190,23 @@
 
       <div class="p-4 rounded-xl bg-white/60 border border-background-200 flex flex-col items-center justify-center text-center gap-1">
         <span class="text-2xl font-bold text-secondary">{{ sentier!.occurrences_count }}</span>
-        <span class="text-xs text-text-500">observations</span>
+        <span class="text-xs text-text-500">observation@if (sentier?.occurrences_count! > 1) {s}</span>
       </div>
 
       <div class="p-4 rounded-xl bg-white/60 border border-background-200 flex flex-col items-center justify-center text-center gap-1">
         <span class="text-2xl font-bold text-accent">{{ sentier!.nb_taxons }}</span>
-        <span class="text-xs text-text-500">taxons</span>
+        <span class="text-xs text-text-500">taxon@if (sentier?.nb_taxons! > 1) {s}</span>
       </div>
 
       <!-- PMR -->
       <div class="p-4 rounded-xl bg-white/60 border border-background-200 flex flex-col items-center justify-center text-center gap-1">
         <span class="text-lg">♿</span>
         <span class="text-xs text-text-500 font-medium">{{ pdfExportService.getPmrText(sentier!.prm) }}</span>
+      </div>
+
+      <div class="p-4 rounded-xl bg-white/60 border border-background-200 flex flex-col items-center justify-center text-center gap-1">
+        <span class="text-2xl font-bold text-accent">{{ pings() }}</span>
+        <span class="text-xs text-text-500 font-medium">vue@if (pings() > 1) {s}</span>
       </div>
     </section>
 
