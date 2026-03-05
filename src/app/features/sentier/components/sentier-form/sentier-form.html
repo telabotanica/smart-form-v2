@@ -1,6 +1,7 @@
 <section
   class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-y-auto"
   id="sentier-form"
+  [class.blur-2xl]="sharedService.blurBackgroundModal()"
 >
   <!-- Decorative lines -->
   <div aria-hidden="true" class="fixed inset-0 pointer-events-none flex justify-evenly">
@@ -115,22 +116,46 @@
       </div>
 
       <!-- Photos -->
-      <div class="flex flex-col gap-1.5">
+      <div class="flex flex-col gap-1.5 relative">
         <p class="flex items-baseline gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent">
           <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">04</span>
           Photos
         </p>
-        @if (sentier() && sentier()!.image ) {
+        @if (sentier()?.image && !pictureDeleted() && !trailPicture()) {
           <div class="w-full aspect-video relative rounded-lg overflow-hidden">
             <img
               class="object-cover"
               fill
               priority
-              [alt]="'Image du sentier ' + sentier()!.display_name"
-              [ngSrc]="sentier()!.image?.url!"
+              [alt]="'Image du sentier ' + sentier()?.display_name"
+              [ngSrc]="sentier()!.image!.url!"
+            />
+          </div>
+
+          <button
+            class="absolute top-10 right-4 mt-0! mx-0! shadow-none! bg-transparent! border-0! p-1!
+               grid place-items-center w-9 h-9 rounded-full text-text-400 hover:text-text hover:bg-background-200"
+            title="Supprimer la photo actuelle"
+            type="button"
+            (click)="openDeletePhotoConfirmationModal()"
+          >
+            <span class="material-symbols-outlined text-red-600 bg-background rounded-full">close</span>
+          </button>
+        }
+
+        @if (trailPicture()){
+          <div class="w-full aspect-video relative rounded-lg overflow-hidden">
+            <img
+              class="object-cover"
+              fill
+              priority
+              [alt]="'Image du sentier ' + sentier()?.display_name"
+              [ngSrc]="trailPicture()!.url"
             />
           </div>
         }
+
+
         <app-dropfile-box
           #dropBox
           [allowedFileTypes]="['jpeg', 'png']"
@@ -197,3 +222,11 @@
     </form>
   </div>
 </section>
+
+@if (showDeleteConfirmModal()) {
+  <app-modal-confirmation
+    [type]="'trailPicture'"
+    (modalClosed)="closeDeletePhotoConfirmationModal()"
+    (modalSucceed)="deleteActualPicture()"
+  />
+}

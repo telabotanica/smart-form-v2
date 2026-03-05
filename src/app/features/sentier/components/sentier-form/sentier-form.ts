@@ -23,12 +23,24 @@ import {environment} from '../../../../../environments/environment';
 import {Image} from '../../../image/models/image.model';
 import {ImageService} from '../../../image/services/image-service';
 import {CelPhoto} from '../../../image/models/cel-photo.model';
+import {ModalConfirmation} from '../../../../shared/components/modal-confirmation/modal-confirmation';
 
 @Component({
   selector: 'app-sentier-form',
-  imports: [CommonModule, ReactiveFormsModule, ErrorComponent, AuthComponent, DropBoxComponent, NgOptimizedImage],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ErrorComponent,
+    AuthComponent,
+    DropBoxComponent,
+    NgOptimizedImage,
+    ModalConfirmation
+  ],
   templateUrl: './sentier-form.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:keydown)': 'onEscape($event)'
+  }
 })
 export class SentierForm implements OnInit {
   readonly sentier = input<Sentier | null>(null);
@@ -52,6 +64,8 @@ export class SentierForm implements OnInit {
   readonly sendPhotoFlag = signal(false);
   readonly baseCelApiUrl = environment.baseCelApiUrl;
   readonly trailPicture = signal<CelPhoto | null>(null);
+  readonly showDeleteConfirmModal = signal(false);
+  readonly pictureDeleted = signal(false)
 
   /** True while the dropbox is uploading — blocks form submission */
   protected get isUploading(): boolean {
@@ -105,7 +119,13 @@ export class SentierForm implements OnInit {
       formValue.best_season?.[3] ?? false
     ];
 
-    let picture: Image | null = null;
+    let picture: Image | null = this.sentier()?.image ?? null;
+    if (this.pictureDeleted()) {
+      picture = null;
+      await this.sentierService.deleteSentierImage(this.sentier()!)
+      this.imageService.deletePhoto(this.sentier()!.image!.cel_image_id!); //Suppression du cel
+    }
+
     if (this.trailPicture()) {
       picture = this.trailPicture();
       picture!.author = this.trailPicture()!.userPseudo;
@@ -172,6 +192,26 @@ export class SentierForm implements OnInit {
     }
   }
 
+  openDeletePhotoConfirmationModal(): void {
+    this.showDeleteConfirmModal.set(true);
+    this.sharedService.blurBackgroundModal.set(true);
+  }
+
+  closeDeletePhotoConfirmationModal(): void {
+    this.showDeleteConfirmModal.set(false);
+    this.sharedService.blurBackgroundModal.set(false);
+  }
+
+  async deleteActualPicture(): Promise<void>{
+    if(!this.sentier()){
+      this.closeDeletePhotoConfirmationModal();
+      return;
+    }
+
+    this.pictureDeleted.set(true);
+    this.closeDeletePhotoConfirmationModal()
+  }
+
   // ── Modal ────────────────────────────────────────────────────────────────
 
   closeModal(): void {
@@ -185,7 +225,7 @@ export class SentierForm implements OnInit {
     }
   }
 
-  @HostListener('window:keydown', ['$event'])
+  // @HostListener('window:keydown', ['$event'])
   onEscape(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
       this.closeModal();

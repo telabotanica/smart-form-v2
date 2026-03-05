@@ -119,6 +119,26 @@ export class SingleSentierService {
     }
   }
 
+  async deleteSentierImage(sentier: Sentier): Promise<void> {
+    this._loading.set(true);
+    this._error.set(null);
+
+    try {
+      const data = await firstValueFrom(this.http.delete<Sentier>(
+        `${this.smartfloreService}trail/${sentier.id}/delete-image`
+      ));
+      this._sentier.set(data ?? {} as Sentier);
+    } catch (err: unknown) {
+      const apiError = err as ErrorApi;
+      this._error.set(
+        apiError.error?.error ?? 'Erreur inconnue lors de la suppression de l\'image du sentier'
+      );
+      console.error(err)
+    } finally {
+      this._loadingUpdate.set(false);
+    }
+  }
+
   async deleteSentier(sentier: Sentier): Promise<void> {
     this._loading.set(true);
     this._error.set(null);

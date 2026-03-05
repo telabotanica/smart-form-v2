@@ -6,7 +6,7 @@ import {SingleSentierService} from '../../../features/sentier/services/single-se
 import {Occurrence} from '../../../features/occurrence/models/occurrence.model';
 import {Router} from '@angular/router';
 
-type ModalType = 'sentier' | 'occurrence' | 'publish' | 'reject' | 'unpublish';
+type ModalType = 'sentier' | 'occurrence' | 'publish' | 'reject' | 'unpublish' | 'trailPicture';
 
 type ModalConfig = {
   title: string;
@@ -46,9 +46,16 @@ const MODAL_CONFIGS: Record<ModalType, ModalConfig> = {
     icon: '❌',
   },
   unpublish: {
-    title: 'Dépubulier le sentier',
+    title: 'Dépublier le sentier',
     message: 'Le sentier sera remis au statut brouillon.',
     confirmLabel: '❌ Oui, dépublier',
+    confirmClass: 'bg-red-800 hover:bg-red-600 text-white border-red-800',
+    icon: '❌',
+  },
+  trailPicture: {
+    title: 'Supprimer la photo',
+    message: 'La photo sera supprimée.',
+    confirmLabel: '❌ Oui, supprimer',
     confirmClass: 'bg-red-800 hover:bg-red-600 text-white border-red-800',
     icon: '❌',
   },
@@ -92,6 +99,10 @@ export class ModalConfirmation {
         this.closeModal();
         break;
       case 'unpublish':
+        this.modalSucceed.emit(true);
+        this.closeModal();
+        break;
+      case 'trailPicture':
         this.modalSucceed.emit(true);
         this.closeModal();
         break;
