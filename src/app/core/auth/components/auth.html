@@ -17,9 +17,9 @@
     </button>
   } @else {
     <div class="flex items-center gap-2">
-      <span class="hidden sm:inline text-xs text-text-500">
-        {{ userService.user()?.name }}
-      </span>
+<!--      <span class="hidden sm:inline text-xs text-text-500">-->
+<!--        {{ userService.user()?.name }}-->
+<!--      </span>-->
       <button
         class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
                hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
@@ -32,7 +32,7 @@
         (keydown.space)="logout()"
       >
         <span class="material-symbols-outlined text-[.9rem]">logout</span>
-        <span class="hidden xs:inline">Se déconnecter</span>
+        <span class="hidden sm:inline">Se déconnecter</span>
       </button>
     </div>
   }
