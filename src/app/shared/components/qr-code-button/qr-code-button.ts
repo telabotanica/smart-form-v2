@@ -25,7 +25,10 @@ export class QrCodeButton {
   readonly title = signal("");
 
   readonly name = signal<string | undefined>("")
-  readonly url = signal(this.sharedService.url().origin)
+  readonly url = computed(() => {
+    const u = this.sharedService.url();
+    return u.origin + u.pathname;
+  });
   readonly referentiel = signal("")
   readonly nt = signal<number | undefined>(0)
   readonly name_id = signal(0)
