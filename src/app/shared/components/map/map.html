@@ -11,6 +11,7 @@
       }
     }
 
+    <app-address-search (selected)="onAddressSelected($event)" />
     <!-- mapContainer TOUJOURS dans le DOM, jamais conditionnel -->
     <div #mapContainer aria-label="Carte des sentiers" class="w-full h-full" role="region"></div>
 

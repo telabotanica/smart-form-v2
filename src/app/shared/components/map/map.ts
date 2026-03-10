@@ -30,12 +30,14 @@ import {SentierPublicListService} from '../../../features/sentier/services/senti
 import {Loader} from '../loader/loader';
 import {QrCodeButton} from '../qr-code-button/qr-code-button';
 import {TaxonSearchService} from '../../../features/taxon/services/taxon-search-service';
+import {NominatimResult} from '../address-search/nominatim.service';
+import {AddressSearchComponent} from '../address-search/address-search';
 
 type LatLngTuple = [number, number];
 
 @Component({
   selector: 'app-map',
-  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent, WaypointListComponent, OccurrenceForm, Loader, QrCodeButton],
+  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent, WaypointListComponent, OccurrenceForm, Loader, QrCodeButton, AddressSearchComponent],
   templateUrl: './map.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -210,6 +212,10 @@ export class Map implements AfterViewInit {
     } else {
       this.renderMarkers();
     }
+  }
+
+  onAddressSelected(result: NominatimResult): void {
+    this.leafletMap?.setView([parseFloat(result.lat), parseFloat(result.lon)], 16);
   }
 
   toggleSatellite(): void {

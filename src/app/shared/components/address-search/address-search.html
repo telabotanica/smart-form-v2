@@ -1,0 +1,146 @@
+<!-- Desktop / tablette : barre centrée en haut -->
+<div class="hidden sm:block absolute top-2 left-1/2 -translate-x-1/2 z-1000 w-60 lg:w-120">
+  <div class="flex items-center bg-white rounded shadow-md
+            focus-within:border-primary transition-colors p-3 gap-2">
+    <input
+      class="flex-1 py-1.5 text-sm outline-none bg-transparent"
+      placeholder="Rechercher une adresse…"
+      type="text"
+      [ngModel]="query()"
+      (ngModelChange)="onQueryChange($event)"
+    />
+    @if (query()) {
+      <button
+        class="hover:text-gray-600 flex items-center my-0"
+        type="button"
+        (click)="onClear()"
+      >
+        <span class="material-symbols-outlined text-[1rem]">close</span>
+      </button>
+    } @else {
+      @if (nominatim.loading()) {
+        <span class="material-symbols-outlined text-gray-400 text-[1rem] animate-spin flex items-center">
+        progress_activity
+      </span>
+      } @else {
+        <span class="material-symbols-outlined text-gray-400 text-[1rem] flex items-center">
+        search
+      </span>
+      }
+    }
+  </div>
+
+  @if (showResults() && nominatim.results().length > 0) {
+    <ul class="bg-white border border-gray-200 rounded shadow-lg overflow-y-auto">
+      @for (result of nominatim.results(); track result.place_id) {
+        <li>
+          <button
+            class="h-full text-left text-wrap px-3 text-xs text-gray-700 bg-gray-50
+                   border-b border-gray-100 last:border-0 transition-colors my-1"
+            type="button"
+            (click)="onSelect(result)"
+          >
+            {{ result.display_name }}
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>
+
+<!-- Mobile : bouton seul -->
+<div class="sm:hidden absolute top-16 right-1 z-1000">
+  <button
+    aria-label="Rechercher une adresse"
+    class="w-9 h-9 bg-white border border-gray-300 rounded shadow-md
+           flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+    title="Rechercher une adresse"
+    type="button"
+    (click)="openMobileModal()"
+  >
+    <span class="material-symbols-outlined text-[1.1rem]">search</span>
+  </button>
+</div>
+
+<!-- Mobile : modal -->
+@if (mobileModalOpen()) {
+  <div class="sm:hidden fixed inset-0 z-[2000] flex flex-col">
+
+    <!-- Backdrop derrière le contenu -->
+    <button
+      aria-label="Fermer la recherche"
+      class="absolute inset-0 w-full h-full bg-black/40 backdrop-blur-sm cursor-default"
+      type="button"
+      (click)="closeMobileModal()"
+    ></button>
+
+    <!-- Contenu au-dessus grâce au relative + z -->
+    <div class="relative z-10 bg-white w-full px-4 pt-5 pb-4 shadow-xl flex flex-col gap-3">
+      <!-- Header modal -->
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-medium text-gray-700">Rechercher une adresse</p>
+        <button
+          aria-label="Fermer"
+          class="w-8 h-8 flex items-center justify-center rounded-full
+                 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+          title="Fermer"
+          type="button"
+          (click)="closeMobileModal()"
+        >
+          <span class="material-symbols-outlined text-[1.1rem]">close</span>
+        </button>
+      </div>
+
+      <!-- Input -->
+      <div class="flex items-center bg-white rounded shadow-md
+                  focus-within:border-primary transition-colors p-3 gap-2">
+        <input
+          class="flex-1 py-1.5 text-sm outline-none bg-transparent"
+          placeholder="Rechercher une adresse…"
+          title="Rechercher une adresse"
+          type="text"
+          [ngModel]="query()"
+          (ngModelChange)="onQueryChange($event)"
+        />
+        @if (query()) {
+          <button
+            class="hover:text-gray-600 flex items-center my-0"
+            title="Supprimer la recherche"
+            type="button"
+            (click)="onClear()"
+          >
+            <span class="material-symbols-outlined text-[1rem]">close</span>
+          </button>
+        } @else {
+          @if (nominatim.loading()) {
+            <span class="material-symbols-outlined text-gray-400 text-[1rem] animate-spin flex items-center">
+              progress_activity
+            </span>
+          } @else {
+            <span class="material-symbols-outlined text-gray-400 text-[1rem] flex items-center">
+              search
+            </span>
+          }
+        }
+      </div>
+
+      <!-- Résultats -->
+      @if (nominatim.results().length > 0) {
+        <ul class="bg-white border border-gray-200 rounded-lg overflow-y-auto">
+          @for (result of nominatim.results(); track result.place_id) {
+            <li>
+              <button
+                class="h-full text-left text-wrap px-3 py-2.5 text-xs text-gray-700 bg-gray-50
+                       border-b border-gray-100 last:border-0 transition-colors"
+                type="button"
+                (click)="onSelect(result)"
+              >
+                {{ result.display_name }}
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+}
