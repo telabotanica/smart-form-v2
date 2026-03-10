@@ -10,6 +10,7 @@ import {Image} from '../../features/image/models/image.model';
 import {FicheForm} from '../../features/fiche/components/fiche-form/fiche-form';
 import {UserService} from '../../core/auth/services/user.service';
 import {ImageCarousel} from '../../shared/components/image-carousel/image-carousel';
+import {FicheModalService} from '../../features/fiche/services/fiche-modal.service';
 
 @Component({
   selector: 'app-fiche',
@@ -40,6 +41,7 @@ export class FichePage implements OnInit {
   sharedService = inject(SharedService);
   ficheService = inject(FicheService);
   userService = inject(UserService);
+  readonly ficheModalService = inject(FicheModalService);
 
   ngOnInit(): void {
     this.taxonSearchService.getTaxonFiche(this.referentiel(), this.num_nom())
@@ -50,15 +52,13 @@ export class FichePage implements OnInit {
     await this.ficheService.fetchFiche(
       this.referentiel(),
       this.num_taxonomic()
-    )
+    );
     this.fiche.set(this.ficheService.fiche());
-    this.showFicheModal.set(true);
-    this.sharedService.toggleBlurBackground()
+    this.ficheModalService.open(this.fiche());
   }
 
   closeFicheModal(): void {
     this.fiche.set(null);
-    this.showFicheModal.set(false);
-    this.sharedService.toggleBlurBackground()
+    this.ficheModalService.close();
   }
 }

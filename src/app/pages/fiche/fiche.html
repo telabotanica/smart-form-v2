@@ -103,11 +103,21 @@
   </section>
 </article>
 
-@if (showFicheModal()) {
+<!--@if (showFicheModal()) {-->
+<!--  <app-fiche-form-->
+<!--    [fiche]="fiche() ?? null"-->
+<!--    [referentiel]="referentiel()"-->
+<!--    [taxonomic_id]="num_taxonomic()"-->
+<!--    (modalClosed)="closeFicheModal()"-->
+<!--  />-->
+<!--}-->
+
+@if (ficheModalService.isOpen()) {
   <app-fiche-form
-    [fiche]="fiche() ?? null"
+    [fiche]="ficheModalService.fiche()"
     [referentiel]="referentiel()"
     [taxonomic_id]="num_taxonomic()"
+    (ficheCreated)="closeFicheModal()"
     (modalClosed)="closeFicheModal()"
   />
 }

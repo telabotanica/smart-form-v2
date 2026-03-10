@@ -38,6 +38,8 @@ import {Router} from '@angular/router';
 import {AdminService} from '../../features/admin/services/admin-service';
 import {PingService} from '../../features/ping/services/ping.service';
 import {Ping} from '../../features/ping/models/ping.model';
+import {FicheForm} from '../../features/fiche/components/fiche-form/fiche-form';
+import {FicheModalService} from '../../features/fiche/services/fiche-modal.service';
 
 @Component({
   selector: 'app-single-trail',
@@ -52,7 +54,8 @@ import {Ping} from '../../features/ping/models/ping.model';
     Loader,
     PdfExport,
     OccurrenceModalDetail,
-    OccurrenceCard
+    OccurrenceCard,
+    FicheForm
   ],
   templateUrl: './single-trail.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -96,6 +99,7 @@ export class SingleTrail implements OnInit {
   adminService = inject(AdminService);
   pingService = inject(PingService);
   private router = inject(Router);
+  readonly ficheModalService = inject(FicheModalService);
 
   readonly baseUrl = computed(() => {
     const u = this.sharedService.url();
@@ -285,6 +289,10 @@ export class SingleTrail implements OnInit {
     this.selectedOccurrence.set(null);
     // this.sharedService.blurBackground.set(false)
   };
+
+  closeFicheModal(): void {
+    this.ficheModalService.close();
+  }
 
   /*********************** ADMIN *********************/
   openPublishConfirmModal(): void {

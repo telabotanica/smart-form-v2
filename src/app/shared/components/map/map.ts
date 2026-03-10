@@ -229,7 +229,7 @@ export class Map implements AfterViewInit {
       }
       const script = document.createElement('script');
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js';
-      script.onload = () => resolve();
+      script.onload = (): void => resolve();
       document.head.appendChild(script);
     });
   }

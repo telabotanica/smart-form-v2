@@ -4,7 +4,7 @@ import {
   computed,
   effect,
   inject,
-  input,
+  input, output,
   signal,
 } from '@angular/core';
 import { Occurrence } from '../../models/occurrence.model';
@@ -25,6 +25,8 @@ import { PdfExportService } from '../../../../shared/components/pdf-export/pdf-e
 import { TaxonSearchService } from '../../../taxon/services/taxon-search-service';
 import { Taxon } from '../../../taxon/models/taxon.model';
 import { ImageCarousel } from '../../../../shared/components/image-carousel/image-carousel';
+import {FicheModalService} from '../../../fiche/services/fiche-modal.service';
+import {Loader} from '../../../../shared/components/loader/loader';
 
 @Component({
   selector: 'app-occurrence-modal-detail',
@@ -36,6 +38,7 @@ import { ImageCarousel } from '../../../../shared/components/image-carousel/imag
     QrCodeButton,
     PdfExport,
     ImageCarousel,
+    Loader,
   ],
   templateUrl: './occurrence-modal-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +47,7 @@ export class OccurrenceModalDetail {
   readonly occurrence = input<Occurrence | null>(null);
   readonly sentier = input<Sentier>({} as Sentier);
   readonly onClose = input.required<() => void>();
+  readonly closeOccurrenceModal = output<boolean >();
 
   showOccurrenceForm = false;
   showDeleteConfirmModal = false;
@@ -59,6 +63,7 @@ export class OccurrenceModalDetail {
   readonly ficheService = inject(FicheService);
   readonly taxonSearchService = inject(TaxonSearchService);
   readonly exportService = inject(PdfExportService);
+  readonly ficheModalService = inject(FicheModalService);
 
   readonly images = computed(() => this.occurrence()?.images ?? []);
 
@@ -125,23 +130,20 @@ export class OccurrenceModalDetail {
       this.occurrence()!.taxon!.taxonomic_id!,
     );
     this.fiche.set(this.ficheService.fiche());
-    this.showFicheModal.set(true);
-    this.sharedService.toggleBlurBackground();
-    this.sharedService.toggleBlurBackgroundModal();
+    this.ficheModalService.open(this.fiche());
+    this.ficheModalService.occurrence.set(this.occurrence());
+    this.onClose()()
   }
 
   createFicheModal(): void {
     this.fiche.set(null);
-    this.showFicheModal.set(true);
-    this.sharedService.toggleBlurBackground();
-    this.sharedService.toggleBlurBackgroundModal();
+    this.ficheModalService.open(null);
+    this.onClose()()
   }
 
   closeFicheModal(): void {
     this.fiche.set(null);
-    this.showFicheModal.set(false);
-    this.sharedService.toggleBlurBackground();
-    this.sharedService.toggleBlurBackgroundModal();
+    this.ficheModalService.close();
   }
 
   ficheCreationSuccess(): void {

@@ -1,6 +1,6 @@
 @if (occurrence(); as o) {
   <article
-    class="flex flex-col w-full bg-background-50 rounded-xl overflow-hidden"
+    class="flex flex-col w-full bg-background-50 rounded-xl overflow-hidden z-20!"
     id="occurrence-detail-modal"
     [class.blur-2xl]="sharedService.blurBackground()"
   >
@@ -91,7 +91,11 @@
 
         @if (o.card_tag) {
           <div class="flex flex-wrap gap-2">
-            @if (userService.isLoggedIn()) {
+            @if (ficheService.loading()) {
+              <app-loader />
+            }
+
+            @if (userService.isLoggedIn() && !ficheService.loading()) {
               <button
                 class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
                        hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
@@ -162,13 +166,13 @@
     />
   }
 
-  @if (showFicheModal()) {
-    <app-fiche-form
-      [fiche]="fiche() ?? null"
-      [referentiel]="o.taxon!.taxon_repository"
-      [taxonomic_id]="o.taxon!.taxonomic_id!"
-      (ficheCreated)="ficheCreationSuccess()"
-      (modalClosed)="closeFicheModal()"
-    />
-  }
+<!--  @if (showFicheModal()) {-->
+<!--    <app-fiche-form-->
+<!--      [fiche]="fiche() ?? null"-->
+<!--      [referentiel]="o.taxon!.taxon_repository"-->
+<!--      [taxonomic_id]="o.taxon!.taxonomic_id!"-->
+<!--      (ficheCreated)="ficheCreationSuccess()"-->
+<!--      (modalClosed)="closeFicheModal()"-->
+<!--    />-->
+<!--  }-->
 }
