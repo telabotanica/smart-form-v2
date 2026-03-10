@@ -1,6 +1,6 @@
 import {
   ChangeDetectionStrategy,
-  Component,
+  Component, computed,
   effect,
   ElementRef,
   inject,
@@ -97,7 +97,10 @@ export class SingleTrail implements OnInit {
   pingService = inject(PingService);
   private router = inject(Router);
 
-  baseUrl = this.sharedService.url().origin
+  readonly baseUrl = computed(() => {
+    const u = this.sharedService.url();
+    return u.origin + u.pathname;
+  });
 
   // private readonly accessGuard = computed(() => ({
   //   sentier: this.sentierService.sentier(),
@@ -135,8 +138,9 @@ export class SingleTrail implements OnInit {
       this.fillUniqueOccurrences();
 
       this.trailQrCode.set(
-        `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl}/trail/${this.id()}.png`
+        `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl()}}.png`
       );
+
     })
 
     effect(() => {
