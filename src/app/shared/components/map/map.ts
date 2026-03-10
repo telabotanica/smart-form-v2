@@ -13,6 +13,9 @@ import { Sentier } from '../../../features/sentier/models/sentier.model';
 import { Occurrence } from '../../../features/occurrence/models/occurrence.model';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
+// import 'leaflet.markercluster/dist/MarkerCluster.css';
+// import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+(window as unknown as Record<string, unknown>)['L'] = L;
 import {
   OccurrenceModalDetail
 } from '../../../features/occurrence/components/occurrence-modal-detail/occurrence-modal-detail';
@@ -113,7 +116,7 @@ export class Map implements AfterViewInit {
 
     // Réagit aux changements d'inputs (sentiers / singleSentier)
     effect(() => {
-      const list = this.sentiers();
+      // const list = this.sentiers();
       const single = this.singleSentier();
       if (!this.mapReady) { return; } // la carte n'est pas encore initialisée
 
@@ -143,21 +146,24 @@ export class Map implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.initMap(); // appelé UNE SEULE FOIS
-
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement) {
-        this.isFullscreen.set(false);
-        this.leafletMap?.invalidateSize();
-      }
+    this.initMap().then(() => {
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+          this.isFullscreen.set(false);
+          this.leafletMap?.invalidateSize();
+        }
+      });
     });
   }
 
-  private initMap(): void {
+  private async initMap(): Promise<void> {
     if (this.mapReady) { return; } // guard strict
 
     const container = this.mapContainer()?.nativeElement;
     if (!container) { return; }
+
+    (window as unknown as Record<string, unknown>)['L'] = L;
+    await this.loadMarkerCluster();
 
     this.leafletMap = L.map(container, {
       center: [43.611, 3.876], //Montpellier
@@ -188,14 +194,16 @@ export class Map implements AfterViewInit {
       }
     );
 
-    const mcgFactory = (L as unknown as { markerClusterGroup?: (opts?: unknown) => L.LayerGroup }).markerClusterGroup;
-    if (mcgFactory) {
-      this.markersLayer = mcgFactory({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const Lany = L as any;
+    if (typeof Lany.markerClusterGroup === 'function') {
+      this.markersLayer = Lany.markerClusterGroup({
         disableClusteringAtZoom: 15,
         spiderfyOnMaxZoom: true,
         showCoverageOnHover: false
       }).addTo(this.leafletMap);
     } else {
+      console.warn('markerClusterGroup not available, falling back to layerGroup');
       this.markersLayer = L.layerGroup().addTo(this.leafletMap);
     }
 
@@ -212,6 +220,18 @@ export class Map implements AfterViewInit {
     } else {
       this.renderMarkers();
     }
+  }
+
+  private loadMarkerCluster(): Promise<void> {
+    return new Promise((resolve) => {
+      if ((L as unknown as Record<string, unknown>)['markerClusterGroup']) {
+        resolve(); return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js';
+      script.onload = () => resolve();
+      document.head.appendChild(script);
+    });
   }
 
   onAddressSelected(result: NominatimResult): void {
