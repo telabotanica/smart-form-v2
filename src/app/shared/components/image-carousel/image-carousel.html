@@ -4,7 +4,7 @@
     <div class="w-full aspect-video rounded-lg bg-background-200 animate-pulse"></div>
     <div class="flex gap-2">
       @for (_ of [1, 2, 3]; track $index) {
-        <div class="flex-shrink-0 w-16 h-16 rounded-lg bg-background-200 animate-pulse"></div>
+        <div class="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-background-200 animate-pulse"></div>
       }
     </div>
   </div>
@@ -17,24 +17,28 @@
     </div>
   </div>
 } @else {
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2 items-center">
 
     <!-- Grande image active -->
-    <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-background-200">
-      <a [href]="activeItem()!.url" [target]="'_blank'" [title]="'Voir l\'image dans une nouvelle fenêtre'">
+    <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-background-200 max-w-7xl">
+      <a
+        [href]="activeItem()!.url"
+        [target]="'_blank'"
+        [title]="'Voir l\'image dans une nouvelle fenêtre'"
+      >
         <img
-        class="w-full h-full object-cover transition-opacity duration-200"
-        height="400"
-        width="800"
-        [alt]="activeItem()!.alt ?? 'image de l\'occurrence'"
-        [ngSrc]="activeItem()!.url"
-      />
+          class="w-full h-full object-cover transition-opacity duration-200"
+          height="400"
+          width="800"
+          [alt]="activeItem()!.alt ?? 'image de l\'occurrence'"
+          [ngSrc]="activeItem()!.url"
+        />
       </a>
 
       <!-- Overlay sélection (mode formulaire) -->
       @if (selectable() && isCelPhotoSelected(activeItem()!.id)) {
-        <div class="absolute top-5 right-5  bg-primary/15 flex items-center justify-center pointer-events-none">
-          <span class="material-symbols-outlined text-black text-4xl drop-shadow-lg bg-white rounded-full">check_circle</span>
+        <div class="absolute top-2 right-2 sm:top-5 sm:right-5 pointer-events-none">
+          <span class="material-symbols-outlined text-black text-3xl sm:text-4xl drop-shadow-lg bg-white rounded-full">check_circle</span>
         </div>
       }
 
@@ -49,47 +53,47 @@
       @if (hasMultiple()) {
         <button
           aria-label="Photo précédente"
-          class="absolute left-2 top-1/2 -translate-y-1/2 !mt-0 !mx-0 !p-0 !shadow-none !border-0
+          class="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 !mt-0 !mx-0 !p-0 !shadow-none !border-0
                  !bg-black/40 hover:!bg-black/65 backdrop-blur-sm
-                 grid place-items-center w-8 h-8 rounded-full text-white transition-colors"
+                 grid place-items-center w-7 h-7 sm:w-8 sm:h-8 rounded-full text-white transition-colors"
           type="button"
           (click)="prev()"
         >
-          <span class="material-symbols-outlined text-[1.1rem]">chevron_left</span>
+          <span class="material-symbols-outlined text-[1rem] sm:text-[1.1rem]">chevron_left</span>
         </button>
         <button
           aria-label="Photo suivante"
-          class="absolute right-2 top-1/2 -translate-y-1/2 !mt-0 !mx-0 !p-0 !shadow-none !border-0
+          class="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 !mt-0 !mx-0 !p-0 !shadow-none !border-0
                  !bg-black/40 hover:!bg-black/65 backdrop-blur-sm
-                 grid place-items-center w-8 h-8 rounded-full text-white transition-colors"
+                 grid place-items-center w-7 h-7 sm:w-8 sm:h-8 rounded-full text-white transition-colors"
           type="button"
           (click)="next()"
         >
-          <span class="material-symbols-outlined text-[1.1rem]">chevron_right</span>
+          <span class="material-symbols-outlined text-[1rem] sm:text-[1.1rem]">chevron_right</span>
         </button>
       }
     </div>
 
     <!-- Bande de miniatures -->
     @if (hasMultiple()) {
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1.5 w-full min-w-0">
 
         <!-- Flèche gauche miniatures -->
         <button
           aria-label="Défiler à gauche"
           class="flex-shrink-0 !mt-0 !mx-0 !p-0 !shadow-none !bg-background-100
                  hover:!bg-background-200 !border !border-background-300
-                 grid place-items-center w-7 h-7 rounded-full text-text-500 transition-colors"
+                 grid place-items-center w-6 h-6 sm:w-7 sm:h-7 rounded-full text-text-500 transition-colors"
           type="button"
           (click)="prev()"
         >
-          <span class="material-symbols-outlined text-[1rem]">chevron_left</span>
+          <span class="material-symbols-outlined text-[.9rem] sm:text-[1rem]">chevron_left</span>
         </button>
 
-        <!-- Strip -->
+        <!-- Strip : flex + overflow-x-auto, largeur max calculée pour tenir dans le parent -->
         <div
           aria-label="Miniatures"
-          class="flex gap-1.5 overflow-x-auto flex-1 py-0.5 scroll-smooth"
+          class="flex gap-1 sm:gap-1.5 overflow-x-auto py-0.5 scroll-smooth flex-1 min-w-0"
           data-carousel-strip
           role="group"
           style="scrollbar-width: none;"
@@ -99,8 +103,8 @@
               type="button"
               [attr.aria-label]="'Voir photo ' + (i + 1)"
               [class]="i === activeIndex()
-                ? 'relative flex-shrink-0 w-14 h-14 rounded-md overflow-hidden ring-2 ring-primary ring-offset-1 ring-offset-background-50 transition-all duration-150 focus:outline-none'
-                : 'relative flex-shrink-0 w-14 h-14 rounded-md overflow-hidden ring-2 ring-transparent opacity-55 hover:opacity-90 transition-all duration-150 focus:outline-none'"
+                ? 'relative flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-md overflow-hidden ring-2 ring-primary ring-offset-1 ring-offset-background-50 transition-all duration-150 focus:outline-none'
+                : 'relative flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-md overflow-hidden ring-2 ring-transparent opacity-55 hover:opacity-90 transition-all duration-150 focus:outline-none'"
               (click)="onThumbnailClick(i, selectable() ? celPhotos()[i] : undefined)"
             >
               <img
@@ -116,7 +120,7 @@
                   aria-hidden="true"
                   class="absolute inset-0 bg-primary/20 flex items-center justify-center"
                 >
-                  <span class="material-symbols-outlined text-black text-sm drop-shadow bg-white rounded-full">check</span>
+                  <span class="material-symbols-outlined text-black text-xs sm:text-sm drop-shadow bg-white rounded-full">check</span>
                 </span>
               }
             </button>
@@ -128,11 +132,11 @@
           aria-label="Défiler à droite"
           class="flex-shrink-0 !mt-0 !mx-0 !p-0 !shadow-none !bg-background-100
                  hover:!bg-background-200 !border !border-background-300
-                 grid place-items-center w-7 h-7 rounded-full text-text-500 transition-colors"
+                 grid place-items-center w-6 h-6 sm:w-7 sm:h-7 rounded-full text-text-500 transition-colors"
           type="button"
           (click)="next()"
         >
-          <span class="material-symbols-outlined text-[1rem]">chevron_right</span>
+          <span class="material-symbols-outlined text-[.9rem] sm:text-[1rem]">chevron_right</span>
         </button>
 
       </div>
