@@ -147,13 +147,16 @@ export class Map implements AfterViewInit {
     if (!container) { return; }
 
     this.leafletMap = L.map(container, {
-      center: [43.611, 3.876],
+      center: [43.611, 3.876], //Montpellier
       zoom: 7,
       zoomControl: false,
-      maxZoom: 19
+      maxZoom: 19,
+      scrollWheelZoom: false,
+      touchZoom: false,
+      // doubleClickZoom: false  // optionnel, pour bloquer aussi le double-tap/click
     });
 
-    L.control.zoom({ position: 'topright' }).addTo(this.leafletMap);
+    L.control.zoom({position: 'topright'}).addTo(this.leafletMap);
 
     this.osmTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -208,16 +211,20 @@ export class Map implements AfterViewInit {
     const map = this.leafletMap;
     if (!map) { return; }
     map.invalidateSize();
-    map.setView(map.getCenter(), map.getZoom(), { animate: false });
+    map.setView(map.getCenter(), map.getZoom(), {animate: false});
     map.eachLayer((layer) => {
-      if (layer instanceof L.TileLayer) { layer.redraw(); }
+      if (layer instanceof L.TileLayer) {
+        layer.redraw();
+      }
     });
   }
 
   private getSentierLatLng(s: Sentier): LatLngTuple | null {
     const lat = s.position?.start?.lat ?? s.path?.coordinates?.[0]?.lat;
     const lng = s.position?.start?.lng ?? s.path?.coordinates?.[0]?.lng;
-    if (typeof lat === 'number' && typeof lng === 'number') { return [lat, lng]; }
+    if (typeof lat === 'number' && typeof lng === 'number') {
+      return [lat, lng];
+    }
     return null;
   }
 
@@ -324,7 +331,12 @@ export class Map implements AfterViewInit {
       .map(c => [c.lat, c.lng]);
 
     if (polyPoints.length > 1) {
-      const poly = L.polyline(polyPoints, { color: '#f97316', weight: 4, opacity: 0.9, dashArray: '6 8' });
+      const poly = L.polyline(polyPoints,
+        { color: '#f97316',
+          weight: 4,
+          opacity: 0.9,
+          dashArray: '6 8'
+        });
       this.routeLayer!.addLayer(poly);
       bounds.push(...polyPoints);
     } else if (polyPoints.length === 1) {
@@ -471,7 +483,10 @@ export class Map implements AfterViewInit {
         const freshCoords = (current.path?.coordinates ?? [])
           .filter((coord): coord is Position => typeof coord?.lat === 'number' && typeof coord?.lng === 'number');
         const ll = marker.getLatLng();
-        const newCoords = freshCoords.map((p, idx) => idx === i ? { lat: ll.lat, lng: ll.lng } : p);
+        const newCoords = freshCoords
+          .map((p, idx) => idx === i
+            ? { lat: ll.lat, lng: ll.lng }
+            : p);
         await this.persistPath(current, newCoords);
       });
 
