@@ -57,6 +57,10 @@ export class Map implements AfterViewInit {
   readonly detailsDialog = viewChild<ElementRef<HTMLDialogElement>>('detailsDialog');
   readonly occurrenceDialog = viewChild<ElementRef<HTMLDialogElement>>('occurrenceDialog');
 
+  readonly isFullscreen = signal(false);
+  readonly isSatellite = signal(false);
+  private googleSatelliteLayer: L.TileLayer | null = null;
+
   private leafletMap: L.Map | null = null;
   private markersLayer: L.LayerGroup | null = null;
   private routeLayer: L.LayerGroup | null = null;
@@ -138,6 +142,13 @@ export class Map implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.initMap(); // appelé UNE SEULE FOIS
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        this.isFullscreen.set(false);
+        this.leafletMap?.invalidateSize();
+      }
+    });
   }
 
   private initMap(): void {
@@ -148,9 +159,9 @@ export class Map implements AfterViewInit {
 
     this.leafletMap = L.map(container, {
       center: [43.611, 3.876], //Montpellier
-      zoom: 7,
+      zoom: 9,
       zoomControl: false,
-      maxZoom: 19,
+      maxZoom: 21,
       scrollWheelZoom: false,
       touchZoom: false,
       // doubleClickZoom: false  // optionnel, pour bloquer aussi le double-tap/click
@@ -159,11 +170,21 @@ export class Map implements AfterViewInit {
     L.control.zoom({position: 'topright'}).addTo(this.leafletMap);
 
     this.osmTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      maxNativeZoom: 19,
+      maxZoom: 21, // permet d'être visible jusqu'au zoom 21
+      maxNativeZoom: 19, // mais les tuiles natives s'arrêtent à 19 → Leaflet les étire
       attribution: 'Map data &copy; <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a> ' +
         'contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>'
     }).addTo(this.leafletMap);
+
+    this.googleSatelliteLayer = L.tileLayer(
+      'https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+      {
+        subdomains: ['0', '1', '2', '3'],
+        maxZoom: 21,
+        maxNativeZoom: 21,
+        attribution: 'Map data &copy; <a href="https://maps.google.com" target="_blank">Google</a>'
+      }
+    );
 
     const mcgFactory = (L as unknown as { markerClusterGroup?: (opts?: unknown) => L.LayerGroup }).markerClusterGroup;
     if (mcgFactory) {
@@ -188,6 +209,21 @@ export class Map implements AfterViewInit {
       this.currentSentier.set(single);
     } else {
       this.renderMarkers();
+    }
+  }
+
+  toggleSatellite(): void {
+    const map = this.leafletMap;
+    if (!map || !this.osmTileLayer || !this.googleSatelliteLayer) { return; }
+
+    if (this.isSatellite()) {
+      map.removeLayer(this.googleSatelliteLayer);
+      this.osmTileLayer.addTo(map);
+      this.isSatellite.set(false);
+    } else {
+      map.removeLayer(this.osmTileLayer);
+      this.googleSatelliteLayer.addTo(map);
+      this.isSatellite.set(true);
     }
   }
 
@@ -579,5 +615,22 @@ export class Map implements AfterViewInit {
     if (!id) { return; }
     this.singleSentierService.fetchSentier(id);
     this.taxonSearchService.getUniqueTaxonsBelongingToTrail(id); // ← refetch les taxons
+  }
+
+  toggleFullscreen(): void {
+    const container = this.mapContainer()?.nativeElement;
+    if (!container) { return; }
+
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().then(() => {
+        this.isFullscreen.set(true);
+        this.leafletMap?.invalidateSize();
+      });
+    } else {
+      document.exitFullscreen().then(() => {
+        this.isFullscreen.set(false);
+        this.leafletMap?.invalidateSize();
+      });
+    }
   }
 }

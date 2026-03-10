@@ -28,6 +28,36 @@
             (click)="locateMe()">Ma position</button>
   </div>
 
+  <!-- Bouton plein écran -->
+  <button
+    class="absolute bottom-7 right-2 z-[1000] w-8 h-8 bg-white border border-gray-300
+         rounded shadow-md flex items-center justify-center text-gray-600
+         hover:bg-gray-50 transition-colors"
+    title="Plein écran"
+    type="button"
+    [attr.aria-label]="isFullscreen() ? 'Quitter le plein écran' : 'Plein écran'"
+    (click)="toggleFullscreen()"
+  >
+  <span class="material-symbols-outlined text-[1.1rem]">
+    {{ isFullscreen() ? 'fullscreen_exit' : 'fullscreen' }}
+  </span>
+  </button>
+
+  <!-- Bouton satellite -->
+  <button
+    class="absolute bottom-7 right-12 z-[1000] w-8 h-8 bg-white border border-gray-300
+         rounded shadow-md flex items-center justify-center text-gray-600
+         hover:bg-gray-50 transition-colors"
+    title="Vue satellite"
+    type="button"
+    [attr.aria-label]="isSatellite() ? 'Vue carte' : 'Vue satellite'"
+    (click)="toggleSatellite()"
+  >
+  <span class="material-symbols-outlined text-[1.1rem]">
+    {{ isSatellite() ? 'map' : 'satellite_alt' }}
+  </span>
+  </button>
+
   <app-error [errorMessage]="occurrenceService.error() ?? ''" />
   <app-error [errorMessage]="singleSentierService.errorUpdate() ?? ''" />
 </div>
