@@ -40,6 +40,7 @@ import {PingService} from '../../features/ping/services/ping.service';
 import {Ping} from '../../features/ping/models/ping.model';
 import {FicheForm} from '../../features/fiche/components/fiche-form/fiche-form';
 import {FicheModalService} from '../../features/fiche/services/fiche-modal.service';
+import {Unauthorized} from '../../core/pages/unauthorized/unauthorized';
 
 @Component({
   selector: 'app-single-trail',
@@ -55,7 +56,8 @@ import {FicheModalService} from '../../features/fiche/services/fiche-modal.servi
     PdfExport,
     OccurrenceModalDetail,
     OccurrenceCard,
-    FicheForm
+    FicheForm,
+    Unauthorized
   ],
   templateUrl: './single-trail.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -84,6 +86,7 @@ export class SingleTrail implements OnInit {
   readonly selectedOccurrence = signal<Occurrence | null>(null);
   private readonly _pingReady = signal(false);
   readonly pings = signal(0);
+  readonly accessAuthorized = signal(false);
 
   readonly mapComponent = viewChild<Map>('mapComponent');
 
@@ -106,12 +109,6 @@ export class SingleTrail implements OnInit {
     return u.origin + u.pathname;
   });
 
-  // private readonly accessGuard = computed(() => ({
-  //   sentier: this.sentierService.sentier(),
-  //   user: this.userService.user(),
-  //   isReady: this.userService.isReady(),
-  // }));
-
   constructor() {
     effect(() => {
       this.isLoggedIn.set(this.userService.isLoggedIn());
@@ -131,13 +128,9 @@ export class SingleTrail implements OnInit {
         if (pingReady) {
           this.trySendPing(this.sentier);
         }
+
+        this.checkAccess(this.sentier);
       }
-      // --- Vérification d'accès ---
-      // if (this.sentier) {
-      //TODO
-      //   this.checkAccess(this.sentier);
-      // }
-      // ----------------------------
 
       this.fillUniqueOccurrences();
 
@@ -151,30 +144,8 @@ export class SingleTrail implements OnInit {
       const pingList = this.pingService.pings();
       this.pings.set(pingList.length)
     });
-    // effect(() => {
-    //   const { sentier, user, isReady } = this.accessGuard();
-    //
-    //   this.sentier = sentier;
-    //   this.fillUniqueOccurrences();
-    //
-    //   if (sentier?.display_name) {
-    //     this.trailQrCode.set(
-    //       `${this.sharedService.env().qrCodeUrl}${sentier.display_name}/${this.baseUrl}/trail/${this.id()}.png`
-    //     );
-    //   }
-    //
-    //   // ⏳ On attend que le UserService ait fini de résoudre le rôle admin
-    //   if (!isReady) { return; }
-    //
-    //   if (sentier) {
-    //     //TODO
-    //     // this.checkAccess(sentier);
-    //   }
-    // });
-
     effect(()=>{
       this.taxons.set(this.taxonSearchService.taxons());
-      // console.log(this.taxons())
     })
   }
 
@@ -185,16 +156,18 @@ export class SingleTrail implements OnInit {
   }
 
   private checkAccess(sentier: Sentier): void {
-    if (sentier.status?.toLowerCase() === 'Validé'.toLowerCase()) { return } // accès libre
+    this.accessAuthorized.set(false);
+    if (sentier.status?.toLowerCase() === 'Validé'.toLowerCase()) {
+      this.accessAuthorized.set(true);
+    }
 
-    // const isAdmin = this.userService.isUserAdmin();
-    const isAdmin = this.user?.admin
+    let isAuthor = null;
+    if (this.user && sentier.author_id) {
+       isAuthor = this.user.id === sentier.author_id;
+    }
 
-    const isAuthor = this.user?.id === sentier.author_id;
-    console.log(isAdmin, isAuthor)
-
-    if (!isAdmin && !isAuthor) {
-      this.router.navigate(['/unauthorized']);
+    if (this.userService.isUserAdmin() || isAuthor) {
+      this.accessAuthorized.set(true);
     }
   }
 

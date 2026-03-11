@@ -17,7 +17,6 @@ import { OccurrenceService } from '../../services/occurrence-service';
 import { ModalConfirmation } from '../../../../shared/components/modal-confirmation/modal-confirmation';
 import { RouterLink } from '@angular/router';
 import { Fiche } from '../../../fiche/models/fiche.model';
-import { FicheForm } from '../../../fiche/components/fiche-form/fiche-form';
 import { FicheService } from '../../../fiche/services/fiche-service';
 import { QrCodeButton } from '../../../../shared/components/qr-code-button/qr-code-button';
 import { PdfExport } from '../../../../shared/components/pdf-export/pdf-export';
@@ -34,7 +33,6 @@ import {Loader} from '../../../../shared/components/loader/loader';
     OccurrenceForm,
     ModalConfirmation,
     RouterLink,
-    FicheForm,
     QrCodeButton,
     PdfExport,
     ImageCarousel,

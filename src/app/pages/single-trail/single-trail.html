@@ -1,16 +1,17 @@
 <section [class.blur-2xl]="sharedService.blurBackground()">
+
   @if (sentierService.loading()) {
     <app-loader />
   } @else if (sentierService.error()) {
     <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
   } @else {
     <!-- HEADER -->
+    @if (accessAuthorized()){
     <section class="px-4 pt-6 pb-2 flex flex-col gap-1">
       <div class="flex items-start justify-between gap-4 flex-wrap">
         <h2 class="!m-0 !p-0 text-2xl font-bold text-text">{{ sentier!.display_name }}
-          @if (userService.isUserAdmin()) {<span class="text-text-400">· ID #{{ sentier!.id }}</span>}
+<!--          @if (userService.isUserAdmin()) {<span class="text-text-400">· ID #{{ sentier!.id }}</span>}-->
         </h2>
-
 
         @if (sentier!.status?.toLowerCase() !== 'Validé'.toLowerCase()) {
           <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
@@ -35,9 +36,9 @@
           <span>· Publié le <span class="text-text font-medium">{{ sentier!.date_publication | date:"d MMM y" }}</span></span>
         }
         <span>· Par <span class="text-text font-medium">{{ sentier!.author }}</span></span>
-        @if (userService.isUserAdmin()) {
-          <span class="text-text-400">· ID {{ sentier!.author_id }} · {{ sentier!.author_email }}</span>
-        }
+<!--        @if (userService.isUserAdmin()) {-->
+<!--          <span class="text-text-400">· ID {{ sentier!.author_id }} · {{ sentier!.author_email }}</span>-->
+<!--        }-->
       </div>
     </section>
 
@@ -258,7 +259,10 @@
         }
       </ul>
     </section>
-
+    } @else {
+    <h2 class="m-0! p-0! text-2xl font-bold text-text">{{ sentier!.display_name }}</h2>
+    <app-unauthorized />
+    }
   }
 </section>
 
