@@ -265,6 +265,7 @@ export class SingleTrail implements OnInit {
 
   closeFicheModal(): void {
     this.ficheModalService.close();
+    this.taxonSearchService.getUniqueTaxonsBelongingToTrail(this.id())
   }
 
   /*********************** ADMIN *********************/

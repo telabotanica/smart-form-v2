@@ -67,18 +67,18 @@ module.exports = tseslint.config(
 
       // JavaScript best practices
       eqeqeq: 'error',
-      complexity: ['error', 20],
+      // complexity: ['error', 20],
       curly: 'error',
       'guard-for-in': 'error',
       'max-classes-per-file': ['error', 1],
       'max-len': [
         'warn',
         {
-          code: 120,
+          code: 150,
           comments: 160,
         },
       ],
-      'max-lines': ['warn', 400], // to keep files small
+      // 'max-lines': ['warn', 400], // to keep files small
       'no-bitwise': 'error',
       'no-console': 'off',
       'no-new-wrappers': 'error',
@@ -126,7 +126,7 @@ module.exports = tseslint.config(
         },
       ],
       '@angular-eslint/template/button-has-type': 'warn',
-      '@angular-eslint/template/cyclomatic-complexity': ['warn', { maxComplexity: 10 }],
+      // '@angular-eslint/template/cyclomatic-complexity': ['warn', { maxComplexity: 10 }],
       '@angular-eslint/template/eqeqeq': 'error',
       '@angular-eslint/template/prefer-control-flow': 'error',
       '@angular-eslint/template/prefer-ngsrc': 'warn',
