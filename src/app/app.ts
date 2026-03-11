@@ -3,13 +3,15 @@ import {RouterOutlet} from '@angular/router';
 import {Sidebar} from './core/layout/sidebar/sidebar';
 import {Header} from './core/layout/header/header';
 import {SharedService} from './shared/services/shared.service';
+import {Footer} from './core/layout/footer/footer';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
     Sidebar,
-    Header
+    Header,
+    Footer
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',

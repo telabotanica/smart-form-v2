@@ -63,7 +63,8 @@ npm run lint -- --fix       # Auto-fix issues
 - **No arrow functions in templates** (not supported)
 - **Don't assume globals** like `new Date()` are available
 - Keep templates simple - avoid complex logic
-- Prefer inline templates for small components
+- Template should always be in a separate html file and not in the ts file
+- Prefer html semantics (<section>, <article>, <header>, <aside>,etc...) instead of div
 
 ## Services
 

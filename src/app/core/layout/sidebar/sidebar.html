@@ -16,15 +16,19 @@
        [class.open]="isOpen()"
 >
   <div class="h-full px-3 py-4 mt-12 sm:mt-0 overflow-y-auto flex flex-col gap-1">
-    <button class="" title="accueil" type="button" [routerLink]="['']" (click)="isOpen() && toggle()">
+    <button class="" role="menuitem" title="accueil" type="button" [routerLink]="['']" (click)="isOpen() && toggle()">
       <span class="material-symbols-outlined">home</span>
     </button>
 
     @if (userService.isLoggedIn()){
-      <button class="" title="Mes sentiers" type="button" [routerLink]="['/me']" (click)="isOpen() && toggle()">
+      <button class="" role="menuitem" title="Mes sentiers" type="button" [routerLink]="['/me']" (click)="isOpen() && toggle()">
         <span class="material-symbols-outlined">route</span>Mes sentiers
       </button>
     }
+
+    <button class="" role="menuitem" title="CGU" type="button" [routerLink]="['cgu']" (click)="isOpen() && toggle()">
+      <span class="material-symbols-outlined">balance</span> CGU / charte
+    </button>
   </div>
 
 <!--  <div class="h-full px-3 py-4 mt-12 sm:mt-0 overflow-y-auto ">-->

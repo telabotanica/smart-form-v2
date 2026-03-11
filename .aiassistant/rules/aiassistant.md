@@ -43,6 +43,8 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 ## Templates
 
 - Keep templates simple and avoid complex logic
+- Template should always be in a separate html file and not in the ts file
+- Prefer html semantics (<section>, <article>, <header>, <aside>, etc...) instead of div
 - Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
 - Use the async pipe to handle observables
 - Do not assume globals like (`new Date()`) are available.
