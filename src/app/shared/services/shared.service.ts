@@ -11,7 +11,8 @@ export class SharedService {
   readonly blurBackgroundModal = signal(false);
   readonly blurBackgroundApp = signal(false);
   readonly url = signal(new URL(window.location.href));
-  readonly env = signal(environment)
+  readonly env = signal(environment);
+  readonly baseUrl = signal(environment.baseUrl);
 
   toggleBlurBackground(): void {
     this.blurBackground.set(!this.blurBackground())

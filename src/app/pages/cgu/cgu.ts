@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
+import {SharedService} from '../../shared/services/shared.service';
 
 @Component({
   selector: 'app-cgu',
@@ -7,5 +8,5 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Cgu {
-
+  sharedService = inject(SharedService);
 }

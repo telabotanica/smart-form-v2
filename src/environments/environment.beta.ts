@@ -7,4 +7,5 @@ export const environment = {
   cookieName: 'tb_auth_beta_test',
   celImageUrl: "https://api-cel-test.tela-botanica.org/api/photos?isPublic=true",
   baseCelApiUrl: "https://api-cel-test.tela-botanica.org/api",
+  baseUrl: "https://beta.tela-botanica.org/v2smartflore",
 };
