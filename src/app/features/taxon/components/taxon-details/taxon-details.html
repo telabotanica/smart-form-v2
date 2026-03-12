@@ -23,7 +23,7 @@
         <app-pdf-export
           [fiche]="fiche()"
           [imageUrl]="getFirstImageUrl()"
-          [taxon]="taxon()"
+          [taxon]="taxonInfos() ?? taxon()"
         />
       }
 

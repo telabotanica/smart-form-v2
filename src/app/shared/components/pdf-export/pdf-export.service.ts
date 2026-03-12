@@ -6,6 +6,7 @@ import { Fiche } from '../../../features/fiche/models/fiche.model';
 import { Sentier } from '../../../features/sentier/models/sentier.model';
 import { SharedService } from '../../services/shared.service';
 import {Tab, TabSection} from '../../../features/fiche/models/tabs.model';
+import { TaxonSearchService } from "../../../features/taxon/services/taxon-search-service";
 
 type PdfColors = {
   primary: [number, number, number];
@@ -21,6 +22,7 @@ type PdfColors = {
 })
 export class PdfExportService {
   private sharedService = inject(SharedService);
+  private taxonSearchService = inject(TaxonSearchService);
 
   private readonly colors: PdfColors = {
     primary: [255, 116, 105],
@@ -409,7 +411,7 @@ export class PdfExportService {
   }
 
   private async renderTaxonFichePage(doc: jsPDF, taxon: Taxon): Promise<void> {
-    const fiche = taxon.tabs?.find((tab: Tab) => tab.title === "Fiche Smart'Flore");
+    const fiche = taxon.tabs?.find((tab: Tab) => tab.type === 'card');
 
     let imageUrl: string | null = null;
     if (taxon.tabs) {
