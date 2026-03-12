@@ -30,7 +30,6 @@
       <div
         class="relative inline-flex items-center shrink-0 rounded-lg border border-background-200 bg-background-50
          text-xs font-medium overflow-hidden h-[38px]"
-        title="{{ form().get('nom_verna')?.value ? 'Recherche par nom vernaculaire' : 'Recherche par nom scientifique' }}"
       >
         <span
           class="absolute top-0 bottom-0 w-1/2 bg-primary-200 rounded-md transition-all duration-200 ease-in-out"
@@ -41,6 +40,7 @@
           class="relative z-10 px-3 h-full transition-colors duration-200 whitespace-nowrap
            m-0! shadow-none! rounded-none! bg-transparent! border-0! py-0! hover:bg-transparent!
            hover:outline-none! hover:no-underline!"
+          title="Recherche par nom scientifique"
           type="button"
           [class.!text-grey-400]="!form().get('nom_verna')?.value"
           [class.!text-text-400]="form().get('nom_verna')?.value"
@@ -54,6 +54,7 @@
           class="relative z-10 px-3 h-full transition-colors duration-200 whitespace-nowrap
            m-0! shadow-none! rounded-none! bg-transparent! border-0! py-0! hover:bg-transparent!
            hover:outline-none! hover:no-underline!"
+          title="Recherche par nom vernaculaire"
           type="button"
           [class.!text-grey-400]="form().get('nom_verna')?.value"
           [class.!text-text-400]="!form().get('nom_verna')?.value"
