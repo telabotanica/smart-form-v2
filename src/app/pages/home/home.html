@@ -1,7 +1,89 @@
+<section class="relative mx-4 mt-4 rounded-2xl overflow-hidden bg-accent-900 text-white">
+
+  <!-- Feuilles décoratives SVG -->
+  <svg aria-hidden="true" class="absolute -top-6 -right-6 w-48 h-48 opacity-15 rotate-12" fill="none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100 10 C140 10, 190 50, 190 100 C190 150, 150 190, 100 185 C50 180, 10 140, 15 90 C20 40, 60 10, 100 10Z" fill="currentColor"/>
+    <path d="M100 10 Q130 60 100 185" fill="none" opacity="0.4" stroke="white" stroke-width="1.5"/>
+    <path d="M100 60 Q140 80 180 75" fill="none" opacity="0.3" stroke="white" stroke-width="1"/>
+    <path d="M100 90 Q145 105 185 95" fill="none" opacity="0.3" stroke="white" stroke-width="1"/>
+    <path d="M100 120 Q138 132 175 120" fill="none" opacity="0.3" stroke="white" stroke-width="1"/>
+  </svg>
+
+  <svg aria-hidden="true" class="absolute -bottom-4 -left-8 w-40 h-40 opacity-10 -rotate-20" fill="none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <path d="M80 5 C130 5, 195 55, 195 110 C195 165, 145 195, 90 190 C35 185, 5 135, 10 80 C15 25, 30 5, 80 5Z" fill="currentColor"/>
+    <path d="M90 5 Q110 80 90 190" fill="none" opacity="0.4" stroke="white" stroke-width="1.5"/>
+  </svg>
+
+  <!-- Petite feuille accent -->
+  <svg aria-hidden="true" class="absolute top-1/2 right-8 w-16 h-16 opacity-20 rotate-45 -translate-y-1/2" fill="none" viewBox="0 0 100 100">
+    <path d="M50 5 C75 5, 95 25, 95 50 C95 75, 75 95, 50 92 C25 89, 5 69, 7 44 C9 19, 25 5, 50 5Z" fill="currentColor"/>
+    <path d="M50 5 Q58 50 50 92" fill="none" opacity="0.5" stroke="white" stroke-width="1.5"/>
+  </svg>
+
+  <!-- Contenu -->
+  <div class="relative z-10 p-5 pb-6">
+
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/20 px-3 py-1 text-xs font-medium tracking-wide text-white/80 mb-4">
+      <span class="size-1.5 rounded-full bg-primary"></span>
+      Botanique · Sentiers · Nature
+    </div>
+
+    <!-- Titre + accroche -->
+    <h2 class="font-title text-2xl font-bold leading-tight text-white mb-1 ml-0 py-0">
+      Partez à la découverte<br>
+      <span class="text-accent-300">de la flore</span> près de chez vous
+    </h2>
+    <p class="text-white/70 text-sm leading-relaxed mb-5 m-0">
+      Laissez-vous guider le long de sentiers botaniques pour identifier et comprendre les espèces qui vous entourent.
+    </p>
+
+    <!-- Infos clés -->
+    <div class="grid grid-cols-2 gap-2 mb-5">
+      <div class="rounded-xl bg-white/8 border border-white/10 px-3 py-2.5">
+        <p class="text-white/50 text-xs mb-0.5 m-0">Référentiels</p>
+        <p class="text-white text-xs font-semibold m-0">France, Antilles, Guyane,<br>Réunion, Afrique, Lichens</p>
+      </div>
+      <div class="rounded-xl bg-white/8 border border-white/10 px-3 py-2.5">
+        <p class="text-white/50 text-xs mb-0.5 m-0">Chaque fiche contient</p>
+        <p class="text-white text-xs font-semibold m-0">Noms, description,<br>usages, habitat, photos</p>
+      </div>
+    </div>
+
+    <!-- Description eFlore -->
+    <p class="text-white/60 text-xs leading-relaxed mb-5 m-0">
+      Chaque espèce est enrichie d'un lien vers
+      <a class="text-accent-300 font-semibold hover:underline" href="https://www.tela-botanica.org/flore/france-metropolitaine/" rel="noopener noreferrer" target="_blank">eFlore</a>,
+      la flore en ligne de <a class="text-accent-300 font-semibold hover:underline" href="https://www.tela-botanica.org/" rel="noopener noreferrer" target="_blank">Tela Botanica</a>.
+    </p>
+
+    <!-- Boutons stores -->
+    <div class="flex flex-wrap gap-2">
+      <a class="inline-flex items-center gap-2 rounded-xl bg-white text-accent-900 px-4 py-2.5 text-xs font-bold hover:bg-accent-100 transition-colors no-underline mt-0 mx-0 h-auto shadow-none"
+         href="https://play.google.com/store/apps/details?id=org.flore.smart.smartflore"
+         target="_blank"
+         title="Voir l'application Smart'Flore sur Google Play">
+        <svg aria-hidden="true" class="w-4 h-4 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M3.18 23.76a2 2 0 0 0 2.17-.22l12.5-7.22-2.83-2.83-11.84 10.27zm-1.01-20.7A2 2 0 0 0 2 4.5v15a2 2 0 0 0 .17.94l.09.14 8.4-8.4v-.2L2.26 3.2l-.09.14zm17.54 8.4-2.68-1.55-3.1 3.1 3.1 3.1 2.7-1.56a2 2 0 0 0 0-3.09zM5.35.46A2 2 0 0 0 3.18.24L15.02 10.5l-2.83 2.83L3.35.68l.09-.14A2 2 0 0 0 5.35.46z"/></svg>
+        Google Play
+      </a>
+      <a class="inline-flex items-center gap-2 rounded-xl bg-white/15 border border-white/25 text-white px-4 py-2.5 text-xs font-bold hover:bg-white/25 transition-colors no-underline mt-0 mx-0 h-auto shadow-none"
+         href="https://apps.apple.com/us/app/smartflore/id1665197224"
+         target="_blank"
+         title="Voir l'application Smart'Flore sur l'App Store">
+        <svg aria-hidden="true" class="w-4 h-4 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        App Store
+      </a>
+    </div>
+  </div>
+</section>
+
 <h2 class="ml-4">Rechercher une fiche espèce</h2>
-<app-taxon-search (emitClear)="resetTaxonDetail()" (emitTaxon)="showTaxon($event)" />
-@if (taxon()) {
-  <app-taxon-details [taxon]="taxon()!" />
-}
+<section class="relative rounded-xl mx-4 mt-4 bg-background-50 border border-background-200">
+  <app-taxon-search (emitClear)="resetTaxonDetail()" (emitTaxon)="showTaxon($event)" />
+  @if (taxon()) {
+    <app-taxon-details [taxon]="taxon()!" />
+  }
+</section>
+
 
 <app-public-trail-list class="" />

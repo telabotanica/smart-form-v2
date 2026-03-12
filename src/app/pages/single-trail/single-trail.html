@@ -42,6 +42,23 @@
       </div>
     </section>
 
+    <!-- ALERTES CHEMIN/POSITION -->
+    @if (!sentier!.position || !sentier!.position.start || !sentier!.path || sentier!.path.coordinates.length === 0) {
+      <section class="mx-4 mt-4 p-3 rounded-xl bg-background-50 border border-background-200">
+        <p>Vous pouvez débuter la création de votre sentier en ajoutant un point de départ, puis un point d'arrivée en effectuant un clic droit sur la carte.</p>
+        <p>Vous pouvez ensuite ajouter des espèces à observer le long de votre sentier.</p>
+        <p><a class="font-bold hover:underline text-accent-700" href="" target="_blank" title="Voir le tutoriel de Smart\'Flore">Voir le tutoriel</a></p>
+      </section>
+      <section class="mx-4 mt-4 p-3 rounded-xl bg-primary-50 border border-primary-200 text-xs text-secondary flex flex-col gap-1">
+        @if (!sentier!.position || !sentier!.position.start) {
+          <span>⚠️ Aucune position de départ/arrivée définie</span>
+        }
+        @if (!sentier!.path || sentier!.path.coordinates.length === 0) {
+          <span>⚠️ Aucun chemin défini</span>
+        }
+      </section>
+    }
+
     <!-- ACTIONS (owner ou admin) -->
     @if (sentier!.status?.toLowerCase() !== 'Validé'.toLowerCase() && isLoggedIn() && user && user.id === sentier!.author_id) {
       <section class="mx-4 mt-4 p-4 rounded-xl bg-background-50 border border-background-200 flex flex-wrap gap-2">
@@ -235,17 +252,7 @@
       </section>
     }
 
-    <!-- ALERTES CHEMIN/POSITION -->
-    @if (!sentier!.position || !sentier!.position.start || !sentier!.path || sentier!.path.coordinates.length === 0) {
-      <section class="mx-4 mt-4 p-3 rounded-xl bg-primary-50 border border-primary-200 text-xs text-secondary flex flex-col gap-1">
-        @if (!sentier!.position || !sentier!.position.start) {
-          <span>⚠️ Aucune position de départ/arrivée définie</span>
-        }
-        @if (!sentier!.path || sentier!.path.coordinates.length === 0) {
-          <span>⚠️ Aucun chemin défini</span>
-        }
-      </section>
-    }
+
 
     <!-- TAXONS -->
     <section class="mx-4 mt-4 mb-8">
