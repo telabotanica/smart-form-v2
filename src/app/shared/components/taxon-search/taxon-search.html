@@ -33,17 +33,17 @@
         title="{{ form().get('nom_verna')?.value ? 'Recherche par nom vernaculaire' : 'Recherche par nom scientifique' }}"
       >
         <span
-          class="absolute top-0 bottom-0 w-1/2 bg-accent rounded-md transition-all duration-200 ease-in-out"
+          class="absolute top-0 bottom-0 w-1/2 bg-primary-200 rounded-md transition-all duration-200 ease-in-out"
           [style.left]="form().get('nom_verna')?.value ? '50%' : '0%'"
         ></span>
 
         <button
           class="relative z-10 px-3 h-full transition-colors duration-200 whitespace-nowrap
-           !m-0 !shadow-none !rounded-none !bg-transparent !border-0 !py-0 hover:!bg-transparent
-           hover:!outline-none hover:!no-underline"
+           m-0! shadow-none! rounded-none! bg-transparent! border-0! py-0! hover:bg-transparent!
+           hover:outline-none! hover:no-underline!"
           type="button"
+          [class.!text-grey-400]="!form().get('nom_verna')?.value"
           [class.!text-text-400]="form().get('nom_verna')?.value"
-          [class.!text-white]="!form().get('nom_verna')?.value"
           (click)="form().get('nom_verna')?.setValue(false)"
         >
           <span class="material-symbols-outlined text-[0.85rem] align-middle mr-0.5">biotech</span>
@@ -52,11 +52,11 @@
 
         <button
           class="relative z-10 px-3 h-full transition-colors duration-200 whitespace-nowrap
-           !m-0 !shadow-none !rounded-none !bg-transparent !border-0 !py-0 hover:!bg-transparent
-           hover:!outline-none hover:!no-underline"
+           m-0! shadow-none! rounded-none! bg-transparent! border-0! py-0! hover:bg-transparent!
+           hover:outline-none! hover:no-underline!"
           type="button"
+          [class.!text-grey-400]="form().get('nom_verna')?.value"
           [class.!text-text-400]="!form().get('nom_verna')?.value"
-          [class.!text-white]="form().get('nom_verna')?.value"
           (click)="form().get('nom_verna')?.setValue(true)"
         >
           <span class="material-symbols-outlined text-[0.85rem] align-middle mr-0.5">language</span>

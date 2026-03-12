@@ -1,7 +1,7 @@
-<app-public-trail-list class="" />
-
 <h2 class="ml-4">Rechercher une fiche espèce</h2>
 <app-taxon-search (emitClear)="resetTaxonDetail()" (emitTaxon)="showTaxon($event)" />
 @if (taxon()) {
   <app-taxon-details [taxon]="taxon()!" />
 }
+
+<app-public-trail-list class="" />
