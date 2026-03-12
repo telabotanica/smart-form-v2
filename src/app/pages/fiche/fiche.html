@@ -86,7 +86,7 @@
           <app-loader />
         } @else {
           <button
-            class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
+            class="mx-0 !shadow-none !bg-transparent !border !border-background-300
                        hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
                        text-text text-[.7rem] tracking-[.06em]"
             type="button"
@@ -97,27 +97,27 @@
           </button>
         }
 
+        @if (!taxonSearchService.loading()) {
+          <app-pdf-export
+            [fiche]="fiche()"
+            [imageUrl]="(images() ?? [])[0]?.url ?? null"
+            [isLoading]="taxonSearchService.loading()"
+            [taxon]="taxonSearchService.taxon()"
+          />
+        }
+
       </div>
     }
 
   </section>
 </article>
 
-<!--@if (showFicheModal()) {-->
-<!--  <app-fiche-form-->
-<!--    [fiche]="fiche() ?? null"-->
-<!--    [referentiel]="referentiel()"-->
-<!--    [taxonomic_id]="num_taxonomic()"-->
-<!--    (modalClosed)="closeFicheModal()"-->
-<!--  />-->
-<!--}-->
-
 @if (ficheModalService.isOpen()) {
   <app-fiche-form
     [fiche]="ficheModalService.fiche()"
     [referentiel]="referentiel()"
     [taxonomic_id]="num_taxonomic()"
-    (ficheCreated)="closeFicheModal()"
     (modalClosed)="closeFicheModal()"
+    (modalSucceed)="refreshFiche()"
   />
 }

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, input, OnInit, signal} from '@angular/core';
 import {TaxonSearchService} from '../../features/taxon/services/taxon-search-service';
 import {Loader} from '../../shared/components/loader/loader';
 import {WikiToHtmlPipe} from '../../features/fiche/pipes/WikiToHtmlPipe';
@@ -11,6 +11,7 @@ import {FicheForm} from '../../features/fiche/components/fiche-form/fiche-form';
 import {UserService} from '../../core/auth/services/user.service';
 import {ImageCarousel} from '../../shared/components/image-carousel/image-carousel';
 import {FicheModalService} from '../../features/fiche/services/fiche-modal.service';
+import {PdfExport} from '../../shared/components/pdf-export/pdf-export';
 
 @Component({
   selector: 'app-fiche',
@@ -19,7 +20,8 @@ import {FicheModalService} from '../../features/fiche/services/fiche-modal.servi
     WikiToHtmlPipe,
     ErrorComponent,
     FicheForm,
-    ImageCarousel
+    ImageCarousel,
+    PdfExport
   ],
   templateUrl: './fiche.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -43,22 +45,30 @@ export class FichePage implements OnInit {
   userService = inject(UserService);
   readonly ficheModalService = inject(FicheModalService);
 
-  ngOnInit(): void {
-    this.taxonSearchService.getTaxonFiche(this.referentiel(), this.num_nom())
+  constructor() {
+    effect(() => {
+      this.fiche.set(this.ficheService.fiche());
+    });
   }
 
-  async editFicheModal(): Promise<void> {
-    this.fiche.set(null);
-    await this.ficheService.fetchFiche(
+  ngOnInit(): void {
+    this.taxonSearchService.getTaxonFiche(this.referentiel(), this.num_nom())
+    this.ficheService.fetchFiche(
       this.referentiel(),
       this.num_taxonomic()
     );
-    this.fiche.set(this.ficheService.fiche());
+  }
+
+  async editFicheModal(): Promise<void> {
     this.ficheModalService.open(this.fiche());
   }
 
   closeFicheModal(): void {
-    this.fiche.set(null);
     this.ficheModalService.close();
+  }
+
+  refreshFiche(): void {
+    this.taxonSearchService.getTaxonFiche(this.referentiel(), this.num_nom())
+    this.ficheModalService.close()
   }
 }
