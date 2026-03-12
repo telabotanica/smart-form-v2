@@ -125,15 +125,12 @@
 
       <!-- Footer -->
       <footer class="flex items-center gap-2 px-8 pb-7 pt-0 border-t border-background-200 pt-4">
-
-        <a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg
-        bg-primary hover:bg-primary-400 text-white text-[.7rem] tracking-[.06em]
-        transition-colors no-underline"
-        [routerLink]="['/trail', s.id]"
-        >
-        <span class="material-symbols-outlined text-[.9rem]">hiking</span>
-        Ouvrir le sentier
-        </a>
+        <button class="p-2" role="button" title="Ouvrir le sentier"
+                type="button">
+          <a class="" [routerLink]="['/trail', s.id]">
+            <span class="material-symbols-outlined text-[.9rem]">hiking</span>Ouvrir le sentier
+          </a>
+        </button>
         <app-qr-code-button [sentier]="s" />
       </footer>
 
