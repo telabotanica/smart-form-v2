@@ -1,4 +1,4 @@
-<div class="w-full relative">
+<section class="w-full relative">
 
   <div class="relative w-full h-[420px]">
     @if (currentSentier(); as s) {
@@ -61,7 +61,7 @@
 
   <app-error [errorMessage]="occurrenceService.error() ?? ''" />
   <app-error [errorMessage]="singleSentierService.errorUpdate() ?? ''" />
-</div>
+</section>
 
 <dialog
   #detailsDialog

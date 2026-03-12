@@ -21,6 +21,9 @@ export class WaypointListComponent {
   readonly canEditTrail = signal(false)
   private readonly draggingIndex = signal<number | null>(null);
 
+  readonly isOpen = signal(false);
+  readonly toggleOpen = (): void => this.isOpen.update(v => !v);
+
   userService = inject(UserService);
   sharedService = inject (SharedService)
   sentierService = inject(SingleSentierService)
