@@ -85,7 +85,7 @@ export class DropBoxComponent implements OnInit {
 
   readonly dropzoneClass = computed(() => {
     const base =
-      'relative w-full flex flex-col items-center justify-center min-w-[300px] p-6 ' +
+      'relative w-full flex flex-col items-center justify-center min-w-[100px] p-6 ' +
       'border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 bg-transparent! ';
     if (!this.enabled()) {return base + 'border-gray-300 opacity-50 cursor-not-allowed';}
     if (this.isFullWindow())

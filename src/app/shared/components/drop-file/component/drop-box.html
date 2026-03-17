@@ -20,13 +20,13 @@
     (windowDrag)="onWindowDrag($event)"
   >
     @if (!sendingImages()) {
-      <div class="flex flex-col flew-wrap items-center gap-2 pointer-events-none select-none">
+      <div class="w-full flex flex-col flew-wrap items-center gap-2 pointer-events-none select-none">
         <!-- Upload icon -->
         <svg class="w-8 h-8 text-primary opacity-70" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
           <path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" stroke-linecap="round"
                 stroke-linejoin="round" />
         </svg>
-        <span class="text-sm font-semibold text-primary text-wrap">{{ currentLabel() }}</span>
+        <span class="w-full text-sm font-semibold text-primary text-wrap">{{ currentLabel() }}</span>
         @if (labelHelp()) {
           <span class="text-xs italic text-gray-400 mt-0.5">{{ labelHelp() }}</span>
         }
@@ -51,57 +51,67 @@
     <input #fileInput formControlName="files" multiple type="file" (change)="onFilesInputChange()" />
   </div>
 
-  <!-- File table -->
+  <!-- File cards list -->
   @if (fileList().length > 0 && showTable() && fileList()[0].uploaded !== 'error') {
-    <div class="mt-4 rounded-lg border border-gray-200 overflow-hidden">
-      <table class="w-full text-sm text-left">
-        <thead class="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
-        <tr>
-          <th class="px-4 py-2">Nom</th>
-          <th class="px-4 py-2">Taille</th>
-          <th class="px-4 py-2">Type</th>
-          <th class="px-4 py-2 w-10"></th>
-        </tr>
-        </thead>
-        <tbody>
-          @for (item of fileList(); track item.index) {
-            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-              <td class="px-4 py-2 font-medium text-gray-700 truncate max-w-[200px]">{{ item.file.name }}</td>
-              <td class="px-4 py-2 text-gray-500">
-                @if (item.initialFileSize) {
-                  <span class="line-through opacity-50 mr-1">{{ item.initialFileSize | fileSize }}</span>→
-                }
-                {{ item.file.size | fileSize }}
-              </td>
-              <td class="px-4 py-2 text-gray-500">
-                <div class="flex items-center gap-1">
-                  {{ item.file.type | fileType: item.file.name }}
-                  @if (item.exifGPSLat && item.exifGPSLng) {
-                    <span class="text-primary" title="Coordonnées GPS incluses">📍</span>
-                  }
-                  @if (item.exifGPSAltitude) {
-                    <span class="text-primary" title="Altitude incluse">⛰️</span>
-                  }
-                </div>
-              </td>
-              <td class="px-4 py-2">
-                <button
-                  class="p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                  title="Supprimer"
-                  type="button"
-                  (click)="deleteFileByIndex(item.index)"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round"
-                          stroke-linejoin="round" />
-                  </svg>
-                </button>
-              </td>
-            </tr>
+    <ul
+      aria-label="Fichiers sélectionnés"
+      class="mt-4 flex flex-col gap-2"
+      role="list"
+    >
+      @for (item of fileList(); track item.index) {
+        <li class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm hover:bg-gray-50 transition-colors">
+
+          <!-- File type icon -->
+          <span aria-hidden="true" class="shrink-0 text-xl">
+          @if (isImage(item.file)) { 🖼️ }
+          @else { 📄 }
+        </span>
+
+          <!-- Name + meta -->
+          <article class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-800 truncate" [title]="item.file.name">
+              {{ item.file.name }}
+            </p>
+            <footer class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-400 mt-0.5">
+            <span>
+              @if (item.initialFileSize) {
+                <span class="line-through opacity-50 mr-1">{{ item.initialFileSize | fileSize }}</span>→
+              }
+              {{ item.file.size | fileSize }}
+            </span>
+              <span>{{ item.file.type | fileType: item.file.name }}</span>
+              @if (item.exifGPSLat && item.exifGPSLng) {
+                <span title="Coordonnées GPS incluses">📍</span>
+              }
+              @if (item.exifGPSAltitude) {
+                <span title="Altitude incluse">⛰️</span>
+              }
+            </footer>
+          </article>
+
+          <!-- Upload status -->
+          @if (item.uploaded === 'true') {
+            <button class="mt-0! mx-0! shadow-none! bg-red-500! border! border-red-300! hover:bg-red-100! hover:border-red-400! hover:no-underline! text-white hover:text-red-500 text-[.72rem] tracking-[.08em]"
+                    role="button"
+                    title="'Supprimer le fichier ' + item.file.name"
+                    type="button"
+                    [attr.aria-label]="'Supprimer le fichier ' + item.file.name"
+                    (click)="deleteFileByIndex(item.index)">
+                  <span class="material-symbols-outlined">delete</span>
+          </button>
           }
-        </tbody>
-      </table>
-    </div>
+
+          @if (item.uploaded === 'error') {
+            <span aria-label="Erreur d'envoi" class="shrink-0 text-red-400" role="img" title="Erreur d'envoi">
+            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path clip-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" fill-rule="evenodd" />
+            </svg>
+          </span>
+          }
+
+        </li>
+      }
+    </ul>
   }
 
   <!-- Thumbnails grid -->
