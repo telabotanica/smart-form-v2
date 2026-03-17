@@ -9,7 +9,7 @@ import {Sentier} from '../../features/sentier/models/sentier.model';
 import {SingleSentierService} from '../../features/sentier/services/single-sentier-service';
 import {SentierValidationCheck} from '../../features/sentier/models/sentier-validation-check.model';
 import {SentierValidationError} from '../../shared/models/sentier-validation-error.model';
-import {SentierCheckErrors} from '../../shared/components/sentier-check-errors/sentier-check-errors';
+import {SentierCheckErrors} from '../../features/sentier/components/sentier-check-errors/sentier-check-errors';
 import {SharedService} from '../../shared/services/shared.service';
 import {ModalConfirmation} from '../../shared/components/modal-confirmation/modal-confirmation';
 import {SentierForm} from '../../features/sentier/components/sentier-form/sentier-form';

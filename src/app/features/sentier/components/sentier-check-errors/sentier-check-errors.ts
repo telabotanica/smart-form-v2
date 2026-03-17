@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, input, signal} from '@angular/core';
-import {SentierValidationError} from '../../models/sentier-validation-error.model';
-import {SentierValidationErrorFiche} from '../../models/sentier-validation-error-fiche.model';
-import {SentierValidationCheck} from '../../../features/sentier/models/sentier-validation-check.model';
+import {SentierValidationError} from '../../../../shared/models/sentier-validation-error.model';
+import {SentierValidationErrorFiche} from '../../../../shared/models/sentier-validation-error-fiche.model';
+import {SentierValidationCheck} from '../../models/sentier-validation-check.model';
 
 @Component({
   selector: 'app-sentier-check-errors',
