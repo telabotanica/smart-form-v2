@@ -88,7 +88,6 @@ export class SingleTrail implements OnInit {
   private readonly _pingReady = signal(false);
   readonly pings = signal(0);
   readonly accessAuthorized = signal(false);
-  readonly errorMessage = signal<string>("");
 
   readonly mapComponent = viewChild<Map>('mapComponent');
 
@@ -121,17 +120,6 @@ export class SingleTrail implements OnInit {
       }
     });
 
-    effect(() => {
-      // if (this.occurrenceService.error()) {
-      //   this.errorMessage.set(this.occurrenceService.error()!)
-      // }
-this.errorMessage.set("")
-      if (this.occurrenceService.error()) {
-        this.errorMessage.set(this.occurrenceService.error()!)
-      }
-
-    });
-
     effect(()=>{
       this.sentier = this.sentierService.sentier();
       const pingReady = this._pingReady();
@@ -151,9 +139,6 @@ this.errorMessage.set("")
           `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl()}}.png`
         );
       }
-
-
-
     })
 
     effect(() => {
