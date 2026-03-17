@@ -41,6 +41,7 @@ import {Ping} from '../../features/ping/models/ping.model';
 import {FicheForm} from '../../features/fiche/components/fiche-form/fiche-form';
 import {FicheModalService} from '../../features/fiche/services/fiche-modal.service';
 import {Unauthorized} from '../../core/pages/unauthorized/unauthorized';
+import {OccurrenceService} from '../../features/occurrence/services/occurrence-service';
 
 @Component({
   selector: 'app-single-trail',
@@ -87,6 +88,7 @@ export class SingleTrail implements OnInit {
   private readonly _pingReady = signal(false);
   readonly pings = signal(0);
   readonly accessAuthorized = signal(false);
+  readonly errorMessage = signal<string>("");
 
   readonly mapComponent = viewChild<Map>('mapComponent');
 
@@ -103,6 +105,7 @@ export class SingleTrail implements OnInit {
   pingService = inject(PingService);
   private router = inject(Router);
   readonly ficheModalService = inject(FicheModalService);
+  readonly occurrenceService = inject(OccurrenceService);
 
   readonly baseUrl = computed(() => {
     const u = this.sharedService.url();
@@ -116,6 +119,17 @@ export class SingleTrail implements OnInit {
       if (this.userService.isReady()) {
         this._pingReady.set(true);
       }
+    });
+
+    effect(() => {
+      // if (this.occurrenceService.error()) {
+      //   this.errorMessage.set(this.occurrenceService.error()!)
+      // }
+this.errorMessage.set("")
+      if (this.occurrenceService.error()) {
+        this.errorMessage.set(this.occurrenceService.error()!)
+      }
+
     });
 
     effect(()=>{
@@ -152,6 +166,8 @@ export class SingleTrail implements OnInit {
   }
 
   ngOnInit(): void {
+    this.occurrenceService._error.set(null);
+    this.sentierService._errorUpdate.set(null);
     this.sentierService.fetchSentier(this.id());
     this.taxonSearchService.getUniqueTaxonsBelongingToTrail(this.id())
     this.sharedService.blurBackground.set(false)

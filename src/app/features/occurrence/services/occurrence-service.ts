@@ -15,7 +15,7 @@ export class OccurrenceService {
 
   private readonly _occurrence = signal<Occurrence>({} as Occurrence);
   private readonly _loading = signal(false);
-  private readonly _error = signal<string | null>(null);
+  readonly _error = signal<string | null>(null);
 
   readonly occurrence = computed(() => this._occurrence());
   readonly loading = computed(() => this._loading());

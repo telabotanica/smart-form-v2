@@ -22,7 +22,7 @@ export class SingleSentierService {
   private readonly _loading = signal(false);
   private readonly _loadingUpdate = signal(false);
   private readonly _error = signal<string | null>(null);
-  private readonly _errorUpdate = signal<string | null>(null);
+  readonly _errorUpdate = signal<string | null>(null);
   // private readonly _errorCheck = signal<string | null>(null);
 
   // --- Exposed signals ---
