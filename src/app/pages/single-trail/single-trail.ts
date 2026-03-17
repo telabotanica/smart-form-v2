@@ -130,13 +130,15 @@ export class SingleTrail implements OnInit {
         }
 
         this.checkAccess(this.sentier);
+
+        this.fillUniqueOccurrences();
+
+        this.trailQrCode.set(
+          `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl()}}.png`
+        );
       }
 
-      this.fillUniqueOccurrences();
 
-      this.trailQrCode.set(
-        `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl()}}.png`
-      );
 
     })
 

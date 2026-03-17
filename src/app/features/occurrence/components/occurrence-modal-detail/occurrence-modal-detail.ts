@@ -53,6 +53,7 @@ export class OccurrenceModalDetail {
   readonly fiche = signal<Fiche | null>(null);
   readonly taxonInfos = signal<Taxon | null>(null);
   readonly ficheExiste = signal(false);
+  occurrenceDeleted = signal(false);
 
   readonly sharedService = inject(SharedService);
   readonly userService = inject(UserService);
@@ -78,6 +79,7 @@ export class OccurrenceModalDetail {
 
   async deleteOccurrence(): Promise<void> {
     await this.occurrenceService.deleteOccurrence(this.occurrence()!).then(() => {
+      this.occurrenceDeleted.set(true);
       this.reloadTrail();
       this.sharedService.toggleBlurBackground();
       this.sharedService.toggleBlurBackgroundModal();
@@ -85,6 +87,11 @@ export class OccurrenceModalDetail {
   }
 
   reloadTrail(): void {
+    if (this.occurrenceDeleted()) {
+      this.singleSentierService.fetchSentier(this.sentier().id);
+      return;
+    }
+
     const occurrence = this.occurrence();
     if (!occurrence) { return; }
 
