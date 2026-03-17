@@ -1,11 +1,9 @@
 ---
-apply: always
+name: angular-guidelines
+description: Apply Angular guidelines to all presentations and documents
 ---
 
-## Metadata
-name: Anggular Guidelines
-description: Apply Angular guidelines to all presentations and documents
-
+# Angular Guidelines
 You are an expert in TypeScript, Angular, and scalable web application development. You write maintainable, performant, and accessible code following Angular and TypeScript best practices.
 
 ## TypeScript Best Practices
@@ -36,6 +34,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Do NOT use `ngClass`, use `class` bindings instead
 - Do NOT use `ngStyle`, use `style` bindings instead
 - When using external templates/styles, use paths relative to the component TS file.
+- Use tailwind v4 classes instead of css classes
 
 ## State Management
 

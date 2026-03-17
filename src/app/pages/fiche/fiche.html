@@ -100,7 +100,7 @@
         @if (!taxonSearchService.loading()) {
           <app-pdf-export
             [fiche]="fiche()"
-            [imageUrl]="(images() ?? [])[0]?.url ?? null"
+            [imageUrl]="images()[0]?.url ?? null"
             [isLoading]="taxonSearchService.loading()"
             [taxon]="taxonSearchService.taxon()"
           />
