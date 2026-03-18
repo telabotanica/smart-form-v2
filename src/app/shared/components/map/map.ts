@@ -23,7 +23,6 @@ import { OccurrenceForm } from '../../../features/occurrence/components/occurren
 import {SharedService} from '../../services/shared.service';
 import {OccurrenceService} from '../../../features/occurrence/services/occurrence-service';
 import {SingleSentierService} from '../../../features/sentier/services/single-sentier-service';
-import {ErrorComponent} from '../error/error';
 import { Position } from '../../models/position.model';
 import { WaypointListComponent } from '../waypoint-list/waypoint-list';
 import { MapUtilsService } from '../../services/map-utils.service';
@@ -40,7 +39,7 @@ type LatLngTuple = [number, number];
 
 @Component({
   selector: 'app-map',
-  imports: [RouterLink, OccurrenceModalDetail, ErrorComponent, WaypointListComponent, OccurrenceForm, Loader, QrCodeButton, AddressSearchComponent],
+  imports: [RouterLink, OccurrenceModalDetail, WaypointListComponent, OccurrenceForm, Loader, QrCodeButton, AddressSearchComponent],
   templateUrl: './map.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

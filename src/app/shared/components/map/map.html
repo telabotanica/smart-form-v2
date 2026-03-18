@@ -16,7 +16,7 @@
     <div #mapContainer aria-label="Carte des sentiers" class="w-full h-full" role="region"></div>
 
     <!-- Loader superposé par-dessus la carte, sans détruire le mapContainer -->
-    @if (singleSentierService.loading() || singleSentierService.loadingUpdate() || sentierService.loading()) {
+    @if (singleSentierService.loading() || singleSentierService.loadingUpdate() || sentierService.loading() || occurrenceService.loading()) {
       <div class="absolute inset-0 z-[1000] flex items-center justify-center bg-white/40 backdrop-blur-sm">
         <app-loader />
       </div>
