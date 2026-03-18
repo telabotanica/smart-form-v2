@@ -84,7 +84,6 @@ export class FicheForm implements OnInit {
         await this.ficheService.updateFiche(this.referentiel(), this.taxonomic_id(), ficheToSave);
       } else {
         await this.ficheService.createFiche(this.referentiel(), this.taxonomic_id(), ficheToSave);
-        //TODO: récupérer le tag de la fiche
       }
 
       if (!this.ficheService.errorUpdate()) {

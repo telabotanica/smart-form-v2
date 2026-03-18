@@ -130,6 +130,9 @@ export class OccurrenceModalDetail {
 
   async editFicheModal(): Promise<void> {
     this.fiche.set(null);
+    const currentOccurrence = this.occurrence();
+    if (!currentOccurrence?.taxon) { return; }
+
     await this.ficheService.fetchFiche(
       this.occurrence()!.taxon!.taxon_repository!,
       this.occurrence()!.taxon!.taxonomic_id!,
@@ -142,7 +145,9 @@ export class OccurrenceModalDetail {
 
   createFicheModal(): void {
     this.fiche.set(null);
+    const currentOccurrence = this.occurrence();
     this.ficheModalService.open(null);
+    this.ficheModalService.occurrence.set(currentOccurrence);
     this.onClose()()
   }
 

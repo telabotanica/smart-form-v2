@@ -255,8 +255,6 @@
       </section>
     }
 
-
-
     <!-- TAXONS -->
     <section class="mx-4 mt-4 mb-8">
       <h3 class="ml-0 text-base font-bold text-text mb-3">🌱 Taxons du sentier</h3>
@@ -332,11 +330,13 @@
 </dialog>
 
 @if (ficheModalService.isOpen()) {
-  <app-fiche-form
-    [fiche]="ficheModalService.fiche()"
-    [referentiel]="ficheModalService.occurrence()!.taxon!.taxon_repository"
-    [taxonomic_id]="ficheModalService.occurrence()!.taxon!.taxonomic_id!"
-    (ficheCreated)="closeFicheModal()"
-    (modalClosed)="closeFicheModal()"
-  />
+  @if (ficheModalService.occurrence()?.taxon) {
+    <app-fiche-form
+      [fiche]="ficheModalService.fiche()"
+      [referentiel]="ficheModalService.occurrence()!.taxon!.taxon_repository"
+      [taxonomic_id]="ficheModalService.occurrence()!.taxon!.taxonomic_id!"
+      (ficheCreated)="closeFicheModal()"
+      (modalClosed)="closeFicheModal()"
+    />
+  }
 }
