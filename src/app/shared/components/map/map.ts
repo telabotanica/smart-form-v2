@@ -501,11 +501,13 @@ export class Map implements AfterViewInit {
   openOccurrence(o: Occurrence): void {
     this.selectedOccurrence.set(o);
     this.occurrenceDialog()?.nativeElement?.showModal();
+    this.sharedService.blurBackground.set(true)
   }
 
   closeOccurrence = (): void => {
     this.occurrenceDialog()?.nativeElement?.close();
     this.selectedOccurrence.set(null);
+    this.sharedService.blurBackground.set(false)
   };
 
   private addEditablePath(s: Sentier, bounds: LatLngTuple[]): void {
