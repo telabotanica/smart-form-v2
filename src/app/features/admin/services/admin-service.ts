@@ -1,16 +1,16 @@
-import {computed, inject, Injectable, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {environment} from '../../../../environments/environment';
-import {Sentier} from '../../sentier/models/sentier.model';
-import {firstValueFrom} from 'rxjs';
-import {ErrorApi} from '../../../core/models/error-api.model';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
+import { Sentier } from '../../sentier/models/sentier.model';
+import { firstValueFrom } from 'rxjs';
+import { ErrorApi } from '../../../core/models/error-api.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminService {
-  private http = inject(HttpClient);
-  private smartfloreService = environment.smartfloreService;
+  private readonly http = inject(HttpClient);
+  private readonly smartfloreService = environment.smartfloreService;
 
   // --- Signals ---
   private readonly _sentiers = signal<Sentier[]>([]);
@@ -39,7 +39,6 @@ export class AdminService {
       const data = await firstValueFrom(
         this.http.get<Sentier[]>(`${this.smartfloreService}admin/trails${queryString}`)
       );
-
       this._sentiers.set(data ?? []);
     } catch (err: unknown) {
       this._error.set(
@@ -50,87 +49,37 @@ export class AdminService {
     }
   }
 
-  async publishSentier(sentier:Sentier): Promise<void> {
+  private async postAction(sentier: Sentier, action: string, errorMsg: string): Promise<boolean> {
     this._loading.set(true);
     this._error.set(null);
-
     try {
-      const data = await firstValueFrom(this.http.post<Sentier>(
-        `${this.smartfloreService}admin/trail/${sentier.id}/publish`,
-        sentier
-      ));
-      // this._sentier.set(data ?? {} as Sentier);
+      await firstValueFrom(
+        this.http.post<Sentier>(`${this.smartfloreService}admin/trail/${sentier.id}/${action}`, sentier)
+      );
+      return true;
     } catch (err: unknown) {
       const apiError = err as ErrorApi;
-      this._error.set(
-        apiError.error?.error ?? 'Erreur inconnue lors du rejet sentier'
-      );
-      console.error(err)
+      this._error.set(apiError.error?.error ?? errorMsg);
+      console.error(err);
+      return false;
     } finally {
       this._loading.set(false);
     }
   }
 
-  async rejectSentier(sentier:Sentier): Promise<void> {
-    this._loading.set(true);
-    this._error.set(null);
-
-    try {
-      const data = await firstValueFrom(this.http.post<Sentier>(
-        `${this.smartfloreService}admin/trail/${sentier.id}/reject`,
-        sentier
-      ));
-      // this._sentier.set(data ?? {} as Sentier);
-    } catch (err: unknown) {
-      const apiError = err as ErrorApi;
-      this._error.set(
-        apiError.error?.error ?? 'Erreur inconnue lors du rejet sentier'
-      );
-      console.error(err)
-    } finally {
-      this._loading.set(false);
-    }
+  async publishSentier(sentier: Sentier): Promise<boolean> {
+    return this.postAction(sentier, 'publish', 'Erreur inconnue lors de la publication du sentier');
   }
 
-  async unpublishSentier(sentier:Sentier): Promise<void> {
-    this._loading.set(true);
-    this._error.set(null);
-
-    try {
-      const data = await firstValueFrom(this.http.post<Sentier>(
-        `${this.smartfloreService}admin/trail/${sentier.id}/unpublish`,
-        sentier
-      ));
-      // this._sentier.set(data ?? {} as Sentier);
-    } catch (err: unknown) {
-      const apiError = err as ErrorApi;
-      this._error.set(
-        apiError.error?.error ?? 'Erreur inconnue lors du rejet sentier'
-      );
-      console.error(err)
-    } finally {
-      this._loading.set(false);
-    }
+  async rejectSentier(sentier: Sentier): Promise<boolean> {
+    return this.postAction(sentier, 'reject', 'Erreur inconnue lors du rejet du sentier');
   }
 
-  async reactivateSentier(sentier:Sentier): Promise<void> {
-    this._loading.set(true);
-    this._error.set(null);
+  async unpublishSentier(sentier: Sentier): Promise<boolean> {
+    return this.postAction(sentier, 'unpublish', 'Erreur inconnue lors de la dépublication du sentier');
+  }
 
-    try {
-      const data = await firstValueFrom(this.http.post<Sentier>(
-        `${this.smartfloreService}admin/trail/${sentier.id}/reactivate`,
-        sentier
-      ));
-      // this._sentier.set(data ?? {} as Sentier);
-    } catch (err: unknown) {
-      const apiError = err as ErrorApi;
-      this._error.set(
-        apiError.error?.error ?? 'Erreur inconnue lors du rejet sentier'
-      );
-      console.error(err)
-    } finally {
-      this._loading.set(false);
-    }
+  async reactivateSentier(sentier: Sentier): Promise<boolean> {
+    return this.postAction(sentier, 'reactivate', 'Erreur inconnue lors de la réactivation du sentier');
   }
 }

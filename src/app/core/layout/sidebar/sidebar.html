@@ -1,43 +1,74 @@
 <button
   aria-controls="sidebar"
+  aria-expanded="false"
   class="z-31 cursor-pointer fixed top-3 left-3 items-center p-2 mt-2 ms-3 text-sm rounded-lg sm:hidden hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-200 text-white hover:text-gray-950"
   data-drawer-target="sidebar"
   data-drawer-toggle="sidebar"
+  title="Ouvrir le menu"
   type="button"
   (click)="toggle()"
 >
-  <span class="material-symbols-outlined">{{ isOpen() ? "close" : "menu"}}</span>
+  <span class="material-symbols-outlined">{{ isOpen() ? "close" : "menu" }}</span>
 </button>
 
-<aside aria-label="Sidebar"
-       class="bg-background-200 open-close-container hidden fixed z-30 top-0 left-0 sm:w-44 w-full h-screen sm:block sm:pb-0 pb-24"
-       id="sidebar"
-       [class.hidden]="!isOpen()"
-       [class.open]="isOpen()"
+<aside
+  aria-label="Navigation principale"
+  class="bg-background-200 open-close-container hidden fixed z-30 top-0 left-0 sm:w-44 w-full h-screen sm:block sm:pb-0 pb-24"
+  id="sidebar"
+  [class.hidden]="!isOpen()"
+  [class.open]="isOpen()"
 >
   <div class="h-full px-3 py-4 mt-12 sm:mt-0 overflow-y-auto flex flex-col gap-1 justify-between">
-    <div class="w-full">
-      <button class="w-full mx-0" role="menuitem" title="accueil" type="button" [routerLink]="['']" (click)="isOpen() && toggle()">
+    <nav class="w-full flex flex-col gap-1">
+      <button
+        class="w-full mx-0"
+        role="menuitem"
+        title="Accueil"
+        type="button"
+        [routerLink]="['']"
+        (click)="isOpen() && toggle()"
+      >
         <span class="material-symbols-outlined">home</span>Accueil
       </button>
 
-      @if (userService.isLoggedIn()){
-        <button class="w-full mx-0" role="menuitem" title="Mes sentiers" type="button" [routerLink]="['/me']" (click)="isOpen() && toggle()">
+      @if (userService.isLoggedIn()) {
+        <button
+          class="w-full mx-0"
+          role="menuitem"
+          title="Mes sentiers"
+          type="button"
+          [routerLink]="['/me']"
+          (click)="isOpen() && toggle()"
+        >
           <span class="material-symbols-outlined">route</span>Mes sentiers
         </button>
       }
-    </div>
+
+      @if (userService.isUserAdmin()) {
+        <button
+          class="w-full mx-0 bg-accent hover:bg-accent-700 text-white"
+          role="menuitem"
+          title="Administration"
+          type="button"
+          [routerLink]="['/admin']"
+          (click)="isOpen() && toggle()"
+        >
+          <span class="material-symbols-outlined">admin_panel_settings</span>Admin
+        </button>
+      }
+    </nav>
+
     <div class="w-full">
-      <button class="w-full mx-0" role="menuitem" title="CGU" type="button" [routerLink]="['cgu']" (click)="isOpen() && toggle()">
-        <span class="material-symbols-outlined">balance</span> CGU / charte
+      <button
+        class="w-full mx-0"
+        role="menuitem"
+        title="CGU / charte"
+        type="button"
+        [routerLink]="['cgu']"
+        (click)="isOpen() && toggle()"
+      >
+        <span class="material-symbols-outlined">balance</span>CGU / charte
       </button>
     </div>
   </div>
-
-<!--  <div class="h-full px-3 py-4 mt-12 sm:mt-0 overflow-y-auto ">-->
-<!--    <button class="" title="Mes sentiers" type="button" [routerLink]="['me']" (click)="isOpen() && toggle()">-->
-<!--      <span class="material-symbols-outlined">Mes sentiers</span>-->
-<!--      <span class="">Mes sentiers</span>-->
-<!--    </button>-->
-<!--  </div>-->
 </aside>

@@ -1,0 +1,135 @@
+<article
+  class="flex flex-col sm:flex-row items-start gap-3 p-4 rounded-xl bg-background-50 border border-background-200 hover:border-background-300 transition-colors w-full"
+  [attr.aria-label]="'Sentier ' + sentier().display_name"
+>
+  <!-- Indicateur statut (barre colorée gauche) -->
+  <span
+    aria-hidden="true"
+    class="hidden sm:block w-1 self-stretch rounded-full shrink-0"
+    [class]="statusColor()"
+  ></span>
+
+  <!-- Infos principales -->
+  <div class="flex flex-col gap-1 flex-1 min-w-0">
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="text-xs text-text-400 font-mono">#{{ sentier().id }}</span>
+      <span class="text-sm font-semibold text-text truncate">{{ sentier().display_name }}</span>
+      <span
+        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+        [class]="statusBadgeClass()"
+      >
+        {{ sentier().status ?? 'Brouillon' }}
+      </span>
+      @if (sentier().date_suppression) {
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
+          🗑️ Supprimé
+        </span>
+      }
+    </div>
+
+    <!-- Métadonnées -->
+    <div class="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-text-500 mt-0.5">
+      <span>Par <span class="text-text font-medium">{{ sentier().author }}</span>
+        <span class="text-text-400"> (ID {{ sentier().author_id }})</span>
+      </span>
+      @if (sentier().date_creation) {
+        <span>· Créé le <span class="text-text font-medium">{{ sentier().date_creation | date:"d MMM y" }}</span></span>
+      }
+      @if (sentier().date_modification) {
+        <span>· Modifié le <span class="text-text font-medium">{{ sentier().date_modification | date:"d MMM y" }}</span></span>
+      }
+      @if (sentier().date_publication) {
+        <span>· Publié le <span class="text-text font-medium">{{ sentier().date_publication | date:"d MMM y" }}</span></span>
+      }
+      @if (sentier().date_suppression) {
+        <span class="text-red-500">· Supprimé le <span class="font-medium">{{ sentier().date_suppression | date:"d MMM y" }}</span></span>
+      }
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex flex-wrap gap-1.5 shrink-0 items-center">
+
+    <!-- Réactiver (si supprimé) -->
+    @if (sentier().date_suppression) {
+      <button
+        class="!mt-0 !mx-0 !h-8 !px-3 !py-1 !text-xs !shadow-none bg-accent hover:!bg-accent-700 text-white"
+        role="button"
+        title="Réactiver le sentier"
+        type="button"
+        (click)="onReactivate()"
+      >
+        <span class="material-symbols-outlined !text-sm">restore</span>
+        Réactiver
+      </button>
+    }
+
+    <!-- Ouvrir -->
+    <a
+      aria-label="Ouvrir le sentier {{ sentier().display_name }}"
+      class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-background-300
+             bg-transparent text-text text-xs hover:bg-background-100 hover:border-background-400
+             transition-colors no-underline h-8"
+      title="Ouvrir le sentier"
+      [routerLink]="['/trail', sentier().id]"
+    >
+      <span class="material-symbols-outlined text-sm">open_in_new</span>
+      Ouvrir
+    </a>
+
+    <!-- Modifier -->
+    <button
+      class="!mt-0 !mx-0 !h-8 !px-3 !py-1 !text-xs !shadow-none !bg-transparent !border !border-background-300
+             hover:!bg-background-100 hover:!border-background-400 text-text"
+      role="button"
+      title="Modifier le sentier"
+      type="button"
+      (click)="onEdit()"
+    >
+      <span class="material-symbols-outlined !text-sm">edit</span>
+      Modifier
+    </button>
+
+    <!-- Dépublier (si validé) -->
+    @if (sentier().status?.toLowerCase() === 'validé') {
+      <button
+        class="!mt-0 !mx-0 !h-8 !px-3 !py-1 !text-xs !shadow-none !bg-orange-600 hover:!bg-orange-700 border-orange-600 text-white"
+        role="button"
+        title="Dépublier le sentier"
+        type="button"
+        (click)="onUnpublish()"
+      >
+        <span class="material-symbols-outlined !text-sm">unpublished</span>
+        Dépublier
+      </button>
+    }
+
+    <!-- Refuser (si en attente) -->
+    @if (sentier().status === 'En attente') {
+      <button
+        class="!mt-0 !mx-0 !h-8 !px-3 !py-1 !text-xs !shadow-none !bg-red-700 hover:!bg-red-600 border-red-700 text-white"
+        role="button"
+        title="Refuser le sentier"
+        type="button"
+        (click)="onReject()"
+      >
+        <span class="material-symbols-outlined !text-sm">cancel</span>
+        Refuser
+      </button>
+    }
+
+    <!-- Supprimer (si non supprimé) -->
+    @if (!sentier().date_suppression) {
+      <button
+        class="!mt-0 !mx-0 !h-8 !px-3 !py-1 !text-xs !shadow-none !bg-red-700 hover:!bg-red-600 border-red-700 text-white"
+        role="button"
+        title="Supprimer le sentier"
+        type="button"
+        (click)="onDelete()"
+      >
+        <span class="material-symbols-outlined !text-sm">delete</span>
+        Supprimer
+      </button>
+    }
+  </div>
+</article>

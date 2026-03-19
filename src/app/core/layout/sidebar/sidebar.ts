@@ -1,25 +1,19 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import {RouterLink} from '@angular/router';
-import {User} from '../../auth/user.model';
-import {UserService} from '../../auth/services/user.service';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { UserService } from '../../auth/services/user.service';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [
-    RouterLink
-  ],
+  imports: [RouterLink],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar {
   readonly isOpen = signal(false);
-  readonly isLoggedIn = signal(false);
-  user: User | null = null;
-
-  userService = inject(UserService);
+  readonly userService = inject(UserService);
 
   toggle(): void {
-    this.isOpen.update((isOpen) => !isOpen);
+    this.isOpen.update((open) => !open);
   }
 }

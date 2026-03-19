@@ -6,7 +6,7 @@ import {SingleSentierService} from '../../../features/sentier/services/single-se
 import {Occurrence} from '../../../features/occurrence/models/occurrence.model';
 import {Router} from '@angular/router';
 
-type ModalType = 'sentier' | 'occurrence' | 'publish' | 'reject' | 'unpublish' | 'trailPicture';
+type ModalType = 'sentier' | 'occurrence' | 'publish' | 'reject' | 'unpublish' | 'trailPicture' | 'reactivate';
 
 type ModalConfig = {
   title: string;
@@ -59,6 +59,13 @@ const MODAL_CONFIGS: Record<ModalType, ModalConfig> = {
     confirmClass: 'bg-red-800 hover:bg-red-600 text-white border-red-800',
     icon: '❌',
   },
+  reactivate: {
+    title: 'Réactiver le sentier',
+    message: 'Le sentier sera restauré et remis au statut brouillon.',
+    confirmLabel: '✅ Oui, réactiver',
+    confirmClass: 'bg-accent hover:bg-accent-700 text-white border-accent',
+    icon: '♻️',
+  },
 };
 
 @Component({
@@ -91,18 +98,10 @@ export class ModalConfirmation {
         this.modalSucceed.emit(true);
         break;
       case 'publish':
-        this.modalSucceed.emit(true);
-        this.closeModal();
-        break;
       case 'reject':
-        this.modalSucceed.emit(true);
-        this.closeModal();
-        break;
       case 'unpublish':
-        this.modalSucceed.emit(true);
-        this.closeModal();
-        break;
       case 'trailPicture':
+      case 'reactivate':
         this.modalSucceed.emit(true);
         this.closeModal();
         break;
