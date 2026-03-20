@@ -11,7 +11,7 @@
           <span class="text-xs text-text-500 truncate">de {{ sentier.author }}</span>
           <span class="text-xs text-text-400">
             {{ sentier.occurrences_count }}
-            occurrence{{ (sentier.occurrences_count ?? 0) > 1 ? 's' : '' }}
+            individu{{ (sentier.occurrences_count ?? 0) > 1 ? 's' : '' }}
           </span>
           <time class="text-xs text-text-400" [attr.datetime]="sentier.date_publication">
             publié le {{ sentier.date_publication | date:'dd/MM/yyyy' }}
