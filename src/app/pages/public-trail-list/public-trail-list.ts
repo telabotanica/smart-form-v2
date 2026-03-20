@@ -4,10 +4,11 @@ import {ErrorComponent} from '../../shared/components/error/error';
 import {SentierPublicFilter} from '../../features/sentier/components/sentier-public-filter/sentier-public-filter';
 import {Map} from '../../shared/components/map/map';
 import {Loader} from '../../shared/components/loader/loader';
+import {SentierHighlights} from '../../features/sentier/components/sentier-highlights/sentier-highlights';
 
 @Component({
   selector: 'app-public-trail-list',
-  imports: [ErrorComponent, SentierPublicFilter, Map, Loader],
+  imports: [ErrorComponent, SentierPublicFilter, Map, Loader, SentierHighlights],
   templateUrl: './public-trail-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

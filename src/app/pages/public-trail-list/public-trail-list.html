@@ -9,13 +9,17 @@
     <app-loader />
   } @else if (sentierService.error()) {
     <app-error [errorMessage]="sentierService.error() ?? 'Erreur inconnue'" />
-  } @else {
-    <p class="!m-0 text-xs text-text-500">
-      <span class="font-semibold text-text">{{ sentierService.sentiers().length }}</span> sentier{{ sentierService.sentiers().length > 1 ? 's' : '' }} trouvé{{ sentierService.sentiers().length > 1 ? 's' : '' }}
-    </p>
-    <div class="rounded-xl overflow-hidden shadow-lg border border-background-200">
-      <app-map [sentiers]="sentierService.sentiers()" />
-    </div>
-  }
+  }  @else {
+      <p class="m-0! text-xs text-text-500">
+        <span class="font-semibold text-text">{{ sentierService.sentiers().length }}</span>
+        sentier{{ sentierService.sentiers().length > 1 ? 's' : '' }}
+        trouvé{{ sentierService.sentiers().length > 1 ? 's' : '' }}
+      </p>
+      <div class="rounded-xl overflow-hidden shadow-lg border border-background-200">
+        <app-map [sentiers]="sentierService.sentiers()" />
+      </div>
+
+      <app-sentier-highlights [sentiers]="sentierService.sentiers()" />
+    }
 
 </div>

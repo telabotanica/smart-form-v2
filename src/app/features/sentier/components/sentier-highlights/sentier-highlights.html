@@ -1,0 +1,21 @@
+<section aria-label="Sentiers mis en avant" class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+  <!-- Récemment publiés -->
+  <article aria-label="Sentiers récemment publiés" class="flex flex-col gap-3">
+    <app-sentier-highlights-list
+      icon="schedule"
+      title="Récemment publiés"
+      [sentiers]="recentSentiers()"
+    />
+  </article>
+
+  <!-- Les plus fréquentés -->
+  <article aria-label="Sentiers ayant le plus d'individus" class="flex flex-col gap-3">
+    <app-sentier-highlights-list
+      icon="groups"
+      title="Sentiers ayant le plus d'individus à observer"
+      [sentiers]="popularSentiers()"
+    />
+  </article>
+
+</section>
