@@ -68,23 +68,21 @@
           Publié le <span class="text-text font-medium">{{ s.date_publication | date:"d MMM y" }}</span>
         </p>
 
-        @if (s.details) {
-          <p
-            aria-label="Cliquer pour copier les détails"
-            class="m-0! text-sm text-text italic px-4 py-3 rounded-lg bg-background-100 border border-background-200 cursor-pointer select-none relative group"
-            role="button"
-            tabindex="0"
-            title="Copier les détails"
-            (click)="copyDetails(s.details)"
-            (keydown.enter)="copyDetails(s.details)"
-            (keydown.space)="copyDetails(s.details)"
-          >
-            {{ s.details }}
-            <span class="absolute top-1 right-2 text-xs text-text-400 opacity-0 group-hover:opacity-100 transition-opacity">
-              {{ copied() ? '✓ Copié' : 'Copier' }}
-            </span>
-          </p>
-        }
+        <p
+          aria-label="Cliquer pour copier les détails"
+          class="m-0! text-sm text-text italic px-4 py-3 rounded-lg bg-background-100 border border-background-200 cursor-pointer select-none relative group"
+          role="button"
+          tabindex="0"
+          title="Copier les détails"
+          (click)="copyDetails(sentierUrl())"
+          (keydown.enter)="copyDetails(sentierUrl())"
+          (keydown.space)="copyDetails(sentierUrl())"
+        >
+          {{ sentierUrl() }}
+          <span class="absolute top-1 right-2 text-xs text-text-400 opacity-0 group-hover:opacity-100 transition-opacity">
+            {{ copied() ? '✓ Copié' : 'Copier' }}
+          </span>
+        </p>
       </section>
 
       <!-- Footer -->

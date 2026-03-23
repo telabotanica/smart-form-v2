@@ -1,6 +1,6 @@
 import {
   ChangeDetectionStrategy,
-  Component,
+  Component, computed,
   ElementRef,
   input,
   OnDestroy,
@@ -12,6 +12,7 @@ import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import {Sentier} from '../../models/sentier.model';
 import {QrCodeButton} from '../../../../shared/components/qr-code-button/qr-code-button';
+import {environment} from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-sentier-public-modal',
@@ -28,6 +29,11 @@ export class SentierPublicModal implements OnDestroy {
   private readonly dialogRef = viewChild.required<ElementRef<HTMLDialogElement>>('detailsDialog');
   private copyTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
+  readonly sentierUrl = computed(() => {
+    const s = this.sentier();
+    if (!s) { return ''; }
+    return `${environment.baseUrl}/trail/${s.id}`;
+  });
 
   open(): void {
     this.dialogRef().nativeElement.showModal();
