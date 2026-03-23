@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
-import {PublicTrailList} from "../public-trail-list/public-trail-list";
+import {PublicTrailList} from "../../features/sentier/components/public-trail-list/public-trail-list";
 import {Taxon} from '../../features/taxon/models/taxon.model';
 import {TaxonSearch} from '../../shared/components/taxon-search/taxon-search';
 import {TaxonDetails} from '../../features/taxon/components/taxon-details/taxon-details';

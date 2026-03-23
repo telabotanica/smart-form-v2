@@ -8,13 +8,10 @@ import {
   signal,
   viewChild
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { Sentier } from '../../../features/sentier/models/sentier.model';
 import { Occurrence } from '../../../features/occurrence/models/occurrence.model';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
-// import 'leaflet.markercluster/dist/MarkerCluster.css';
-// import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 (window as unknown as Record<string, unknown>)['L'] = L;
 import {
   OccurrenceModalDetail
@@ -34,12 +31,21 @@ import {QrCodeButton} from '../qr-code-button/qr-code-button';
 import {TaxonSearchService} from '../../../features/taxon/services/taxon-search-service';
 import {NominatimResult} from '../address-search/nominatim.service';
 import {AddressSearchComponent} from '../address-search/address-search';
+import {SentierPublicModal} from '../../../features/sentier/components/sentier-public-modal/sentier-public-modal';
 
 type LatLngTuple = [number, number];
 
 @Component({
   selector: 'app-map',
-  imports: [RouterLink, OccurrenceModalDetail, WaypointListComponent, OccurrenceForm, Loader, QrCodeButton, AddressSearchComponent],
+  imports: [
+    OccurrenceModalDetail,
+    WaypointListComponent,
+    OccurrenceForm,
+    Loader,
+    QrCodeButton,
+    AddressSearchComponent,
+    SentierPublicModal
+  ],
   templateUrl: './map.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -58,8 +64,8 @@ export class Map implements AfterViewInit {
   user: User | null = null;
 
   readonly mapContainer = viewChild<ElementRef<HTMLElement>>('mapContainer');
-  readonly detailsDialog = viewChild<ElementRef<HTMLDialogElement>>('detailsDialog');
   readonly occurrenceDialog = viewChild<ElementRef<HTMLDialogElement>>('occurrenceDialog');
+  readonly modalRef = viewChild.required<SentierPublicModal>('modal');
 
   readonly isFullscreen = signal(false);
   readonly isSatellite = signal(false);
@@ -490,11 +496,10 @@ export class Map implements AfterViewInit {
 
   openDetails(s: Sentier): void {
     this.selectedSentier.set(s);
-    this.detailsDialog()?.nativeElement?.showModal();
+    this.modalRef().open();
   }
 
-  closeDetails(): void {
-    this.detailsDialog()?.nativeElement?.close();
+  onModalClosed(): void {
     this.selectedSentier.set(null);
   }
 

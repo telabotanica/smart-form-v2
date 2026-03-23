@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
-import {SentierPublicListService} from '../../features/sentier/services/sentier-public-list-service';
-import {ErrorComponent} from '../../shared/components/error/error';
-import {SentierPublicFilter} from '../../features/sentier/components/sentier-public-filter/sentier-public-filter';
-import {Map} from '../../shared/components/map/map';
-import {Loader} from '../../shared/components/loader/loader';
-import {SentierHighlights} from '../../features/sentier/components/sentier-highlights/sentier-highlights';
+import {SentierPublicListService} from '../../services/sentier-public-list-service';
+import {ErrorComponent} from '../../../../shared/components/error/error';
+import {SentierPublicFilter} from '../sentier-public-filter/sentier-public-filter';
+import {Map} from '../../../../shared/components/map/map';
+import {Loader} from '../../../../shared/components/loader/loader';
+import {SentierHighlights} from '../sentier-highlights/sentier-highlights';
 
 @Component({
   selector: 'app-public-trail-list',
