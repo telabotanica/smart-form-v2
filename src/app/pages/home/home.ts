@@ -3,13 +3,15 @@ import {PublicTrailList} from "../../features/sentier/components/public-trail-li
 import {Taxon} from '../../features/taxon/models/taxon.model';
 import {TaxonSearch} from '../../shared/components/taxon-search/taxon-search';
 import {TaxonDetails} from '../../features/taxon/components/taxon-details/taxon-details';
+import {NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'app-home',
   imports: [
     PublicTrailList,
     TaxonSearch,
-    TaxonDetails
+    TaxonDetails,
+    NgOptimizedImage
   ],
   templateUrl: './home.html',
   changeDetection: ChangeDetectionStrategy.OnPush
