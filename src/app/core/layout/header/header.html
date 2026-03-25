@@ -2,7 +2,7 @@
                bg-background-50 border-b border-background-200 shadow-sm">
 
   <!-- Logo -->
-  <div class="justify-start items-center gap-2 hidden md:flex">
+  <div class="w-1/2 md:w-1/3 justify-start items-center gap-2 hidden md:flex">
     <img
       class="rounded-lg"
       height="32"
@@ -18,15 +18,20 @@
 
   <!-- Actions -->
   <div class="flex justify-start items-center gap-2 flex-wrap">
+    @if (userService.user()) {
+      <span class="hidden lg:inline text-text-500 mr-4">
+        Bienvenue {{ userService.user()?.name }}
+      </span>
+    }
     <button
-      class="mt-0 mx-0 bg-primary hover:bg-primary-400 text-white text-[.72rem] tracking-[.08em] uppercase"
+      class="mt-0 ml-12 md:mx-0 bg-primary hover:bg-primary-400 text-white text-[.72rem] tracking-[.08em] uppercase"
       role="button"
       title="Créer un nouveau sentier"
       type="button"
       (click)="openTrailModal()"
     >
       <span class="material-symbols-outlined text-[.9rem]">add</span>
-      <span class="hidden xs:inline">Créer un sentier</span>
+      <span class="inline">Créer un sentier</span>
     </button>
 
     <app-auth />
