@@ -29,6 +29,10 @@ export class QrCodeButton {
     const u = this.sharedService.url();
     return u.origin + u.pathname;
   });
+  readonly baseUrl = computed(() => {
+    const u = this.sharedService.url();
+    return u.origin;
+  });
   readonly referentiel = signal("")
   readonly nt = signal<number | undefined>(0)
   readonly name_id = signal(0)
@@ -42,7 +46,7 @@ export class QrCodeButton {
         this.name_id.set(this.taxon()!.name_id)
 
         this.taxonUrl.set(
-          `${this.sharedService.env().qrCodeUrl}${this.name()}/${this.url()}/fiche/${this.referentiel()}/${this.nt()}/${this.name_id()}.png`
+          `${this.sharedService.env().qrCodeUrl}${this.name()}/${this.baseUrl()}/fiche/${this.referentiel()}/${this.nt()}/${this.name_id()}.png`
         )
 
         this.outUrl.set(this.taxonUrl());
@@ -55,7 +59,7 @@ export class QrCodeButton {
         this.name.set(this.sentier()!.display_name)
 
         this.sentierUrl.set(
-          `${this.sharedService.env().qrCodeUrl}${this.name()}/${this.url()}/trail/${this.sentier()!.id}.png`
+          `${this.sharedService.env().qrCodeUrl}${this.name()}/${this.url()}trail/${this.sentier()!.id}.png`
         )
 
         this.outUrl.set(this.sentierUrl());

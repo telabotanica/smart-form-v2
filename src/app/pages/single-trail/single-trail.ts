@@ -108,7 +108,7 @@ export class SingleTrail implements OnInit {
 
   readonly baseUrl = computed(() => {
     const u = this.sharedService.url();
-    return u.origin + u.pathname;
+    return u.origin;
   });
 
   constructor() {
@@ -136,7 +136,7 @@ export class SingleTrail implements OnInit {
         this.fillUniqueOccurrences();
 
         this.trailQrCode.set(
-          `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl()}}.png`
+          `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl()}/trail/${this.id()}.png`
         );
       }
     })
@@ -151,6 +151,10 @@ export class SingleTrail implements OnInit {
   }
 
   ngOnInit(): void {
+    this.trailQrCode.set(
+      `${this.sharedService.env().qrCodeUrl}${this.sentier?.display_name}/${this.baseUrl()}/trail/${this.id()}.png`
+    );
+
     this.occurrenceService._error.set(null);
     this.sentierService._errorUpdate.set(null);
     this.sentierService.fetchSentier(this.id());

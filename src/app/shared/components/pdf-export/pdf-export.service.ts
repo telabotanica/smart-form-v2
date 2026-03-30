@@ -42,7 +42,7 @@ export class PdfExportService {
 
   readonly baseUrl = computed(() => {
     const u = this.sharedService.url();
-    return u.origin + u.pathname;
+    return u.origin;
   });
 
   // ---------------------------------------------------------------------------
@@ -203,12 +203,12 @@ export class PdfExportService {
   }
 
   private async generateTaxonQrCodeDataUrl(taxon: Taxon): Promise<string> {
-    const url = `${this.baseUrl}/fiche/${taxon.taxon_repository}/${taxon.taxonomic_id}/${taxon.name_id}`;
+    const url = `${this.baseUrl()}/fiche/${taxon.taxon_repository}/${taxon.taxonomic_id}/${taxon.name_id}`;
     return QRCode.toDataURL(url, { width: 200, margin: 1, color: { dark: '#000000', light: '#FFFFFF' } });
   }
 
   private async generateSentierQrCodeDataUrl(sentier: Sentier): Promise<string> {
-    const url = `${this.baseUrl}/trail/${sentier.id}`;
+    const url = `${this.baseUrl()}/trail/${sentier.id}`;
     return QRCode.toDataURL(url, { width: 200, margin: 1, color: { dark: '#000000', light: '#FFFFFF' } });
   }
 
