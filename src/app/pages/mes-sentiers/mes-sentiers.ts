@@ -90,13 +90,13 @@ export class MesSentiers implements OnInit{
 
   // --- Deletion methods ---
   openDeleteConfirmModal(sentier: Sentier): void {
-    this.sharedService.toggleBlurBackground()
+    this.sharedService.blurBackground.set(true)
     this.sentierToDelete = sentier;
     this.showDeleteConfirmModal = true;
   }
 
   closeDeleteConfirmModal(): void {
-    this.sharedService.toggleBlurBackground()
+    this.sharedService.blurBackground.set(false)
     this.sentierToDelete = null;
     this.showDeleteConfirmModal = false;
   }
@@ -118,13 +118,13 @@ export class MesSentiers implements OnInit{
 
   // --- Add / Edit methods ---
   openTrailModal(sentier: Sentier | null = null): void {
-    this.sharedService.toggleBlurBackground()
+    this.sharedService.blurBackground.set(true)
     this.sentierToUpdate = sentier
     this.showTrailModal = true;
   }
 
   closeTrailModal(): void {
-    this.sharedService.toggleBlurBackground()
+    this.sharedService.blurBackground.set(false)
     this.sentierToUpdate = null;
     this.showTrailModal = false;
     this.mesSentiersService.fetchMe();

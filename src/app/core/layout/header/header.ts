@@ -37,12 +37,12 @@ export class Header {
     })
   }
   openTrailModal(): void {
-    this.sharedService.toggleBlurBackgroundApp()
+    this.sharedService.blurBackground.set(true)
     this.showTrailModal = true;
   }
 
   closeTrailModal(): void {
-    this.sharedService.toggleBlurBackgroundApp()
+    this.sharedService.blurBackground.set(false)
     this.showTrailModal = false;
   }
 }

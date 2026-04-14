@@ -229,26 +229,26 @@ export class SingleTrail implements OnInit {
   }
 
   openDeleteConfirmModal(sentier: Sentier): void {
-    this.sharedService.toggleBlurBackground()
+    this.sharedService.blurBackground.set(true)
     this.sentierToDelete = sentier;
     this.showDeleteConfirmModal = true;
   }
 
   closeDeleteConfirmModal(): void {
-    this.sharedService.toggleBlurBackground()
+    this.sharedService.blurBackground.set(false)
     this.sentierToDelete = null;
     this.showDeleteConfirmModal = false;
     this.sentierService.fetchSentier(this.id());
   }
 
   openTrailModal(sentier: Sentier | null = null): void {
-    this.sharedService.toggleBlurBackground()
+    this.sharedService.blurBackground.set(true)
     this.sentierToUpdate = sentier
     this.showTrailModal = true;
   }
 
   closeTrailModal(): void {
-    this.sharedService.toggleBlurBackground()
+    this.sharedService.blurBackground.set(false)
     this.sentierToUpdate = null;
     this.showTrailModal = false;
     this.sentierService.fetchSentier(this.id());

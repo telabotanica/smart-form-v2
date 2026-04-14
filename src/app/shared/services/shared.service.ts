@@ -14,18 +14,6 @@ export class SharedService {
   readonly env = signal(environment);
   readonly baseUrl = signal(environment.baseUrl);
 
-  toggleBlurBackground(): void {
-    this.blurBackground.set(!this.blurBackground())
-  }
-
-  toggleBlurBackgroundApp(): void {
-    this.blurBackgroundApp.set(!this.blurBackgroundApp())
-  }
-
-  toggleBlurBackgroundModal(): void {
-    this.blurBackgroundModal.set(!this.blurBackgroundModal())
-  }
-
   canEditTrail(user: User | null, trail: Sentier, isAdmin: boolean): boolean {
     if (!user) { return false}
 

@@ -80,12 +80,12 @@ export class TaxonDetails implements OnInit {
 
   openFicheModal(): void {
     this.showFicheModal = true;
-    this.sharedService.toggleBlurBackground()
+    this.sharedService.blurBackground.set(true)
   }
 
   closeFicheModal(): void {
     this.showFicheModal = false;
-    this.sharedService.toggleBlurBackground()
+    this.sharedService.blurBackground.set(false)
   }
 
   ficheCreationSuccess(): void {

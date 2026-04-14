@@ -81,8 +81,8 @@ export class OccurrenceModalDetail {
     await this.occurrenceService.deleteOccurrence(this.occurrence()!).then(() => {
       this.occurrenceDeleted.set(true);
       this.reloadTrail();
-      this.sharedService.toggleBlurBackground();
-      this.sharedService.toggleBlurBackgroundModal();
+      this.sharedService.blurBackground.set(false)
+      this.sharedService.blurBackgroundModal.set(false)
     });
   }
 
@@ -101,26 +101,26 @@ export class OccurrenceModalDetail {
   }
 
   openDeleteConfirmation(): void {
-    this.sharedService.toggleBlurBackground();
-    this.sharedService.toggleBlurBackgroundModal();
+    this.sharedService.blurBackground.set(true)
+    this.sharedService.blurBackgroundModal.set(true)
     this.showDeleteConfirmModal = true;
   }
 
   closeDeleteConfirmModal(): void {
-    this.sharedService.toggleBlurBackground();
-    this.sharedService.toggleBlurBackgroundModal();
+    this.sharedService.blurBackground.set(false)
+    this.sharedService.blurBackgroundModal.set(false)
     this.showDeleteConfirmModal = false;
   }
 
   openOccurrenceForm(): void {
-    this.sharedService.toggleBlurBackground();
-    this.sharedService.toggleBlurBackgroundModal();
+    this.sharedService.blurBackground.set(true)
+    this.sharedService.blurBackgroundModal.set(true)
     this.showOccurrenceForm = true;
   }
 
   closeOccurrenceForm(): void {
-    this.sharedService.toggleBlurBackground();
-    this.sharedService.toggleBlurBackgroundModal();
+    this.sharedService.blurBackground.set(false)
+    this.sharedService.blurBackgroundModal.set(false)
     this.showOccurrenceForm = false;
   }
 
