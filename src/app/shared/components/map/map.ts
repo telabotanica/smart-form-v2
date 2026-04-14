@@ -539,7 +539,7 @@ export class Map implements AfterViewInit {
           iconSize: [10, 10],
           iconAnchor: [5, 5]
         });
-        marker = L.marker(pt, { icon: dot, draggable, title: `Étape ${i + 1}` });
+        marker = L.marker(pt, { icon: dot, draggable, title: `Étape ${i}` });
       }
 
       marker.on('dragend', async () => {

@@ -1,5 +1,4 @@
 <section class="w-full relative">
-
   <div class="relative w-full h-[420px]">
     @if (currentSentier(); as s) {
       @if ((s.path?.coordinates?.length || 0) > 0) {
@@ -10,80 +9,89 @@
         />
       }
     }
-
     <app-address-search (selected)="onAddressSelected($event)" />
-    <!-- mapContainer TOUJOURS dans le DOM, jamais conditionnel -->
-    <div #mapContainer aria-label="Carte des sentiers" class="w-full h-full" role="region"></div>
 
-    <!-- Loader superposé par-dessus la carte, sans détruire le mapContainer -->
-    @if (singleSentierService.loading() || singleSentierService.loadingUpdate() || sentierService.loading() || occurrenceService.loading()) {
-      <div class="absolute inset-0 z-[1000] flex items-center justify-center bg-white/40 backdrop-blur-sm">
-        <app-loader />
-      </div>
-    }
+    <!-- mapContainer contient la carte ET tous les overlays/modals -->
+    <div #mapContainer aria-label="Carte des sentiers" class="relative w-full h-full" role="region">
+
+      <!-- Loader -->
+      @if (singleSentierService.loading() || singleSentierService.loadingUpdate() || sentierService.loading() || occurrenceService.loading()) {
+        <div class="absolute inset-0 z-[1000] flex items-center justify-center bg-white/40 backdrop-blur-sm">
+          <app-loader />
+        </div>
+      }
+
+      <!-- Dialog occurrence detail -->
+      <dialog
+        #occurrenceDialog
+        class="border-0 rounded-xl p-0 shadow-2xl top-20 left-1/2 -translate-x-1/2 w-full max-w-2xl"
+        (close)="closeOccurrence()"
+      >
+        <app-occurrence-modal-detail
+          [occurrence]="selectedOccurrence()"
+          [onClose]="closeOccurrence"
+          [sentier]="singleSentier()!"
+        />
+      </dialog>
+
+      <!-- Formulaire ajout occurrence -->
+      @if (showOccurrenceForm()) {
+        <app-occurrence-form
+          class="absolute inset-0 z-[500]"
+          [position]="occurrenceFormPosition()!"
+          [sentier]="singleSentier()!"
+          (modalClosed)="closeOccurrenceModal()"
+          (modalSuccessed)="occurrenceModalSuccessed()"
+        />
+      }
+
+      <!-- Modal sentier public -->
+      <app-sentier-public-modal
+        #modal
+        [sentier]="selectedSentier()"
+        (closed)="onModalClosed()"
+      />
+
+    </div>
   </div>
 
+  <!-- Bouton ma position -->
   <div class="flex items-center gap-3 my-2 absolute bottom-0 left-20 transform -translate-x-1/2 z-20">
-    <button class="px-3 mt-0 border border-gray-200 rounded-md bg-white"
-            type="button"
-            (click)="locateMe()">Ma position</button>
+    <button
+      class="px-3 mt-0 border border-gray-200 rounded-md bg-white"
+      title="Ma position"
+      type="button"
+      (click)="locateMe()"
+    >Ma position</button>
   </div>
 
   <!-- Bouton plein écran -->
   <button
     class="absolute bottom-7 right-2 z-15 w-8 h-8 bg-white border border-gray-300
-         rounded shadow-md flex items-center justify-center text-gray-600
-         hover:bg-gray-50 transition-colors"
+           rounded shadow-md flex items-center justify-center text-gray-600
+           hover:bg-gray-50 transition-colors"
     title="Plein écran"
     type="button"
     [attr.aria-label]="isFullscreen() ? 'Quitter le plein écran' : 'Plein écran'"
     (click)="toggleFullscreen()"
   >
-  <span class="material-symbols-outlined text-[1.1rem]">
-    {{ isFullscreen() ? 'fullscreen_exit' : 'fullscreen' }}
-  </span>
+    <span class="material-symbols-outlined text-[1.1rem]">
+      {{ isFullscreen() ? 'fullscreen_exit' : 'fullscreen' }}
+    </span>
   </button>
 
   <!-- Bouton satellite -->
   <button
     class="absolute bottom-7 right-12 z-15 w-8 h-8 bg-white border border-gray-300
-         rounded shadow-md flex items-center justify-center text-gray-600
-         hover:bg-gray-50 transition-colors"
+           rounded shadow-md flex items-center justify-center text-gray-600
+           hover:bg-gray-50 transition-colors"
     title="Vue satellite"
     type="button"
     [attr.aria-label]="isSatellite() ? 'Vue carte' : 'Vue satellite'"
     (click)="toggleSatellite()"
   >
-  <span class="material-symbols-outlined text-[1.1rem]">
-    {{ isSatellite() ? 'map' : 'satellite_alt' }}
-  </span>
+    <span class="material-symbols-outlined text-[1.1rem]">
+      {{ isSatellite() ? 'map' : 'satellite_alt' }}
+    </span>
   </button>
-
 </section>
-
-<app-sentier-public-modal
-  #modal
-  [sentier]="selectedSentier()"
-  (closed)="onModalClosed()"
-/>
-
-<dialog
-  #occurrenceDialog
-  class="border-0 rounded-xl p-0 shadow-2xl top-20 left-1/2 translate-y--50 -translate-x-1/2 w-full max-w-2xl"
-  (close)="closeOccurrence()"
->
-  <app-occurrence-modal-detail
-    [occurrence]="selectedOccurrence()"
-    [onClose]="closeOccurrence"
-    [sentier]="singleSentier()!"
-  />
-</dialog>
-
-@if (showOccurrenceForm()) {
-  <app-occurrence-form
-    [position]="occurrenceFormPosition()!"
-    [sentier]="singleSentier()!"
-    (modalClosed)="closeOccurrenceModal()"
-    (modalSuccessed)="occurrenceModalSuccessed()"
-  />
-}
