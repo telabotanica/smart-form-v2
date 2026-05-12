@@ -42,6 +42,7 @@ import {FicheForm} from '../../features/fiche/components/fiche-form/fiche-form';
 import {FicheModalService} from '../../features/fiche/services/fiche-modal.service';
 import {Unauthorized} from '../../core/pages/unauthorized/unauthorized';
 import {OccurrenceService} from '../../features/occurrence/services/occurrence-service';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-single-trail',
@@ -139,7 +140,7 @@ export class SingleTrail implements OnInit {
 
         this.fillUniqueOccurrences();
 
-        this.sentierUrl.set(`${this.baseUrl()}/trail/${this.id()}`);
+        this.sentierUrl.set(`${environment.baseUrl}/trail/${this.id()}`);
         this.trailQrCode.set(
           `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.sentierUrl()}.png`
         );
