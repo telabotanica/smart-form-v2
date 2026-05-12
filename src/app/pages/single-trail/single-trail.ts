@@ -89,6 +89,10 @@ export class SingleTrail implements OnInit {
   readonly pings = signal(0);
   readonly accessAuthorized = signal(false);
 
+  private copyTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  readonly copied = signal(false);
+  readonly sentierUrl = signal("")
+
   readonly mapComponent = viewChild<Map>('mapComponent');
 
   readonly seasonImages = ['arbre.png', 'sunny.png', 'maple-leaf.png', 'flocon-de-neige.png'];
@@ -135,8 +139,9 @@ export class SingleTrail implements OnInit {
 
         this.fillUniqueOccurrences();
 
+        this.sentierUrl.set(`${this.baseUrl()}/trail/${this.id()}`);
         this.trailQrCode.set(
-          `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.baseUrl()}/trail/${this.id()}.png`
+          `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.sentierUrl()}.png`
         );
       }
     })
@@ -341,6 +346,39 @@ export class SingleTrail implements OnInit {
       trail: sentier.id,
       from_website: true,
     } as Ping);
+  }
+
+  copyDetails(text: string | null | undefined): void {
+    if (!text) { return; }
+
+    if (this.copyTimeoutId !== null) {
+      clearTimeout(this.copyTimeoutId);
+    }
+
+    navigator.clipboard.writeText(text).then(() => {
+      this.copied.set(true);
+      this.copyTimeoutId = setTimeout(() => {
+        this.copied.set(false);
+        this.copyTimeoutId = null;
+      }, 2000);
+    }).catch((err: unknown) => {
+      console.error('Échec de la copie :', err);
+    });
+  }
+
+  copyQrCodeUrl(): void {
+    if (!this.trailQrCode()) { return; }
+    if (this.copyTimeoutId !== null) {
+      clearTimeout(this.copyTimeoutId);
+    }
+
+    navigator.clipboard.writeText(this.trailQrCode()).then(() => {
+      this.copyTimeoutId = setTimeout(() => {
+        this.copyTimeoutId = null;
+      }, 2000);
+    }).catch((err: unknown) => {
+        console.error('Échec de la copie :', err);
+      });
   }
 
 }

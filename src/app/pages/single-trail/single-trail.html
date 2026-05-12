@@ -156,23 +156,55 @@
     }
 
     <!-- EXPORT PDF + QR -->
-    <section class="mx-4 mt-4 p-4 rounded-xl bg-white/60 border border-background-200 flex flex-wrap items-center justify-between gap-4">
-      <app-pdf-export
-        type="sentier"
-        [isLoading]="taxonSearchService.loading()"
-        [mapImageUrl]="mapImageUrl()"
-        [sentier]="sentier!"
-        [taxons]="taxons()"
-        (beforeExport)="captureMap()"
-      />
-      <img
-        alt="QR code du sentier"
-        class="rounded-lg"
-        height="80"
-        priority
-        width="80"
-        [ngSrc]="trailQrCode()"
-      />
+    <section class="mx-4 mt-4 p-4 rounded-xl bg-white/60 border border-background-200 flex flex-wrap items-start justify-between gap-4">
+      <div class="flex items-start justify-start gap-4 flex-wrap">
+        <p
+          aria-label="Cliquer pour copier les détails"
+          class="m-0! text-sm text-text italic px-4 py-4 rounded-lg bg-background-100 border-background-200 cursor-pointer select-none relative group"
+          role="button"
+          tabindex="0"
+          title="Copier les détails"
+          (click)="copyDetails(sentierUrl())"
+          (keydown.enter)="copyDetails(sentierUrl())"
+          (keydown.space)="copyDetails(sentierUrl())"
+        >
+          {{ sentierUrl() }}
+          <span class="absolute top-1 right-2 text-xs text-text-400 opacity-0 group-hover:opacity-100 transition-opacity">
+            {{ copied() ? '✓ Copié' : 'Copier' }}
+          </span>
+        </p>
+
+        <app-pdf-export
+          type="sentier"
+          [isLoading]="taxonSearchService.loading()"
+          [mapImageUrl]="mapImageUrl()"
+          [sentier]="sentier!"
+          [taxons]="taxons()"
+          (beforeExport)="captureMap()"
+        />
+      </div>
+
+      <div class="flex items-center gap-2 " title="QR code du sentier">
+        <img
+          alt="QR code du sentier"
+          class="rounded-lg"
+          height="80"
+          priority
+          width="80"
+          [ngSrc]="trailQrCode()"
+        />
+        <span
+          aria-label="Cliquer pour copier l'url du QR code du sentier"
+          class="material-symbols-outlined cursor-pointer"
+          role="button"
+          tabindex="0"
+          title="Copier l'url du QR code du sentier"
+          (click)="copyQrCodeUrl()"
+          (keydown.enter)="copyQrCodeUrl()"
+          (keydown.space)="copyQrCodeUrl()"
+        >content_copy</span>
+      </div>
+
     </section>
 
     <!-- CARTE (élément mis en avant) -->

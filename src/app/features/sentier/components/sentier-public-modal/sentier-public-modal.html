@@ -25,7 +25,7 @@
       </header>
 
       <!-- Barre colorée -->
-      <div class="h-[3px] bg-gradient-to-r from-primary to-primary-300 shrink-0"></div>
+      <div class="h-0.75 bg-linear-to-r from-primary to-primary-300 shrink-0"></div>
 
       <!-- Corps -->
       <section class="flex flex-col gap-3 px-8 py-7">
@@ -88,7 +88,7 @@
       <!-- Footer -->
       <footer class="flex items-center gap-2 px-8 pb-7 pt-4 border-t border-background-200">
         <button role="button" title="Ouvrir le sentier" type="button">
-          <a [routerLink]="['/trail', s.id]">
+          <a class="text-text!" [routerLink]="['/trail', s.id]">
             <span aria-hidden="true" class="material-symbols-outlined text-[.9rem]">hiking</span>
             Ouvrir le sentier
           </a>
