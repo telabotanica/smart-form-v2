@@ -89,15 +89,15 @@
         </p>
 
         @if (o.card_tag) {
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-2 items-start">
             @if (ficheService.loading()) {
               <app-loader />
             }
 
             @if (userService.isLoggedIn() && !ficheService.loading()) {
               <button
-                class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
-                       hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+                class="mt-0! mx-0! shadow-none! bg-transparent! border! border-background-300!
+                       hover:bg-background-100! hover:border-background-400! hover:no-underline!
                        text-text text-[.7rem] tracking-[.06em]"
                 type="button"
                 (click)="editFicheModal()"
@@ -107,7 +107,7 @@
               </button>
             }
 
-            <a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-background-300
+            <a class="inline-flex items-center gap-1.5 h-9 px-4 py-2 rounded-lg border border-background-300
             bg-transparent text-text text-[.7rem] tracking-[.06em] hover:bg-background-100
             hover:border-background-400 transition-colors no-underline"
                target="_blank"
