@@ -8,4 +8,5 @@ export const environment = {
   celImageUrl: "https://api-cel.tela-botanica.org/api/photos?isPublic=true",
   baseCelApiUrl: "https://api-cel.tela-botanica.org/api",
   baseUrl: "https://www.tela-botanica.org/smart-form/",
+  celUrl: "https://www.tela-botanica.org/appli:cel/occurrence-ui",
 };

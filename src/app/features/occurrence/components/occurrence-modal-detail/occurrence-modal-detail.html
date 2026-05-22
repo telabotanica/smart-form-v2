@@ -8,18 +8,21 @@
     <header class="relative px-8 pt-8 pb-5">
       <p class="text-[.68rem] tracking-[.18em] uppercase text-text-500 mb-2">Observation</p>
       <h3 class="!m-0 !p-0 text-2xl font-semibold tracking-tight text-text">
-        @if (o.taxon?.vernacular_names) {
-          <span>{{ o.taxon!.vernacular_names![0] }}</span><br/>
+        @if (o.taxon?.vernacular_names?.length) {
+          <span>{{ o.taxon!.vernacular_names!.join(', ') }}</span><br/>
           <span class="italic text-lg font-normal">{{ o.taxon!.scientific_name }}</span>
         } @else if (o.taxon?.scientific_name) {
           <span class="italic">{{ o.taxon!.scientific_name }}</span>
         } @else {
           Occurrence #{{ o.id }}
         }
+        @if (o.taxon?.taxon_repository) {
+          <br /><span class="m-0! text-xs text-text-500">Référentiel : <span class="uppercase">{{ o.taxon!.taxon_repository }}</span></span>
+        }
       </h3>
       <button
         aria-label="Fermer"
-        class="absolute top-4 right-4 !mt-0 !mx-0 !shadow-none !bg-transparent !border-0 !p-1
+        class="absolute top-4 right-4 mt-0! mx-0! shadow-none! bg-transparent! border-0! p-1!
                grid place-items-center w-9 h-9 rounded-full text-text-400 hover:text-text hover:bg-background-200"
         type="button"
         (click)="onClose()()"
@@ -29,23 +32,23 @@
     </header>
 
     <!-- Barre colorée -->
-    <div class="h-[3px] bg-gradient-to-r from-primary to-primary-300 shrink-0"></div>
+    <div class="h-0.75 bg-linear-to-r from-primary to-primary-700 shrink-0"></div>
 
     <!-- Corps scrollable -->
     <section class="flex flex-col gap-5 px-8 py-7 overflow-y-auto max-h-[70dvh]">
 
       <!-- Infos taxon -->
-      <div class="p-4 rounded-lg bg-accent-50 border border-accent-200 flex flex-col gap-1">
-        @if (o.taxon?.scientific_name) {
-          <p class="!m-0 text-sm font-semibold italic text-accent">{{ o.taxon!.scientific_name }}</p>
-        }
-        @if (o.taxon?.taxon_repository) {
-          <p class="!m-0 text-xs text-text-500">Référentiel : {{ o.taxon!.taxon_repository }}</p>
-        }
-        @if (o.taxon?.vernacular_names?.length) {
-          <p class="!m-0 text-xs text-text-500">{{ o.taxon!.vernacular_names!.join(', ') }}</p>
-        }
-      </div>
+<!--      <div class="p-4 rounded-lg bg-accent-50 border border-accent-200 flex flex-col gap-1">-->
+<!--        @if (o.taxon?.scientific_name) {-->
+<!--          <p class="!m-0 text-sm font-semibold italic text-accent">{{ o.taxon!.scientific_name }}</p>-->
+<!--        }-->
+<!--        @if (o.taxon?.taxon_repository) {-->
+<!--          <p class="!m-0 text-xs text-text-500">Référentiel : {{ o.taxon!.taxon_repository }}</p>-->
+<!--        }-->
+<!--        @if (o.taxon?.vernacular_names?.length) {-->
+<!--          <p class="!m-0 text-xs text-text-500">{{ o.taxon!.vernacular_names!.join(', ') }}</p>-->
+<!--        }-->
+<!--      </div>-->
 
       <!-- Carousel photos -->
       <app-image-carousel [images]="images()" />
@@ -53,8 +56,8 @@
       <!-- Anecdote -->
       @if (o.anecdotes) {
         <div class="px-4 py-3 rounded-lg bg-background-100 border border-background-200">
-          <p class="!m-0 text-xs text-text-500 uppercase tracking-widest mb-1">Anecdote</p>
-          <p class="!m-0 text-sm text-text italic">{{ o.anecdotes }}</p>
+          <p class="m-0! text-xs text-text-500 uppercase tracking-widest mb-1">Anecdote</p>
+          <p class="m-0! text-sm text-text italic">{{ o.anecdotes }}</p>
         </div>
       }
 
@@ -62,8 +65,8 @@
       @if (sharedService.canEditTrail(userService.user(), sentier(), userService.isUserAdmin())) {
         <div class="flex gap-2 flex-wrap">
           <button
-            class="!mt-0 !mx-0 !shadow-none !bg-transparent !border !border-background-300
-                   hover:!bg-background-100 hover:!border-background-400 hover:!no-underline
+            class="mt-0! mx-0! shadow-none! bg-transparent! border! border-background-300!
+                   hover:bg-background-100! hover:border-background-400! hover:no-underline!
                    text-text text-[.7rem] tracking-[.06em]"
             type="button"
             (click)="openOccurrenceForm()"
@@ -72,7 +75,7 @@
             Modifier
           </button>
           <button
-            class="!mt-0 !mx-0 !bg-red-700 hover:!bg-red-600 border-red-700 text-white text-[.7rem] tracking-[.06em]"
+            class="mt-0! mx-0! bg-red-700! hover:bg-red-600! border-red-700 text-white text-[.7rem] tracking-[.06em]"
             type="button"
             (click)="openDeleteConfirmation()"
           >

@@ -13,4 +13,5 @@ export const environment = {
   celImageUrl: "http://localhost:8001/api/photos?isPublic=true",
   baseCelApiUrl: "http://localhost:8001/api",
   baseUrl: "http://localhost:4200",
+  celUrl: "https://www.tela-botanica.org/appli:cel/occurrence-ui",
 };

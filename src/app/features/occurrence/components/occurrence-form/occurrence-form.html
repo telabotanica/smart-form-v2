@@ -76,9 +76,12 @@
       <!-- Section photos CEL — 02 (visible dès qu'un taxon est sélectionné) -->
       @if (selectedTaxonName() !== '') {
         <div class="flex flex-col gap-2">
-          <p class="flex items-center gap-2 text-[.68rem] tracking-[.1em] uppercase text-accent font-semibold">
+          <p class="text-[.68rem] tracking-widest uppercase text-accent font-semibold">
             <span class="bg-text text-background-50 text-[.58rem] px-1.5 py-0.5 rounded">02</span>
-            Ajouter une ou plusieurs photos de cet individu à partir du CEL
+            Ajouter une ou plusieurs photos de cet individu à partir du
+            <a class="text-accent hover:text-accent-400" href="{{celUrl}}" target="_blank">
+              Carnet en ligne
+            </a>
           </p>
 
           <app-image-carousel

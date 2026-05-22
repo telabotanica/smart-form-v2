@@ -21,6 +21,7 @@ import { ImageService } from '../../../image/services/image-service';
 import { CelPhoto } from '../../../image/models/cel-photo.model';
 import { Image } from '../../../image/models/image.model';
 import { ImageCarousel } from '../../../../shared/components/image-carousel/image-carousel';
+import {environment} from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-occurrence-form',
@@ -40,6 +41,7 @@ export class OccurrenceForm implements OnInit {
 
   readonly photos = signal<CelPhoto[]>([]);
   readonly selectedPhotoIds = signal<Set<number>>(new Set());
+  celUrl = environment.celUrl;
 
   readonly taxonSearchService = inject(TaxonSearchService);
   readonly occurrenceService = inject(OccurrenceService);
