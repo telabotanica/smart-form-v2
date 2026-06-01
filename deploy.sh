@@ -9,7 +9,7 @@ if [ "$CONFIG" == "production" ]; then
   BUILD_DIR="dist/smart-form/production/browser"
   TARGET_PATH="/home/telaorg/www/smart-form"
   SERVER="telaorg@sycomore"
-  BASE_HREF="/appli:smart-form/"
+  BASE_HREF="/smart-form/"
 elif [ "$CONFIG" == "beta" ]; then
   BUILD_DIR="dist/smart-form/beta/browser"
   TARGET_PATH="/home/beta/www/v2smartflore"

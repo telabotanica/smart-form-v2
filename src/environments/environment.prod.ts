@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
   smartfloreService: "https://www.tela-botanica.org/smartflore-services/",
   serviceAuthBaseUrl: "https://www.tela-botanica.org/service:annuaire:auth/",
   inscriptionUrl: "https://www.tela-botanica.org/test/inscription/",
