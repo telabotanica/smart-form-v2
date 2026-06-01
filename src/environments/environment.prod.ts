@@ -5,7 +5,7 @@ export const environment = {
   inscriptionUrl: "https://www.tela-botanica.org/test/inscription/",
   qrCodeUrl: "https://qr.tela-botanica.org/smartflore/",
   cookieName: 'tb_auth',
-  celImageUrl: "https://api-cel.tela-botanica.org/api/photos?isPublic=true",
+  celImageUrl: "https://api-cel.tela-botanica.org/api/photos?",
   baseCelApiUrl: "https://api-cel.tela-botanica.org/api",
   baseUrl: "https://www.tela-botanica.org/smart-form/",
   celUrl: "https://www.tela-botanica.org/appli:cel/occurrence-ui",
