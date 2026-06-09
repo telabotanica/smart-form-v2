@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, input, output} from '@angular/core';
 import {Occurrence} from '../../models/occurrence.model';
 import {TaxonSearchService} from '../../../taxon/services/taxon-search-service';
 import {QrCodeButton} from '../../../../shared/components/qr-code-button/qr-code-button';

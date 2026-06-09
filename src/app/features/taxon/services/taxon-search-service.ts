@@ -148,14 +148,18 @@ export class TaxonSearchService {
   }
 
   getFullTaxon(occurrence: Occurrence): Taxon | null {
+    if (occurrence.id === 17580){
+      console.log(occurrence.taxon, this.taxons())
+    }
+
     return this.taxons().find(
-      t => t.name_id === occurrence.taxon?.name_id
+      t => t.taxonomic_id === occurrence.taxon?.taxonomic_id
     ) ?? null;
   }
 
   hasFiche(occurrence: Occurrence): boolean {
     const fullTaxon = this.taxons().find(
-      t => t.name_id === occurrence.taxon?.name_id
+      t => t.taxonomic_id === occurrence.taxon?.taxonomic_id
     );
     return fullTaxon?.tabs?.some(tab => tab.type === 'card') ?? false;
   }

@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
-  Component, computed,
+  Component,
+  computed,
   effect,
   ElementRef,
   inject,
@@ -29,9 +30,7 @@ import {TaxonSearchService} from '../../features/taxon/services/taxon-search-ser
 import {Occurrence} from '../../features/occurrence/models/occurrence.model';
 import {Taxon} from '../../features/taxon/models/taxon.model';
 import html2canvas from 'html2canvas';
-import {
-  OccurrenceModalDetail
-} from '../../features/occurrence/components/occurrence-modal-detail/occurrence-modal-detail';
+import {OccurrenceModalDetail} from '../../features/occurrence/components/occurrence-modal-detail/occurrence-modal-detail';
 import {OccurrenceCard} from '../../features/occurrence/components/occurrence-card/occurrence-card';
 import {PdfExportService} from '../../shared/components/pdf-export/pdf-export.service';
 import {Router} from '@angular/router';
@@ -76,11 +75,11 @@ export class SingleTrail implements OnInit {
   showRejectConfirmModal = false;
   showUnpublishConfirmModal = false;
 
-  readonly id = input.required<number>()
+  readonly id = input.required<number>();
   readonly isLoggedIn = signal(false);
   readonly sentierCheck = signal({} as SentierValidationCheck);
   readonly sentierCheckError = signal<SentierValidationError | null>(null);
-  readonly trailQrCode= signal("");
+  readonly trailQrCode = signal('');
   readonly mapImageUrl = signal<string | null>(null);
   readonly taxons = signal<Taxon[]>([]);
   readonly occurencesUniques = signal<Occurrence[]>([]);
@@ -92,29 +91,32 @@ export class SingleTrail implements OnInit {
 
   private copyTimeoutId: ReturnType<typeof setTimeout> | null = null;
   readonly copied = signal(false);
-  readonly sentierUrl = signal("")
+  readonly sentierUrl = signal('');
 
   readonly mapComponent = viewChild<Map>('mapComponent');
 
   readonly seasonImages = ['arbre.png', 'sunny.png', 'maple-leaf.png', 'flocon-de-neige.png'];
   readonly seasonLabels = ['Printemps', 'Été', 'Automne', 'Hiver'];
 
-  sentierService= inject(SingleSentierService)
-  userService = inject(UserService);
-  sharedService = inject(SharedService);
-  ficheService = inject(FicheService);
-  taxonSearchService = inject(TaxonSearchService);
-  pdfExportService = inject(PdfExportService);
-  adminService = inject(AdminService);
-  pingService = inject(PingService);
-  private router = inject(Router);
+  readonly sentierService = inject(SingleSentierService);
+  readonly userService = inject(UserService);
+  readonly sharedService = inject(SharedService);
+  readonly ficheService = inject(FicheService);
+  readonly taxonSearchService = inject(TaxonSearchService);
+  readonly pdfExportService = inject(PdfExportService);
+  readonly adminService = inject(AdminService);
+  readonly pingService = inject(PingService);
+  private readonly router = inject(Router);
   readonly ficheModalService = inject(FicheModalService);
   readonly occurrenceService = inject(OccurrenceService);
 
-  readonly baseUrl = computed(() => {
-    const u = this.sharedService.url();
-    return u.origin;
-  });
+  readonly baseUrl = computed(() => this.sharedService.url().origin);
+
+  readonly occurrencesReady = computed(() =>
+    !this.sentierService.loading() &&
+    !this.taxonSearchService.loading() &&
+    this.taxonSearchService.error() === null
+  );
 
   constructor() {
     effect(() => {
@@ -125,9 +127,12 @@ export class SingleTrail implements OnInit {
       }
     });
 
-    effect(()=>{
+    effect(() => {
       this.sentier = this.sentierService.sentier();
       const pingReady = this._pingReady();
+
+      const taxonsReady = !this.taxonSearchService.loading() && this.taxonSearchService.error() === null;
+      void this.taxonSearchService.taxons();
 
       if (this.sentier) {
         this.pingService.fetchPings(this.sentier);
@@ -138,22 +143,25 @@ export class SingleTrail implements OnInit {
 
         this.checkAccess(this.sentier);
 
-        this.fillUniqueOccurrences();
+        if (taxonsReady) {
+          this.fillUniqueOccurrences();
+        }
 
         this.sentierUrl.set(`${environment.baseUrl}/trail/${this.id()}`);
         this.trailQrCode.set(
           `${this.sharedService.env().qrCodeUrl}${this.sentier.display_name}/${this.sentierUrl()}.png`
         );
       }
-    })
+    });
 
     effect(() => {
       const pingList = this.pingService.pings();
-      this.pings.set(pingList.length)
+      this.pings.set(pingList.length);
     });
-    effect(()=>{
+
+    effect(() => {
       this.taxons.set(this.taxonSearchService.taxons());
-    })
+    });
   }
 
   ngOnInit(): void {
@@ -164,34 +172,35 @@ export class SingleTrail implements OnInit {
     this.occurrenceService._error.set(null);
     this.sentierService._errorUpdate.set(null);
     this.sentierService.fetchSentier(this.id());
-    this.taxonSearchService.getUniqueTaxonsBelongingToTrail(this.id())
-    this.sharedService.blurBackground.set(false)
+    this.taxonSearchService.getUniqueTaxonsBelongingToTrail(this.id());
+    this.sharedService.blurBackground.set(false);
   }
 
   private checkAccess(sentier: Sentier): void {
     this.accessAuthorized.set(false);
-    if (sentier.status?.toLowerCase() === 'Validé'.toLowerCase()) {
+
+    if (sentier.status?.toLowerCase() === 'validé') {
       this.accessAuthorized.set(true);
     }
 
-    let isAuthor = null;
-    if (this.user && sentier.author_id) {
-       isAuthor = this.user.id === sentier.author_id;
-    }
+    const isAuthor = this.user && sentier.author_id
+      ? this.user.id === sentier.author_id
+      : false;
 
     if (this.userService.isUserAdmin() || isAuthor) {
       this.accessAuthorized.set(true);
     }
   }
 
-  fillUniqueOccurrences(): void{
-    const occurrences = this.sentier!.occurrences ?? [];
+  fillUniqueOccurrences(): void {
+    const occurrences = this.sentier?.occurrences ?? [];
     const seen = new Set<number>();
     const uniques = occurrences.filter(o => {
-      if (!o.taxon?.name_id || seen.has(o.taxon?.name_id)){ return false };
-      seen.add(o.taxon?.name_id);
+      if (!o.taxon?.name_id || seen.has(o.taxon.name_id)) { return false; }
+      seen.add(o.taxon.name_id);
       return true;
     });
+
     this.occurencesUniques.set(uniques);
   }
 
@@ -229,32 +238,32 @@ export class SingleTrail implements OnInit {
   }
 
   async checkSentier(sentier: Sentier): Promise<void> {
-    const { check, error } = await this.sentierService.checkSentier(sentier);
+    const {check, error} = await this.sentierService.checkSentier(sentier);
     this.sentierCheck.set(check);
     this.sentierCheckError.set(error);
   }
 
   openDeleteConfirmModal(sentier: Sentier): void {
-    this.sharedService.blurBackground.set(true)
+    this.sharedService.blurBackground.set(true);
     this.sentierToDelete = sentier;
     this.showDeleteConfirmModal = true;
   }
 
   closeDeleteConfirmModal(): void {
-    this.sharedService.blurBackground.set(false)
+    this.sharedService.blurBackground.set(false);
     this.sentierToDelete = null;
     this.showDeleteConfirmModal = false;
     this.sentierService.fetchSentier(this.id());
   }
 
   openTrailModal(sentier: Sentier | null = null): void {
-    this.sharedService.blurBackground.set(true)
-    this.sentierToUpdate = sentier
+    this.sharedService.blurBackground.set(true);
+    this.sentierToUpdate = sentier;
     this.showTrailModal = true;
   }
 
   closeTrailModal(): void {
-    this.sharedService.blurBackground.set(false)
+    this.sharedService.blurBackground.set(false);
     this.sentierToUpdate = null;
     this.showTrailModal = false;
     this.sentierService.fetchSentier(this.id());
@@ -267,65 +276,65 @@ export class SingleTrail implements OnInit {
   openOccurrence(o: Occurrence): void {
     this.selectedOccurrence.set(o);
     this.occurrenceDialog()?.nativeElement?.showModal();
-    this.sharedService.blurBackground.set(true)
+    this.sharedService.blurBackground.set(true);
   }
 
   closeOccurrence = (): void => {
     this.occurrenceDialog()?.nativeElement?.close();
     this.selectedOccurrence.set(null);
-    this.sharedService.blurBackground.set(false)
+    this.sharedService.blurBackground.set(false);
   };
 
   closeFicheModal(): void {
     this.ficheModalService.close();
-    this.taxonSearchService.getUniqueTaxonsBelongingToTrail(this.id())
+    this.taxonSearchService.getUniqueTaxonsBelongingToTrail(this.id());
   }
 
   /*********************** ADMIN *********************/
   openPublishConfirmModal(): void {
-    this.sharedService.blurBackground.set(true)
+    this.sharedService.blurBackground.set(true);
     this.showPublishConfirmModal = true;
   }
 
   closePublishConfirmModal(): void {
-    this.sharedService.blurBackground.set(false)
+    this.sharedService.blurBackground.set(false);
     this.showPublishConfirmModal = false;
   }
 
   openRejectConfirmModal(): void {
-    this.sharedService.blurBackground.set(true)
+    this.sharedService.blurBackground.set(true);
     this.showRejectConfirmModal = true;
   }
 
   closeRejectConfirmModal(): void {
-    this.sharedService.blurBackground.set(false)
+    this.sharedService.blurBackground.set(false);
     this.showRejectConfirmModal = false;
   }
 
   openUnpublishConfirmModal(): void {
-    this.sharedService.blurBackground.set(true)
+    this.sharedService.blurBackground.set(true);
     this.showUnpublishConfirmModal = true;
   }
 
   closeUnpublishConfirmModal(): void {
-    this.sharedService.blurBackground.set(false)
+    this.sharedService.blurBackground.set(false);
     this.showUnpublishConfirmModal = false;
   }
 
   async adminPublishTrail(): Promise<void> {
-    await this.adminService.publishSentier(this.sentier!)
+    await this.adminService.publishSentier(this.sentier!);
     this.closePublishConfirmModal();
     this.sentierService.fetchSentier(this.id());
   }
 
   async adminRejectTrail(): Promise<void> {
-    await this.adminService.rejectSentier(this.sentier!)
+    await this.adminService.rejectSentier(this.sentier!);
     this.closeRejectConfirmModal();
     this.sentierService.fetchSentier(this.id());
   }
 
   async adminUnpublishTrail(): Promise<void> {
-    await this.adminService.unpublishSentier(this.sentier!)
+    await this.adminService.unpublishSentier(this.sentier!);
     this.closeUnpublishConfirmModal();
     this.sentierService.fetchSentier(this.id());
   }
@@ -369,6 +378,7 @@ export class SingleTrail implements OnInit {
 
   copyQrCodeUrl(): void {
     if (!this.trailQrCode()) { return; }
+
     if (this.copyTimeoutId !== null) {
       clearTimeout(this.copyTimeoutId);
     }
@@ -378,8 +388,7 @@ export class SingleTrail implements OnInit {
         this.copyTimeoutId = null;
       }, 2000);
     }).catch((err: unknown) => {
-        console.error('Échec de la copie :', err);
-      });
+      console.error('Échec de la copie :', err);
+    });
   }
-
 }

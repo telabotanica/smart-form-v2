@@ -290,14 +290,18 @@
     <!-- TAXONS -->
     <section class="mx-4 mt-4 mb-8">
       <h3 class="ml-0 text-base font-bold text-text mb-3">🌱 Taxons du sentier</h3>
-      <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        @for (occurrence of occurencesUniques(); track occurrence.id) {
-          <app-occurrence-card
-            [occurrence]="occurrence"
-            (openOccurrence)="openOccurrence($event)"
-          />
-        }
-      </ul>
+      @if (occurrencesReady()) {
+        <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          @for (occurrence of occurencesUniques(); track occurrence.id) {
+            <app-occurrence-card
+              [occurrence]="occurrence"
+              (openOccurrence)="openOccurrence($event)"
+            />
+          }
+        </ul>
+      } @else if (taxonSearchService.loading()) {
+        <app-loader />
+      }
     </section>
     } @else {
     <h2 class="m-0! p-0! text-2xl font-bold text-text">{{ sentier!.display_name }}</h2>
