@@ -98,6 +98,8 @@ export class OccurrenceForm implements OnInit {
   onTaxonSelected(userSciName?: string): void {
     const queryParams: Record<string, string> = {};
     if (userSciName) {
+      //On ne prend que la 1ère partie de la string car parfois le sci name change eg. Coronilla coronata devient Coronilla coronata L.
+      userSciName = userSciName.split(' ').slice(0, 1).join(' ');
       queryParams['userSciName'] = userSciName;
     }
     this.getCelPhotos(queryParams);
@@ -127,6 +129,7 @@ export class OccurrenceForm implements OnInit {
       position: this.position(),
       taxon,
     });
+    console.log(taxon)
     this.onTaxonSelected(taxon.scientific_name);
   }
 
