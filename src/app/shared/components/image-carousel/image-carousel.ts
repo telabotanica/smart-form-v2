@@ -64,7 +64,7 @@ export class ImageCarousel {
 
   readonly activeItem = computed(() => this.items()[this.activeIndex()] ?? null);
   readonly total = computed(() => this.items().length);
-  readonly hasMultiple = computed(() => this.total() > 1);
+  readonly hasMultiple = computed(() => this.total() > 0);
 
   setActive(index: number): void {
     this.activeIndex.set(index);
