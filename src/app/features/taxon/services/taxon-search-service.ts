@@ -161,7 +161,28 @@ export class TaxonSearchService {
     const fullTaxon = this.taxons().find(
       t => t.taxonomic_id === occurrence.taxon?.taxonomic_id
     );
-    return fullTaxon?.tabs?.some(tab => tab.type === 'card') ?? false;
+
+    if (!fullTaxon) {
+      return false;
+    }
+
+    // Défense contre le bug de sérialisation Symfony : tabs peut arriver
+    // comme une string JSON au lieu d'un tableau
+    let tabs = fullTaxon.tabs;
+
+    if (typeof tabs === 'string') {
+      try {
+        tabs = JSON.parse(tabs);
+      } catch {
+        return false;
+      }
+    }
+
+    if (!Array.isArray(tabs)) {
+      return false;
+    }
+
+    return tabs.some(tab => tab.type === 'card');
   }
 
   isFicheFullyCompleted(taxon: Taxon): boolean {
