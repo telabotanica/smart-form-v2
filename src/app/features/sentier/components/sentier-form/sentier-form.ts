@@ -183,8 +183,18 @@ export class SentierForm implements OnInit {
 
   onPostPhotoError(error: any): void {
     this.trailPicture.set(null);
-    this.pictureError = error.error["hydra:description"];
+    if (error.error["hydra:description"]) {
+      this.pictureError = error.error["hydra:description"];
+    } else if (error.error["message"]){
+      this.pictureError = error.error["message"];
+    } else if (error.message){
+      this.pictureError = error.message;
+    } else {
+      this.pictureError = "Une erreur inconnue est survenue lors de l'upload de la photo.";
+    }
+
     console.error('Erreur upload photo :', error.error["hydra:description"]);
+    console.error('Erreur upload photo :', error);
   }
 
   onUploadedPhotoDeleted(image: unknown): void {
