@@ -12,7 +12,7 @@ import {Sentier} from '../../models/sentier.model';
 import {SharedService} from '../../../../shared/services/shared.service';
 import {SingleSentierService} from '../../services/single-sentier-service';
 import {FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import {Router} from '@angular/router';
 import {UserService} from '../../../../core/auth/services/user.service';
 import {ErrorComponent} from '../../../../shared/components/error/error';
@@ -27,14 +27,13 @@ import {ModalConfirmation} from '../../../../shared/components/modal-confirmatio
 @Component({
   selector: 'app-sentier-form',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     ErrorComponent,
     AuthComponent,
     DropBoxComponent,
     NgOptimizedImage,
     ModalConfirmation
-  ],
+],
   templateUrl: './sentier-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
