@@ -12,7 +12,6 @@ import {UserService} from '../services/user.service';
 import {environment} from '../../../../environments/environment';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CookieService} from 'ngx-cookie-service';
-import {CommonModule} from '@angular/common';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ErrorComponent} from '../../../shared/components/error/error';
 
@@ -23,7 +22,7 @@ type AuthForm = {
 
 @Component({
   selector: 'app-auth',
-  imports: [ReactiveFormsModule, CommonModule, ErrorComponent],
+  imports: [ReactiveFormsModule, ErrorComponent],
   templateUrl: './auth.html',
   styleUrl: './auth.css',
   changeDetection: ChangeDetectionStrategy.OnPush
