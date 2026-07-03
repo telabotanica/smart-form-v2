@@ -1,6 +1,6 @@
-<section class="w-full rounded flex items-center justify-end sm:justify-between gap-4 px-6 py-3
+<section class="w-full rounded flex items-center justify-start sm:justify-center gap-4 px-6 py-3
                bg-background-50 border-b border-background-200 shadow-sm">
-  <div class="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-text-500">
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-text-500">
     <p class="m-0">
       <a
         class="hover:underline hover:text-accent-600"
@@ -23,11 +23,20 @@
         CC BY-SA 4.0
       </a>
     </p>
-    <p class="m-0">Soutenu par l' <a
+    <p class="m-0 flex items-center">
+      Soutenu par l'<a
       class="hover:underline hover:text-accent-600"
       href="https://ofb.gouv.fr/"
       rel="noopener noreferrer"
       target="_blank"
-      title="Aller sur le site de l'OFB'">Office Français de la Biodiversité</a></p>
+      title="Aller sur le site de l\'OFB'">Office Français de la Biodiversité
+      </a>
+      <img
+        alt="Logo de l'Office Français de la Biodiversité"
+        height="80"
+        loading="lazy"
+        width="80"
+        [ngSrc]="'assets/images/ofb_soutien_80x80.webp'" />
+    </p>
   </div>
 </section>
