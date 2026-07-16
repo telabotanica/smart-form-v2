@@ -40,9 +40,15 @@ export class PdfExportService {
   private readonly topMargin = 5;
   private sentier = {} as Sentier;
 
-  readonly baseUrl = computed(() => {
+  // readonly baseUrl = computed(() => {
+  //   const u = this.sharedService.url();
+  //   return u.origin;
+  // });
+  baseUrl = this.sharedService.baseUrl();
+
+  readonly url = computed(() => {
     const u = this.sharedService.url();
-    return u.origin;
+    return u.origin + u.pathname;
   });
 
   // ---------------------------------------------------------------------------
@@ -203,12 +209,12 @@ export class PdfExportService {
   }
 
   private async generateTaxonQrCodeDataUrl(taxon: Taxon): Promise<string> {
-    const url = `${this.baseUrl()}/fiche/${taxon.taxon_repository}/${taxon.taxonomic_id}/${taxon.name_id}`;
+    const url = `${this.baseUrl}fiche/${taxon.taxon_repository}/${taxon.taxonomic_id}/${taxon.name_id}`;
     return QRCode.toDataURL(url, { width: 200, margin: 1, color: { dark: '#000000', light: '#FFFFFF' } });
   }
 
   private async generateSentierQrCodeDataUrl(sentier: Sentier): Promise<string> {
-    const url = `${this.baseUrl()}/trail/${sentier.id}`;
+    const url = `${this.url()}/trail/${sentier.id}`;
     return QRCode.toDataURL(url, { width: 200, margin: 1, color: { dark: '#000000', light: '#FFFFFF' } });
   }
 
