@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
   smartfloreService: "http://localhost:8000/",
+  // smartfloreService: "https://www.tela-botanica.org/smartflore-services/trails",
   serviceAuthBaseUrl: "https://www.tela-botanica.org/service:annuaire:auth/",
   inscriptionUrl: "https://www.tela-botanica.org/inscription/",
   qrCodeUrl: "https://qr.tela-botanica.org/smartflore/",
